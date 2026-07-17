@@ -2299,32 +2299,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @returns {string} - la chaîne de caractères formattée en Latex
 	 */
 	const StringToLatex = (str) => {
-		str = str.replaceAll("Rouge", " \\textit{ Rouge } ");
-		str = str.replaceAll("Jaune", " \\textit{ Jaune } ");
-		str = str.replaceAll("Bleue", " \\textit{ Bleue } ");
-		str = str.replaceAll("Orange", " \\textit{ Orange } ");
-		str = str.replaceAll("Verte", " \\textit{ Verte } ");
-		str = str.replaceAll("Vrai", " \\textit{ Vrai } ");
-		str = str.replaceAll("Faux", " \\textit{ Faux } ");
-		str = str.replaceAll("True", " \\textit{ True } ");
-		str = str.replaceAll("False", " \\textit{ False } ");
-		str = str.replaceAll("^", " \\land ");
-		str = str.replaceAll("non", " \\neg ");
-		str = str.replaceAll("<=>", " \\Leftrightarrow ");
-		str = str.replaceAll("=>", " \\Rightarrow ");
-		str = str.replaceAll(".", " \\text{. }$$$ ");
-		str = str.replaceAll(",", " \\text{, }");
-		str = str.replaceAll("alors", " $$$\\text{alors } ");
-		str = str.replaceAll("On a", "$$$\\text{On a } ");
-		str = str.replaceAll("on a", "\\text{on a } ");
-		str = str.replaceAll(
-			"Par transitivité",
-			" $$$\\text{Par transitivité } "
-		);
-		str = str.replaceAll("Montrons", " $$$\\text{Montrons } ");
-		str = str.replaceAll("Supposons", " $$$\\text{Supposons } ");
-		str = str.replaceAll("Puisque", " $$$\\text{Puisque } ");
-		str = str.split().join();
+		str = str.replaceAll("^", " ∧ ");
+		str = str.replaceAll("non", " ¬ ");
+		str = str.replaceAll("<=>", " ⇔ ");
+		str = str.replaceAll("=>", " ⇒ ");
 		return str;
 	};
 
@@ -2333,26 +2311,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const copyHandler = () => {
 		let str = window.getSelection().toString();
-		str = str.replaceAll("\\textit{ Rouge }", " Rouge ");
-		str = str.replaceAll("\\textit{ Jaune }", " Jaune ");
-		str = str.replaceAll("\\textit{ Bleue }", " Bleue ");
-		str = str.replaceAll("\\textit{ Orange }", " Orange ");
-		str = str.replaceAll("\\textit{ True }", " True ");
-		str = str.replaceAll("\\textit{ False }", " False ");
-		str = str.replaceAll("\\land", "^");
 		str = str.replaceAll("∧", "^");
-		str = str.replaceAll("\\Leftrightarrow", "<=>");
-		str = str.replaceAll("\\neg", "non");
-		str = str.replaceAll("⇒", "=>");
 		str = str.replaceAll("⇔", "<=>");
-		str = str.replaceAll("\\Rightarrow", "=>");
-		str = str.replaceAll("\\text{. }", ". ");
-		str = str.replaceAll("\\text{, }", ", ");
-		str = str.replaceAll("\\text{On a }", "On a");
-		str = str.replaceAll("\\text{on a }", "on a");
-		str = str.replaceAll("\\text{Montrons }", "Montrons");
-		str = str.replaceAll("\\text{Supposons }", "Supposons");
-		str = str.replaceAll("\\text{Puisque }", "Puisque");
+		str = str.replaceAll("⇒", "=>");
+		str = str.replaceAll("¬", "non");
 		let espaceInsec = new RegExp(String.fromCharCode(160), "g");
 		str = str.replaceAll(espaceInsec, " ");
 		str = str.replaceAll("  ", " ");

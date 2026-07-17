@@ -29,11 +29,11 @@ const Card = ({
 	 */
 	const afficheLink = (str) => {
 		if (str === "=>")
-			return "$$\\Rightarrow$$";
+			return "⇒";
 		else if (str === "<=>")
-			return "$$\\Leftrightarrow$$";
+			return "⇔";
 		else if (str === "non")
-			return "$$\\neg$$";
+			return "¬";
 		else
 			return str;
 	};
