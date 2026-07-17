@@ -1696,7 +1696,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		// S'il y a un prochain exercice
 		if (numero + 2 <= nbExo) {
 			// url du prochain exercice
-			let url = "/Exercise-" + mode + "-" + (numero + 2);
+			let url = "/Exercise/" + mode + "/" + (numero + 2);
 			// Redirige vers cet url
 			navigate(url);
 		}
@@ -2645,7 +2645,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						onClick={retourEnArriere}
 					>
 						<img
-							src={"img/retour_arriere.png"}
+							src={"/img/retour_arriere.png"}
 							alt={"Retour arrière"}
 						/>
 						<span className="tooltiptext">Retour arrière</span>
@@ -2665,7 +2665,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							onClick={addCardAnd}
 						>
 							<img
-								src={"img/ajout_carte_et.png"}
+								src={"/img/ajout_carte_et.png"}
 								alt={"Séparation"}
 							/>
 							<span className="tooltiptext">Séparation</span>
@@ -2687,7 +2687,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							onClick={addCardFuse}
 						>
 							<img
-								src={"img/ajout_carte_implique.png"}
+								src={"/img/ajout_carte_implique.png"}
 								alt={"Implique"}
 							/>
 							<span className="tooltiptext">Implique</span>
@@ -2709,7 +2709,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							onClick={fuseCardAnd}
 						>
 							<img
-								src={"img/fusion_carte_et.png"}
+								src={"/img/fusion_carte_et.png"}
 								alt={"Fusion"}
 							/>
 							<span className="tooltiptext">Fusion</span>
@@ -2722,7 +2722,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{false && mode !== "Create" && (
 					<button className={"buttonAction "} onClick={fuseCardFuse}>
 						<img
-							src={"img/fusion_carte_et.png"}
+							src={"/img/fusion_carte_et.png"}
 							alt={"Fusion Carte =>"}
 						/>
 						<span className="tooltiptext">Fusion Carte {"=>"}</span>
@@ -2742,7 +2742,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							onClick={addObjectif}
 						>
 							<img
-								src={"img/ajout_objectif.png"}
+								src={"/img/ajout_objectif.png"}
 								alt={"+ Objectif"}
 							/>
 							<span className="tooltiptext">+ Objectif</span>
@@ -2762,7 +2762,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							onClick={tiersExlus}
 						>
 							<img
-								src={"img/tiers_exclus.png"}
+								src={"/img/tiers_exclus.png"}
 								alt={"tiers-exclus"}
 							/>
 							<span className="tooltiptext">Tiers Exclus</span>
@@ -2782,7 +2782,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						onClick={transitivite}
 					>
 						<img
-							src={"img/transitivite.png"}
+							src={"/img/transitivite.png"}
 							alt={"Transitivité"}
 						></img>
 						<span className="tooltiptext">Transitivité</span>

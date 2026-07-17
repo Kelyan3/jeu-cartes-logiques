@@ -23,8 +23,8 @@ const App = () => {
 		<BrowserRouter>
 			<Routes>
 				<Route path="/" exact element={<Home />} />
-				<Route path="/Exercise-:mode-:num" exact element={<Exercise />} />
-				<Route path="/Exercise-:mode" exact element={<Exercise />} />
+				<Route path="/Exercise/:mode/:num" exact element={<Exercise />} />
+				<Route path="/Exercise/:mode" exact element={<Exercise />} />
 				<Route path="/About" exact element={<About />} />
 				<Route path="/Forms" exact element={<Forms />} />
 				<Route path="/Levels" exact element={<Levels />} />

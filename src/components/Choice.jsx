@@ -47,9 +47,9 @@ const Choice = () => {
 					<td
 						key={index}
 						onClick={goToExo}
-						url={"/Exercise-Play-" + (index + 1)}
+						url={"/Exercise/Play/" + (index + 1)}
 					>
-						<p url={"/Exercise-Play-" + (index + 1)}>Niveau {index + 1}</p>
+						<p url={"/Exercise/Play/" + (index + 1)}>Niveau {index + 1}</p>
 					</td>
 				);
 			}

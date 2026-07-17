@@ -11,7 +11,7 @@ const Navigation = () => {
 		{
 			res.push(
 				<li className="exo" key={index}>
-					<NavLink exact="true" to={"/Exercise-Tutorial-" + (index + 1)}>Tutoriel {index + 1}</NavLink>
+					<NavLink exact="true" to={"/Exercise/Tutorial/" + (index + 1)}>Tutoriel {index + 1}</NavLink>
 				</li>
 			);
 		}
@@ -33,7 +33,7 @@ const Navigation = () => {
 							</ul>
 						</li>
 						<li><NavLink exact="true" to="/Levels">Choisir un niveau</NavLink></li>
-						<li><NavLink exact="true" to="/Exercise-Create">Créer un niveau</NavLink></li>
+						<li><NavLink exact="true" to="/Exercise/Create">Créer un niveau</NavLink></li>
 						<li><NavLink exact="true" to="/About">À propos</NavLink></li>
 						<li><NavLink exact="true" to="/Forms">Votre avis</NavLink></li>
 					</ul>
@@ -41,9 +41,9 @@ const Navigation = () => {
 			</ul>
 
 			<h1>Jeu des Cartes Logiques</h1>
-			{window.location.pathname.substring(10, 14) === "Play" && (
+			{window.location.pathname.startsWith("/Exercise/Play/") && (
 				<div id="titrePage">
-					{"Niveau " + window.location.pathname.substring(15, 30)}
+					{"Niveau " + window.location.pathname.split("/")[3]}
 				</div>
 			)}
 			
@@ -63,13 +63,13 @@ const Navigation = () => {
 				<div id="titrePage">{"Choix du niveau"}</div>
 			)}
 
-			{window.location.pathname.substring(10, 18) === "Create" && (
+			{window.location.pathname === "/Exercise/Create" && (
 				<div id="titrePage">{"Créer un niveau"}</div>
 			)}
 
-			{window.location.pathname.substring(10, 18) === "Tutorial" && (
+			{window.location.pathname.startsWith("/Exercise/Tutorial/") && (
 				<div id="titrePage">
-					{"Tutoriel " + window.location.pathname.substring(19, 30)}
+					{"Tutoriel " + window.location.pathname.split("/")[3]}
 				</div>
 			)}
 		</div>

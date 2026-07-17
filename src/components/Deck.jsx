@@ -87,7 +87,7 @@ const Deck = ({
 				{indice === nbDeck - 1 && (
 					<h3>
 						Objectifs{" "}
-						<img src={"img/objectif.png"} alt={"Ajout objectif"} />
+						<img src={"/img/objectif.png"} alt={"Ajout objectif"} />
 					</h3>
 				)}
 

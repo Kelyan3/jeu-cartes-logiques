@@ -22,7 +22,7 @@ const Exercise = () => {
 			setNbExoConfondu(nbExo);
 			setNum(tmpNum);
 
-			fetch("json/exos_feuilles/ex" + tmpNum + ".json")
+			fetch("/json/exos_feuilles/ex" + tmpNum + ".json")
 				.then((response) => response.text())
 				.then((data) => {
 					tmpEx = JSON.parse(data);
@@ -34,7 +34,7 @@ const Exercise = () => {
 			setNbExoConfondu(nbTuto);
 			setNum(tmpNum);
 
-			fetch("json/tutoriel/tuto" + tmpNum + ".json")
+			fetch("/json/tutoriel/tuto" + tmpNum + ".json")
 				.then((response) => response.text())
 				.then((data) => {
 					tmpEx = JSON.parse(data);

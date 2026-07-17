@@ -10,7 +10,7 @@ const Home = () => {
 
 				<h2>Présentation du jeu</h2>
 				<ul>
-					<li>Le <string>Jeu des Cartes Logiques</string> est un jeu à un seul joueur.</li>
+					<li>Le <strong>Jeu des Cartes Logiques</strong> est un jeu à un seul joueur.</li>
 					<li>Le joueur manipule des <strong>cartes.</strong></li>
 					<li>
 						Chaque <strong>carte</strong> dispose
