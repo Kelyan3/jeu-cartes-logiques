@@ -1,0 +1,18 @@
+.forms {
+	min-width: 100vw;
+	min-height: 100vh;
+	position: relative;
+	display: grid;
+	grid-template-areas:
+		"h h h"
+		"l m r";;
+}
+
+.forms #forms {
+	grid-area: m;
+	background-color: lightgray;
+	border-radius: 15px;
+	margin: 8% auto 2% auto;
+	padding: 1%;
+	width: fit-content;
+}

@@ -1,0 +1,49 @@
+.about {
+	min-width: 100vw;
+	min-height: 100vh;
+	position: relative;
+	display: grid;
+	grid-template-areas: "h h h" "l m r";
+}
+
+.about #credits {
+	grid-area: m;
+	height: fit-content;
+	font-family: 'FilmCryptic';
+	font-size: 20px;
+	text-align: center;
+	// Fond ardoise.
+	background-image: url("https://static.vecteezy.com/system/resources/previews/007/451/024/original/textured-empty-blackboard-chalkboard-design-free-vector.jpg");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	padding: 8%;
+	margin-left: 13%;
+	margin-right: 13%;
+	border-width: 13px;
+	box-shadow: 7px 7px 15px black;
+}
+
+.about #credits h2 {
+	margin-top: 1%;
+}
+
+.about #credits img {
+	height: 175px;
+	width: auto;
+	border-radius: 25px;
+}
+
+.about #credits ul {
+	padding: 0;
+	text-align: center;
+}
+
+.about #credits li {
+	list-style-type: none;
+}
+
+.about #credits .linkedin {
+	height: 17px;
+	width: auto;
+	border-radius: 0px;
+}

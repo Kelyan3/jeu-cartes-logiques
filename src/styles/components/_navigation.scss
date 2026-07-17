@@ -1,0 +1,109 @@
+.navigation {
+	width: 100%;
+	height: 50px;
+	grid-area: h;
+	position: fixed;
+	background-color: #ADBDE2;
+	padding: 0;
+	z-index: 99;
+	display: flex;
+	font-size: 2.5vh;
+	box-shadow: 0px 5px 5px #4F618F;
+}
+
+.navigation h1 {
+	font-size: 150%;
+	font-family: 'Sora', sans-serif;
+	margin: auto;
+	color: #061539;
+	position: static;
+}
+
+.navigation #titrePage {
+	position: absolute;
+	top: 10px;
+	right: 30px;
+}
+
+.navbar {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	text-align: center;
+	width: 180px;
+	position: absolute;
+}
+
+.navbar ul {
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	text-align: center;
+}
+
+.navbar > li {
+	min-height: 50px;
+}
+
+.navbar li {
+	background-color: #729EBF;
+}
+
+.navbar li li {
+	max-height: 0;
+	overflow: hidden;
+	transition: all 1s;
+	border-radius: 0;
+	background: #444444;
+	box-shadow: none;
+	border: none;
+	margin: 0;
+}
+
+.choose ul {
+	max-height: 0;
+	transition: all 1s;
+	position: absolute;
+	right: -150px;
+	top: 17.9vh;
+	max-height: 15em;
+	min-width: 150px;
+	background: #4F618F;
+}
+
+#tuto {
+	top: 11.9vh;
+}
+
+.navbar div, .navbar a, .choose a {
+	display: block;
+	text-decoration: none;
+	color: #FFFFFF;
+	padding: 8px 0;
+	user-select: none;
+}
+
+.navbar li:hover {
+	background: #729EBF;
+}
+
+.navbar li:hover .choose li {
+	display: none;
+}
+
+.navbar li:hover .choose:hover .exo {
+	display: block;
+	background: #4F618F;
+}
+
+.navbar li:hover .choose .exo:hover {
+	background-color: #729EBF;
+}
+
+.navbar li li:hover {
+	background: #999999;
+}
+
+.navbar li:hover li {
+	max-height: 30em;
+}

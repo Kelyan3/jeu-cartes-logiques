@@ -1,0 +1,85 @@
+.popup-box {
+	position: fixed;
+	width: 100%;
+	height: 100vh;
+	top: 0;
+	left: 0;
+	z-index: 20;
+}
+
+.popup-box .bigbox {
+	position: relative;
+	margin: 0 auto;
+	margin-top: 10%;
+	height: fit-content;
+	max-height: 80%;
+	max-width: 80%;
+}
+
+.popup-box .box {
+	color: black;
+	background-color: #FFFFFF;
+	border-radius: 30px;
+	border: 5px solid rgb(255, 208, 0);
+	box-shadow: 0 0 30px 15px #E3C70F, 0 0 50px 30px rgb(223, 163, 0);
+	padding: 25px;
+	text-align: center;
+	overflow: hidden;
+	animation-duration: 1.5s;
+	animation-name: appear;
+
+	@keyframes appear {
+		from {
+			position: relative;
+			bottom: -500px;
+		}
+
+		to {
+			position: relative;
+			bottom: 0px;
+		}
+	}
+}
+
+.popup-box .box b {
+	margin-bottom: 5%;
+}
+
+.popup-box .box .closeButton {
+	position: absolute;
+	display: inline-block;
+	top: 1vh;
+	right: 1vw;
+	text-align: center;
+	line-height: 20px;
+	font-weight: 850;
+	background-color: lightgray;
+	border: 1px solid #0082B0;
+	border-radius: 50%;
+	height: 20px;
+	width: 20px;
+}
+
+.popup-box .box .closeButton:hover {
+	cursor: pointer;
+	background-color: rgb(180, 178, 178);
+	animation-duration: 0.5s;
+	animation-name: rotatehover;
+
+	@keyframes rotatehover {
+		from {
+			transform: rotate(180deg);
+		}
+
+		to {
+			transform: rotate(0deg);
+		}
+	}
+}
+
+.popup-box .box .demonstration-win {
+	text-align: left;
+	background-color: #F5CBA0;
+	border: 1px solid #A53010;
+	min-width: fit-content;
+}

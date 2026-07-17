@@ -1,0 +1,37 @@
+@font-face {
+	font-family: 'FilmCryptic';
+	src: url("/fonts/FilmCryptic.ttf");
+}
+
+#root {
+	min-height: 100vh;
+	min-width: 100vw;
+	background-color: #432F75;
+	background-image: linear-gradient(to bottom, #7887AB, #162856);
+	color: #FDFDFD;
+	font-family: 'Open Sans', sans-serif;
+}
+
+body {
+	min-height: 100vh;
+	min-width: 100vw;
+	overflow-x: hidden;
+}
+
+* {
+	margin: 0;
+}
+
+button {
+	cursor: pointer;
+}
+
+h1, h2 {
+	font-family: 'Fredericka the Great', cursive;
+	text-align: center;
+}
+
+h2 {
+	color: rgb(255, 132, 132);
+	text-decoration: underline;
+}

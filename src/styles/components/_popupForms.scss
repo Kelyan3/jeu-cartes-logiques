@@ -1,0 +1,22 @@
+.popupForms-box {
+    position: fixed;
+    bottom: 1%;
+    right: 1%;
+    max-height: fit-content;
+    width: auto;
+}
+
+.popupForms-box .box {
+    color: black;
+    background: #FAC906;
+    border-radius: 8px;
+    padding: 10px;
+    overflow: auto;
+    text-align: center;
+}
+
+.popupForms-box .box a {
+    color: black;
+    font-family: "Fredericka the Great", cursive;
+    text-decoration: none;
+}

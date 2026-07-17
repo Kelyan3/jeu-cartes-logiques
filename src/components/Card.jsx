@@ -1,0 +1,182 @@
+import React, { useEffect } from "react";
+import { GameTab } from "./Game";
+import Latex from "./Latex";
+
+const Card = ({
+	deckIndice,
+	cardIndice,
+	update,
+	cardHelp,
+	cardHelp2,
+	isWin,
+	affichageSimple,
+}) => {
+
+	/**
+	 * Fonction qui détecte le clique sur une carte & qui appelle la fonction {@link update()} passée par le
+	 * component Deck.
+	 */
+	const handleClick = () => {
+		update(cardIndice);
+	}
+
+	/**
+	 * Convertit les liaisons en symboles LaTeX.
+	 * 
+	 * @param {string} str - La liaison.
+	 * 
+	 * @returns {string} Le symbole LaTeX.
+	 */
+	const afficheLink = (str) => {
+		if (str === "=>")
+			return "$$\\Rightarrow$$";
+		else if (str === "<=>")
+			return "$$\\Leftrightarrow$$";
+		else if (str === "non")
+			return "$$\\neg$$";
+		else
+			return str;
+	};
+
+	/**
+	 * 
+	 * @param {Card} currentCard - La carte sur laquelle on est actuellement
+	 * @param {number} count
+	 * @param {true|false} selec - true si la carte est sélectionnée, sinon false
+	 * @param {true|false} help
+	 * @param {number} originalCount
+	 * @returns {JSX.Element}
+	 */
+	const recursiveRender = (currentCard, count, selec, help, originalCount) => {
+		recursiveRender.count++;
+		if (currentCard.color !== null)
+		{
+			let style = { backgroundColor: currentCard.color };
+			if (currentCard.color === "transparent")
+				style["border"] = "none";
+
+			return (
+				<span
+					key={recursiveRender.count}
+					className={`card_simple ` + (selec && currentCard.color !== "transparent" ? "selectionner " : "") + (help ? "help " : "")}
+					style={style}
+				></span>
+			);
+		}
+
+		if (affichageSimple)
+			currentCard = currentCard.displayGoodCard();
+
+		let className = "carte_container_horizon";
+		let link = "link_vertical";
+		className = "carte_container_vertical";
+
+		if (count % 2 !== 0 || (originalCount === 2 && count === 2))
+		{
+			className = "carte_container_horizon";
+			link = "";
+		}
+
+		if (count % 4 === 0)
+			link = "link_vertical2";
+
+		return (
+			<span className={className} key={recursiveRender.count}>
+				{[
+					recursiveRender(currentCard.left, count - 1, selec, help, originalCount),
+					<span key={recursiveRender.count + "link"} className={`link ${link}`}>
+						<Latex>{afficheLink(currentCard.link)}</Latex>
+					</span>,
+					recursiveRender(currentCard.right, count - 1, selec, help, originalCount),
+				]}
+			</span>
+		);
+	};
+
+	/**
+	 * 
+	 * @param {JSX.Element} props
+	 * 
+	 * @returns {JSX.Elements}
+	 */
+	function RenderCard(props) {
+		let currentCard = props.currentCard;
+		let selec = props.selec;
+		let help = props.help
+
+		if (currentCard === undefined)
+			return <span></span>;
+
+		if (affichageSimple)
+			currentCard = currentCard.displayGoodCardRecur();
+
+		const profondeurCard = currentCard.getProfondeur();
+		recursiveRender.count = 0;
+
+		return recursiveRender(currentCard, profondeurCard, selec, help, profondeurCard);
+	}
+
+	/**
+	 * Renvoie les dimensions (largeur et longueur) de la carte selon sa profondeur dans la carte complexe.
+	 * 
+	 * @param {Card} card - La carte.
+	 * 
+	 * @returns {JSX.Element} - La largeur et la longueur de la carte.
+	 */
+	function calcSizeCard(card)
+	{
+		if (card === undefined)
+			return { minWidth: 0, minHeight: 0 };
+
+		if (affichageSimple)
+			card = card.displayGoodCardRecur();
+
+		const prof = card.getProfondeur();
+		if (prof === 1)
+			return { width: "5vw", height: "13vh" };
+		if (prof < 4)
+			return { width: "11vw", height: "13vh" };
+		if (prof < 5)
+			return { width: "11vw", height: "20vh" };
+		if (prof < 6)
+			return { width: "15vw", height: "20vh" };
+
+		return { width: "15vw", height: "28vh" };
+	}
+
+	useEffect((_) => {
+		return (_) => {
+			if (false)
+				console.log("Toto");
+		};
+	});
+
+	return (
+		<GameTab.Consumer>
+			{(game) => {
+				return (
+					<div
+						onClick={handleClick}
+						className={
+							"card " +
+							(isWin ? "" : "hoverable ") +
+							(game[deckIndice][cardIndice].hover && !isWin ? "activeHover " : "") +
+							(game[deckIndice][cardIndice].nouveau ? "nouveau " : "")}
+						style={calcSizeCard(game[deckIndice][cardIndice])}
+					>
+						<RenderCard
+							currentCard={game[deckIndice][cardIndice]}
+							selec={game[deckIndice][cardIndice].active}
+							help={
+								(cardHelp[0] === deckIndice && cardHelp[1] === cardIndice) ||
+								(cardHelp2[0] === deckIndice && cardHelp2[1] === cardIndice)
+							}
+						></RenderCard>
+					</div>
+				);
+			}}
+		</GameTab.Consumer>
+	);
+};
+
+export default Card;

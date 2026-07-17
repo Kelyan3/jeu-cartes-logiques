@@ -1,0 +1,47 @@
+.deck {
+	background-color: beige;
+	border-radius: 10px;
+	grid-area: 1;
+	position: relative;
+	margin-left: 2%;
+	margin-right: 2%;
+	border: 3px solid white;
+	min-width: 160px;
+	height: 100%;
+	color: black;
+	margin-top: 20px;
+}
+
+.deck b {
+	display: block;
+	width: fit-content;
+	margin: 0 auto;
+	text-align: center;
+}
+
+.deck h3 {
+	color: black;
+	text-align: center;
+	margin-bottom: 10%;
+}
+
+.deck img {
+	height: 20px;
+	width: auto;
+}
+
+.start {
+	grid-area: start;
+}
+
+.goal {
+	grid-area: goal;
+}
+
+.other1 {
+	grid-area: other1;
+}
+
+.other2 {
+	grid-area: other2;
+}
