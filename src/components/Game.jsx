@@ -7,7 +7,12 @@ import Card from "../class/Card";
 export const GameTab = React.createContext();
 import Latex from "./Latex";
 
+import { useAuth } from "../context/AuthContext";
+
+
 const Game = ({ mode, ex, numero, nbExo }) => {
+	const { user } = useAuth();
+
 	/**
 	 *
 	 * @param {number} indexDeck
@@ -890,6 +895,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (originel && bool) {
 			setWin(true);
 			setPopupWin(true);
+			saveProgress();
 		}
 
 		return [tmp, bool, arrayMsg, arrayIndent];
@@ -1701,6 +1707,26 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			navigate(url);
 		}
 		setPopupWin(false);
+	};
+
+	/**
+	 * Enregistre la progression du niveau actuel auprès du backend, si l'utilisateur est connecté.
+	 */
+	const saveProgress = () => {
+		if (!user || mode === "Create")
+			return;
+
+		const API = import.meta.env.DEV ? "http://localhost:80" : "";
+		fetch(`${API}/api/progress`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			credentials: "include",
+			body: JSON.stringify({
+				mode: mode,
+				num: numero + 1,
+				completed: true,
+			}),
+		});
 	};
 
 	/**

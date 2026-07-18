@@ -1,5 +1,6 @@
-import React, { use } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const Choice = () => {
 	/**
@@ -17,6 +18,27 @@ const Choice = () => {
 	];
 
 	const navigate = useNavigate();
+	const { user } = useAuth();
+	const [completedLevels, setCompletedLevels] = useState([]);
+
+	const API = import.meta.env.DEV ? "http://localhost:80" : "";
+
+	useEffect(() => {
+		if (!user)
+		{
+			setCompletedLevels([]);
+			return;
+		}
+
+		fetch(`${API}/api/progress`, { credentials: "include" })
+			.then((response) => response.json())
+			.then((data) => {
+				const completedNums = data
+					.filter((p) => p.mode === "Play" && p.completed)
+					.map((p) => p.num);
+				setCompletedLevels(completedNums);
+			});
+	}, [user]);
 
 	/**
 	 * Navigue vers la page du niveau.
@@ -43,13 +65,15 @@ const Choice = () => {
 		{
 			if (index < jsonCount)
 			{
+				const isCompleted = completedLevels.includes(index + 1);
 				row.push(
 					<td
 						key={index}
 						onClick={goToExo}
 						url={"/Exercise/Play/" + (index + 1)}
+						className={isCompleted ? "levelCompleted" : ""}
 					>
-						<p url={"/Exercise/Play/" + (index + 1)}>Niveau {index + 1}</p>
+						<p url={"/Exercise/Play/" + (index + 1)}>Niveau {index + 1} {isCompleted && "✓"}</p>
 					</td>
 				);
 			}
