@@ -31,7 +31,7 @@ const Navigation = () => {
 						<li><NavLink exact="true" to="/">Accueil</NavLink></li>
 						<li className="choose">
 							<div>Tutoriel</div>
-							<ul id="tuto">
+							<ul>
 								<CreateTuto></CreateTuto>
 							</ul>
 						</li>

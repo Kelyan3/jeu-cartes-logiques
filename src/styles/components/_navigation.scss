@@ -60,19 +60,23 @@
 	margin: 0;
 }
 
+.navbar .choose {
+	position: relative;
+}
+
+.navbar li:hover .choose {
+	overflow: visible;
+}
+
 .choose ul {
 	max-height: 0;
 	transition: all 1s;
 	position: absolute;
-	right: -150px;
-	top: 17.9vh;
+	top: 0;
+	left: 100%;
 	max-height: 15em;
 	min-width: 150px;
 	background: #4F618F;
-}
-
-#tuto {
-	top: 11.9vh;
 }
 
 .navbar div, .navbar a, .choose a {
@@ -91,12 +95,12 @@
 	display: none;
 }
 
-.navbar li:hover .choose:hover .exo {
+.navbar li:hover .choose:hover li {
 	display: block;
 	background: #4F618F;
 }
 
-.navbar li:hover .choose .exo:hover {
+.navbar li:hover .choose li:hover {
 	background-color: #729EBF;
 }
 
