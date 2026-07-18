@@ -22,9 +22,10 @@ CREATE TABLE users (
 CREATE TABLE user_progress (
 	id SERIAL PRIMARY KEY,
 	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-	level_id VARCHAR(50) NOT NULL,
+	mode VARCHAR(20) NOT NULL,
+	num INTEGER NOT NULL,
 	completed BOOLEAN DEFAULT FALSE,
 	score INTEGER DEFAULT 0,
 	updated_at TIMESTAMP DEFAULT NOW(),
-	UNIQUE(user_id, level_id)
+	UNIQUE(user_id, mode, num)
 );

@@ -8,6 +8,7 @@ from dotenv import dotenv_values
 
 from database import get_database
 from auth import *
+from progress import get_progress, save_progress
 
 
 config = dotenv_values(".env")
@@ -73,15 +74,15 @@ def login():
 @app.route("/api/logout", methods=["POST"])
 @login_required
 def logout():
-    logout_user()
-    return jsonify({"ok": True})
+	logout_user()
+	return jsonify({"ok": True})
 
 
 @app.route("/api/me", methods=["GET"])
 def me():
-    if current_user.is_authenticated:
-        return jsonify({"username": current_user.username, "email": current_user.email})
-    return jsonify(None), 200
+	if current_user.is_authenticated:
+		return jsonify({"username": current_user.username, "email": current_user.email})
+	return jsonify(None), 200
 
 
 @app.route("/", defaults={"path": ""})
@@ -91,6 +92,27 @@ def index(path):
 		return send_from_directory(app.static_folder, path)
 	return send_from_directory(app.static_folder, "index.html")
 
+
+@app.route("/api/progress", methods=["GET"])
+@login_required
+def progress_get():
+	return jsonify(get_progress(current_user.id))
+
+
+@app.route("/api/progress", methods=["POST"])
+@login_required
+def progress_post():
+	data = request.get_json()
+	mode = data.get("mode")
+	num = data.get("num")
+	completed = data.get("completed", True)
+	score = data.get("score", 0)
+
+	if mode not in ("Play", "Tutorial") or not isinstance(num, int):
+		return jsonify({"error": "Paramètres invalides"}), 400
+
+	save_progress(current_user.id, mode, num, completed, score)
+	return jsonify({"ok": True})
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=80)
