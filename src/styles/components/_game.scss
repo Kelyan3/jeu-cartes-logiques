@@ -1,9 +1,7 @@
 .game {
 	grid-area: m;
-	background-color: rgba(117, 190, 218, 0.7);
 	position: relative;
-	padding: 55px 5% 5% 5%;
-	border: 5px solid rgb(28, 2, 53);
+	padding: 90px 5% 40px 5%;
 	display: grid;
 	grid-template-columns: 20% 30% 30% 20%;
 	grid-template-areas:
@@ -40,26 +38,30 @@
 		"start other1 other2 goal"
 		"start other1 other2 goal"
 		"start other1 other2 goal"
-		"start other1 other2 goal"
 		"d d d d";
 }
 
 .game .buttonWin {
-	background-image: linear-gradient(to right, #D4DDF5, #97B4FC);
-	border: 2px solid lightgray;
-	border-radius: 15px;
-	font-size: 30px;
-	height: 100px;
+	background: var(--bg-surface);
+	border: 1px solid var(--accent-cyan);
+	box-shadow: 0 0 20px rgba(94, 234, 212, 0.3);
+	border-radius: 12px;
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	color: var(--text-primary);
+	font-size: 20px;
+	height: 90px;
 	left: 50%;
 	margin-left: -163px;
-	margin-top: -59px;
+	margin-top: -45px;
 	position: absolute;
 	top: 40%;
 	width: 326px;
+	transition: box-shadow .15s ease;
 }
 
 .game .buttonWin:hover {
-	border: 2px solid black;
+	box-shadow: 0 0 28px rgba(94, 234, 212, 0.5);
 }
 
 .game .bouton {
@@ -67,8 +69,13 @@
 	align-items: center;
 	margin: auto;
 	position: sticky;
-	top: 55px;
+	top: 74px;
 	z-index: 20;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 8px 12px;
+	width: fit-content;
 }
 
 .game .bouton div {
@@ -77,46 +84,45 @@
 
 .game .bouton button {
 	cursor: pointer;
-	margin-bottom: 0.8vh;
-	margin-left: 1vh;
-	margin-right: 1vh;
-	margin-top: 0.8vh;
+	margin: 20px;
 	position: relative;
 }
 
 .game .bouton .buttonAction {
-	background-image: linear-gradient(to right, #D4DDF5, #97B4FC);
-	border: 2px solid lightgray;
-	border-radius: 5px;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
 	height: 42px;
 	width: auto;
+	transition: border-color .15s ease, box-shadow .15s ease;
 }
 
 .game .bouton .buttonAction img {
 	height: 35px;
 	width: auto;
+	filter: brightness(0) invert(1) opacity(0.85);
 }
 
 .game .bouton .tooltiptext {
 	visibility: hidden;
-	width: 120px;
-	height: 20px;
-	line-height: 20px;
-	background-color: black;
-	color: #FFFFFF;
+	width: 130px;
+	line-height: 18px;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-primary);
 	text-align: center;
 	border-radius: 6px;
-	padding: 5px 0;
+	padding: 6px 8px;
 	position: absolute;
 	z-index: 50;
 	top: 120%;
 	left: 50%;
-	font-size: small;
+	font-size: 12px;
 	transform: translateX(-50%);
 }
 
 .game .bouton .tooltiptext::after {
-	border-color: transparent transparent black transparent;
+	border-color: transparent transparent var(--border-subtle) transparent;
 	border-style: solid;
 	border-width: 5px;
 	bottom: 100%;
@@ -127,21 +133,19 @@
 }
 
 .game .bouton #checkBoxSimple {
-	margin-bottom: 0.8vh;
-	margin-left: 1vh;
-	margin-right: 1vh;
-	margin-top: 0.8vh;
+	margin: 6px;
 	position: relative;
-	top: -10px;
+	top: -6px;
 }
 
-.game .buoton #checkBoxSimple .tooltiptext {
+.game .bouton #checkBoxSimple .tooltiptext {
 	top: 180%;
 	width: 200px;
 }
 
 .game .bouton .buttonAction:hover {
-	border: 2px solid black;
+	border-color: var(--accent-cyan);
+	box-shadow: 0 0 10px rgba(94, 234, 212, 0.3);
 }
 
 .game .bouton .buttonAction:hover .tooltiptext {
@@ -149,7 +153,7 @@
 }
 
 .game .bouton #checkBoxSimple:hover [type="checkbox"] + label:before {
-	border: 2px solid black;
+	border-color: var(--accent-cyan);
 }
 
 .game .bouton #checkBoxSimple:hover .tooltiptext {
@@ -157,65 +161,83 @@
 }
 
 .game .bouton .boutonSelection {
-	border: 3px solid black;
-	border-radius: 10px;
-	box-shadow: 0 0 15px 8px #F8FF24;
+	border: 1px solid var(--accent-cyan) !important;
+	border-radius: 8px;
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.5);
 }
 
 .game .message {
-	border-radius: 10px;
-	color: black;
-	font-size: 14px;
-	font-weight: bold;
-	margin-bottom: 5px;
-	margin-left: 200px;
-	margin-right: 200px;
+	border-radius: 8px;
+	color: var(--text-primary);
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	font-size: 13px;
+	font-weight: 500;
+	margin-bottom: 8px;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 480px;
+	padding: 6px 14px;
 	position: sticky;
 	text-align: center;
-	top: 110px;
+	top: 140px;
 	z-index: 10;
 }
 
 .game .tutoriel {
 	grid-area: t;
-	background-color: #E9FFD9;
-	border: 1px solid #A6CA8A;
+	background: rgba(94, 234, 212, 0.08);
+	border: 1px solid rgba(94, 234, 212, 0.3);
+	border-radius: 10px;
+	padding: 14px 18px;
+	color: var(--text-primary);
+	margin-bottom: 12px;
 }
 
 .game .error {
 	grid-area: e;
-	background: #FFECEC;
-	border: 1px solid #F5ACA6;
+	background: rgba(248, 113, 113, 0.1);
+	border: 1px solid rgba(248, 113, 113, 0.35);
+	border-radius: 10px;
+	padding: 14px 18px;
+	color: var(--text-primary);
+	margin-bottom: 12px;
 }
 
 .game #checkBoxSimple {
-	color: black;
+	color: var(--text-muted);
 }
 
 .game .demonstration {
 	grid-area: d;
-	background-image: url("/img/fond_ligne_cahier.png");
-	border-radius: 10px;
-	color: black;
-	margin-top: 50px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	color: var(--text-primary);
+	margin-top: 40px;
+	padding: 16px;
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 14px;
 }
 
 .game .demonstration div {
-	border-radius: 10px;
-	padding: 5px 10px 5px 10px;
+	border-radius: 8px;
+	padding: 8px 12px;
 	text-align: left;
-	background: rgba(255, 255, 255, 0.5);
+	background: transparent;
 	cursor: pointer;
+	transition: background .15s ease, color .15s ease;
 }
 
 .game .demonstration div:hover {
-	color: #444444;
+	background: rgba(94, 234, 212, 0.08);
+	color: var(--accent-cyan);
 }
 
 .game [type="checkbox"]:not(:checked),
 .game [type="checkbox"]:checked {
 	left: -9999px;
-	position: absolute;    
+	position: absolute;
 }
 
 .game [type="checkbox"]:not(:checked) + label,
@@ -235,33 +257,34 @@
 
 .game [type="checkbox"]:not(:checked) + label:before,
 .game [type="checkbox"]:checked + label:before {
-	background: linear-gradient(to right, #989EAF, #6173A1);
-	border: 2px solid lightgray;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
 	border-radius: 20px;
-	height: 40px;
+	height: 32px;
 	left: 0;
-	top: -12px;
-	transition: background-color .2s;
-	width: 85px;
+	top: -8px;
+	transition: border-color .2s;
+	width: 68px;
 }
 
 .game [type="checkbox"]:not(:checked) + label:after,
 .game [type="checkbox"]:checked + label:after {
-	background: #D82828;
+	background: var(--text-muted);
 	border-radius: 50%;
-	height: 35px;
-	left: 4px;
-	top: -8px;
+	height: 26px;
+	left: 3px;
+	top: -5px;
 	transition: all .2s;
-	width: 35px;
+	width: 26px;
 }
 
 .game [type="checkbox"]:checked + label:before {
-	background: linear-gradient(to right, #D4DDF5, #97B4FC);
+	border-color: var(--accent-cyan);
 }
 
 .game [type="checkbox"]:checked + label:after {
-	background: #14F585;
-	left: 50px;
-	top: -8px;
+	background: var(--accent-cyan);
+	left: 39px;
+	top: -5px;
+	box-shadow: 0 0 8px rgba(94, 234, 212, 0.5);
 }

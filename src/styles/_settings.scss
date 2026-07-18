@@ -1,42 +1,83 @@
-@font-face {
-	font-family: 'FilmCryptic';
-	src: url("/fonts/FilmCryptic.ttf");
+:root {
+	--bg-base: #0B0E14;
+	--bg-surface: #151A24;
+	--accent-cyan: #5EEAD4;
+	--accent-amber: #FACC15;
+	--text-primary: #E4E7EC;
+	--text-muted: #8B93A7;
+	--border-subtle: #232938;
 }
 
 #root {
 	min-height: 100vh;
 	min-width: 100vw;
-	background-color: #432F75;
-	background-image: linear-gradient(to bottom, #7887AB, #162856);
-	color: #FDFDFD;
-	font-family: 'Open Sans', sans-serif;
+	background-color: var(--bg-base);
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
 }
 
 body {
 	min-height: 100vh;
 	min-width: 100vw;
 	overflow-x: hidden;
+	background-color: var(--bg-base);
 }
 
 * {
 	margin: 0;
+	box-sizing: border-box;
 }
 
 button {
 	cursor: pointer;
+	font-family: 'Inter', sans-serif;
 }
 
-h1, h2 {
-	font-family: 'Fredericka the Great', cursive;
+h1, h2, h3 {
+	font-family: 'Sora', sans-serif;
 	text-align: center;
+	font-weight: 700;
 }
 
 h2 {
-	color: rgb(255, 132, 132);
-	text-decoration: underline;
+	color: var(--text-primary);
+	font-weight: 600;
+	position: relative;
+	display: inline-block;
+	padding-bottom: 12px;
+}
+
+h2::after {
+	content: "";
+	position: absolute;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 48px;
+	height: 2px;
+	background: var(--accent-cyan);
+	box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.symbol {
+	font-family: 'JetBrains Mono', monospace;
+	color: var(--accent-cyan);
+	font-weight: 600;
+	padding: 1px 5px;
+	background: rgba(94, 234, 212, 0.1);
+	border-radius: 4px;
+}
+
+.eyebrow {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 12px;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--accent-cyan);
+	font-weight: 600;
 }
 
 .math-text {
-	font-family: 'Cambria Math', 'STIX Two Math', Georgia, 'Times New Roman', serif;
-	font-style: italic;
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 600;
 }

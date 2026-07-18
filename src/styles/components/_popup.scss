@@ -4,82 +4,79 @@
 	height: 100vh;
 	top: 0;
 	left: 0;
-	z-index: 20;
+	z-index: 200;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(11, 14, 20, 0.7);
+	backdrop-filter: blur(4px);
 }
 
 .popup-box .bigbox {
 	position: relative;
-	margin: 0 auto;
-	margin-top: 10%;
-	height: fit-content;
-	max-height: 80%;
-	max-width: 80%;
+	max-height: 80vh;
+	max-width: 90vw;
 }
 
 .popup-box .box {
-	color: black;
-	background-color: #FFFFFF;
-	border-radius: 30px;
-	border: 5px solid rgb(255, 208, 0);
-	box-shadow: 0 0 30px 15px #E3C70F, 0 0 50px 30px rgb(223, 163, 0);
-	padding: 25px;
+	color: var(--text-primary);
+	background: var(--bg-surface);
+	border: 1px solid var(--accent-cyan);
+	box-shadow: 0 0 32px rgba(94, 234, 212, 0.25);
+	border-radius: 16px;
+	padding: 32px;
 	text-align: center;
-	overflow: hidden;
-	animation-duration: 1.5s;
-	animation-name: appear;
-
-	@keyframes appear {
-		from {
-			position: relative;
-			bottom: -500px;
-		}
-
-		to {
-			position: relative;
-			bottom: 0px;
-		}
-	}
+	overflow: auto;
+	max-height: 80vh;
+	animation: popup-appear .25s ease;
 }
 
 .popup-box .box b {
-	margin-bottom: 5%;
+	display: block;
+	margin-bottom: 16px;
+	font-family: 'Sora', sans-serif;
 }
 
 .popup-box .box .closeButton {
 	position: absolute;
-	display: inline-block;
-	top: 1vh;
-	right: 1vw;
-	text-align: center;
-	line-height: 20px;
-	font-weight: 850;
-	background-color: lightgray;
-	border: 1px solid #0082B0;
+	top: 14px;
+	right: 14px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
 	border-radius: 50%;
-	height: 20px;
-	width: 20px;
+	height: 26px;
+	width: 26px;
+	color: var(--text-muted);
+	transition: color .15s ease, border-color .15s ease;
 }
 
 .popup-box .box .closeButton:hover {
 	cursor: pointer;
-	background-color: rgb(180, 178, 178);
-	animation-duration: 0.5s;
-	animation-name: rotatehover;
-
-	@keyframes rotatehover {
-		from {
-			transform: rotate(180deg);
-		}
-
-		to {
-			transform: rotate(0deg);
-		}
-	}
+	color: var(--accent-cyan);
+	border-color: var(--accent-cyan);
 }
 
 .popup-box .box .demonstration-win {
 	text-align: left;
-	background-color: #F5CBA0;
-	border: 1px solid #A53010;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 16px;
 	min-width: fit-content;
+}
+
+@keyframes popup-appear {
+	from {
+		opacity: 0;
+		transform: translateY(12px) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
 }

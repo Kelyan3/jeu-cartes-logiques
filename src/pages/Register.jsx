@@ -33,29 +33,27 @@ const Register = () => {
 		<div className="forms">
 			<Navigation />
 			<div id="forms">
+				<span className="eyebrow">Nouveau compte</span>
 				<h2>Créer un compte</h2>
-				<form onSubmit={handleSubmit}>
-					<div>
+				<form onSubmit={handleSubmit} className="authForm">
+					<div className="field">
 						<label htmlFor="username">Nom d'utilisateur</label>
-						<br />
 						<input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
 					</div>
 
-					<div>
+					<div className="field">
 						<label htmlFor="email">Email</label>
-						<br />
 						<input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 					</div>
 
-					<div>
+					<div className="field">
 						<label htmlFor="password">Mot de passe</label>
-						<br />
 						<input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
 					</div>
 
-					{error && <p style={{ color: "red" }}>{error}</p>}
+					{error && <p className="formError">{error}</p>}
 
-					<button type="submit" disabled={submitting}>
+					<button type="submit" className="authSubmit" disabled={submitting}>
 						{submitting ? "Création..." : "Créer mon compte"}
 					</button>
 				</form>

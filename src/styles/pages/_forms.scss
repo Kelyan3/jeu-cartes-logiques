@@ -1,18 +1,93 @@
 .forms {
-	min-width: 100vw;
 	min-height: 100vh;
-	position: relative;
-	display: grid;
-	grid-template-areas:
-		"h h h"
-		"l m r";;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 90px;
+	padding-bottom: 60px;
 }
 
 .forms #forms {
-	grid-area: m;
-	background-color: lightgray;
-	border-radius: 15px;
-	margin: 8% auto 2% auto;
-	padding: 1%;
 	width: fit-content;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 20px;
+	text-align: center;
+}
+
+.forms #forms .eyebrow {
+	display: block;
+	margin-bottom: 10px;
+}
+
+.forms #forms iframe {
+	border-radius: 8px;
+	display: block;
+}
+
+.forms .authForm {
+	width: min(360px, 80vw);
+	text-align: left;
+	margin-top: 24px;
+}
+
+.forms .field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 18px;
+}
+
+.forms .field label {
+	font-size: 13px;
+	color: var(--text-muted);
+	font-weight: 500;
+}
+
+.forms .field input {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 10px 12px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 15px;
+	outline: none;
+	transition: border-color .15s ease;
+}
+
+.forms .field input:focus {
+	border-color: var(--accent-cyan);
+	box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.15);
+}
+
+.forms .formError {
+	color: #F87171;
+	font-size: 14px;
+	margin-bottom: 14px;
+}
+
+.forms .authSubmit {
+	width: 100%;
+	padding: 11px;
+	border: 1px solid var(--accent-cyan);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--accent-cyan);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 15px;
+	transition: background .15s ease, box-shadow .15s ease;
+}
+
+.forms .authSubmit:hover:not(:disabled) {
+	background: rgba(94, 234, 212, 0.1);
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+}
+
+.forms .authSubmit:disabled {
+	opacity: 0.5;
+	cursor: default;
 }

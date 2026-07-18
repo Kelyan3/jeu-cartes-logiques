@@ -1,9 +1,36 @@
 #notFound {
-	margin: auto;
-	width: 60%;
+	min-height: 100vh;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 	text-align: center;
+	gap: 12px;
+	padding: 0 24px;
 }
 
 #notFound h1 {
-	padding-top: 40%;
+	max-width: 500px;
+}
+
+#notFound p {
+	color: var(--text-muted);
+}
+
+#notFound .backHome {
+	margin-top: 20px;
+	padding: 10px 24px;
+	border: 1px solid var(--accent-cyan);
+	border-radius: 8px;
+	color: var(--accent-cyan);
+	text-decoration: none;
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	transition: background .15s ease, box-shadow .15s ease;
+}
+
+#notFound .backHome:hover {
+	background: rgba(94, 234, 212, 0.1);
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
 }

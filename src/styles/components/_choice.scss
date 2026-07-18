@@ -1,35 +1,33 @@
 .choice {
-	grid-area: m;
-	padding-top: 1%;
-	text-align: center;
-	width: 90%;
+	width: min(900px, 92vw);
 	margin: 0 auto;
+	padding-top: 8px;
 }
 
 .choice h2:first-child {
-	margin-top: 5%;
+	margin-top: 0;
 }
 
 .choice table {
-	width: 80%;
-	margin: auto;
-	border-spacing: 20px;
+	width: 100%;
+	margin: 24px auto 40px auto;
+	border-spacing: 14px;
 }
 
 .choice td {
-	//padding: 20px;
-	background-color: lightgray;
-	border-radius: 5px;
-	box-shadow: 7px 7px 15px black;
-	padding: 20px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 10px;
+	padding: 18px 12px;
 	cursor: pointer;
-	transition: all .2s ease-in-out;
+	transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
 
 .choice td p {
-	font-size: large;
-	color: black;
-	text-decoration: none;
+	font-family: 'Sora', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--text-primary);
 }
 
 .choice .tdVoid {
@@ -37,14 +35,16 @@
 }
 
 .choice td:hover {
-	background-color: gray;
-	transform: scale(1.3);
+	border-color: var(--accent-cyan);
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.25);
+	transform: translateY(-2px);
 }
 
-.choice td:hover a:hover {
-	background-color: gray;
+.choice .levelCompleted {
+	border-color: var(--accent-amber) !important;
+	background: rgba(250, 204, 21, 0.08) !important;
 }
 
-.levelCompleted {
-	background-color: #A8E6A1 !important;
+.choice .levelCompleted p {
+	color: var(--accent-amber);
 }

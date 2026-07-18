@@ -1,49 +1,68 @@
 .about {
 	min-width: 100vw;
-	min-height: 100vh;
-	position: relative;
-	display: grid;
-	grid-template-areas: "h h h" "l m r";
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	padding-top: 90px;
+	padding-bottom: 60px;
 }
 
 .about #credits {
-	grid-area: m;
+	width: min(600px, 90vw);
 	height: fit-content;
-	font-family: 'FilmCryptic';
-	font-size: 20px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 40px 48px;
 	text-align: center;
-	// Fond ardoise.
-	background-image: url("https://static.vecteezy.com/system/resources/previews/007/451/024/original/textured-empty-blackboard-chalkboard-design-free-vector.jpg");
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	padding: 8%;
-	margin-left: 13%;
-	margin-right: 13%;
-	border-width: 13px;
-	box-shadow: 7px 7px 15px black;
 }
 
-.about #credits h2 {
-	margin-top: 1%;
+.about #credits > a:first-of-type {
+	display: block;
+	width: fit-content;
+	margin: 0 auto 20px auto;
+	background: #FFFFFF;
+	border-radius: 10px;
+	padding: 10px 16px;
 }
 
 .about #credits img {
-	height: 175px;
+	height: 70px;
 	width: auto;
-	border-radius: 25px;
+	display: block;
+}
+
+.about #credits p {
+	color: var(--text-muted);
+	line-height: 1.6;
+	margin-top: 20px;
 }
 
 .about #credits ul {
+	list-style: none;
 	padding: 0;
-	text-align: center;
+	margin-top: 16px;
+	display: flex;
+	gap: 10px;
 }
 
 .about #credits li {
-	list-style-type: none;
+	color: var(--text-primary);
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
 }
 
 .about #credits .linkedin {
-	height: 17px;
+	height: 18px;
 	width: auto;
-	border-radius: 0px;
+	border-radius: 0;
+	opacity: 0.8;
+	transition: opacity .15s ease;
+}
+
+.about #credits .linkedin:hover {
+	opacity: 1;
 }

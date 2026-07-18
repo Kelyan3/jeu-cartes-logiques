@@ -63,20 +63,20 @@ const Home = () => {
 					<li>
 						Les <strong>cartes avec un connecteur</strong> : cartes en deux parties séparées par un rectangle gris qui contient un symbole dont le pouvoir dépend du{" "} <strong>connecteur</strong> et des cartes connectées :
 						<ul>
-							<li>Le <strong>connecteur « et »</strong> dont le symbole est <strong>∧</strong>.</li>
-							<li>Le <strong>connecteur « ou »</strong> dont le symbole est <strong>∨</strong>.</li>
-							<li>Le <strong>connecteur « implique »</strong> dont le symbole est <strong>⟹</strong>.</li>
-							<li>Le <strong>connecteur « équivaut à »</strong> dont le symbole est <strong>⟺</strong>.</li>
-							<li>Le <strong>connecteur « négation »</strong> dont le symbole est{" "} <strong>¬</strong>. Comme il est unaire, il n'est connecté qu'à une seule carte.</li>
+							<li>Le <strong>connecteur « et »</strong> dont le symbole est <strong className="symbol">∧</strong>.</li>
+							<li>Le <strong>connecteur « ou »</strong> dont le symbole est <strong className="symbol">∨</strong>.</li>
+							<li>Le <strong>connecteur « implique »</strong> dont le symbole est <strong className="symbol">⟹</strong>.</li>
+							<li>Le <strong>connecteur « équivaut à »</strong> dont le symbole est <strong className="symbol">⟺</strong>.</li>
+							<li>Le <strong>connecteur « négation »</strong> dont le symbole est{" "} <strong className="symbol">¬</strong>. Comme il est unaire, il n'est connecté qu'à une seule carte.</li>
 						</ul>
 					</li>
 				</ul>
 
 				<h2>Pouvoir d'utilisation des connecteurs</h2>
 				<ul>
-					<li>En présentant à la banque une carte avec le connecteur <strong>∧</strong>, on peut obtenir chacune des <strong>deux cartes</strong> connectées.</li>
-					<li>En présentant à la banque une carte avec le connecteur <strong>⟹</strong> et{" "} <strong>la carte d'où vient la flèche</strong>, on peut obtenir{" "} <strong>la carte d'où va la flèche</strong>.</li>
-					<li>En présentant à la banque une carte avec le connecteur <strong>⟺</strong> et{" "} <strong>une des deux cartes connectées</strong>, on peut obtenir{" "} <strong>l'autre carte</strong> connectée.</li>
+					<li>En présentant à la banque une carte avec le connecteur <strong className="symbol">∧</strong>, on peut obtenir chacune des <strong>deux cartes</strong> connectées.</li>
+					<li>En présentant à la banque une carte avec le connecteur <strong className="symbol">⟹</strong> et{" "} <strong>la carte d'où vient la flèche</strong>, on peut obtenir{" "} <strong>la carte d'où va la flèche</strong>.</li>
+					<li>En présentant à la banque une carte avec le connecteur <strong className="symbol">⟺</strong> et{" "} <strong>une des deux cartes connectées</strong>, on peut obtenir{" "} <strong>l'autre carte</strong> connectée.</li>
 				</ul>
 			</div>
 

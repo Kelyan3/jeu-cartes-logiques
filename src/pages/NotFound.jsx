@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
 
 const NotFound = () => {
@@ -6,8 +7,11 @@ const NotFound = () => {
 		<div>
 			<Navigation />
 			<div id="notFound">
-				<h1>Not Found</h1>
-				<p>Désolé, mais cette page n'existe pas.</p>
+				<span className="eyebrow">Erreur 404</span>
+				<h1>Aucune démonstration ne mène ici</h1>
+				<p>Cette page n'existe pas.</p>
+				
+				<NavLink to="/" className="backHome">Retour à l'accueil</NavLink>
 			</div>
 		</div>
 	);
