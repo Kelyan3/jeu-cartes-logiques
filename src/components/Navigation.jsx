@@ -1,8 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+
 
 const Navigation = () => {
 	const nbTuto = 7;
+	const { user, loading, logout } = useAuth();
 
 	function CreateTuto(props)
 	{
@@ -36,6 +39,25 @@ const Navigation = () => {
 						<li><NavLink exact="true" to="/Exercise/Create">Créer un niveau</NavLink></li>
 						<li><NavLink exact="true" to="/About">À propos</NavLink></li>
 						<li><NavLink exact="true" to="/Forms">Votre avis</NavLink></li>
+
+						{!loading && !user && (
+							<li className="choose">
+								<div>Compte</div>
+								<ul>
+									<li><NavLink exact="true" to="/Login">Connexion</NavLink></li>
+									<li><NavLink exact="true" to="/Register">Inscription</NavLink></li>
+								</ul>
+							</li>
+						)}
+
+						{!loading && user && (
+							<li className="choose">
+								<div>{user.username}</div>
+								<ul>
+									<li><div onClick={logout} style={{ cursor: "pointer" }}>Déconnexion</div></li>
+								</ul>
+							</li>
+						)}
 					</ul>
 				</li>
 			</ul>
