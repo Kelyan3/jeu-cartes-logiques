@@ -2,14 +2,14 @@ import Navigation from "../components/Navigation";
 import PopupForms from "../components/PopupForms";
 import Choice from "../components/Choice";
 
-const Levels = () => {
+const Tutorials = () => {
 	return (
 		<div className="home">
 			<Navigation />
-			<Choice mode="Play" />
+			<Choice mode="Tutorial" />
 			<PopupForms />
 		</div>
 	);
 };
 
-export default Levels;
+export default Tutorials;

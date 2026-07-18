@@ -2,20 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const Choice = () => {
+const Choice = ({ mode }) => {
 	/**
-	 * Nombre de niveaux.
+	 * Configuration selon le mode : nombre de niveaux et chapitrage.
 	 */
-	const jsonCount = 36;
+	const config = {
+		Play: {
+			jsonCount: 36,
+			difficulty: [
+				[1, 20, "Démonstrations"],
+				[21, 35, "Raisonnements"],
+				[36, 40, "Autres"],
+			],
+		},
+		Tutorial: {
+			jsonCount: 7,
+			difficulty: [[1, 7, "Tutoriels"]],
+		},
+	};
 
-	/**
-	 * Chapitrage.
-	 */
-	const difficulty = [
-		[1, 20, "Démonstrations"],
-		[21, 35, "Raisonnements"],
-		[36, 40, "Autres"],
-	];
+	const { jsonCount, difficulty } = config[mode];
 
 	const navigate = useNavigate();
 	const { user } = useAuth();
@@ -34,11 +40,11 @@ const Choice = () => {
 			.then((response) => response.json())
 			.then((data) => {
 				const completedNums = data
-					.filter((p) => p.mode === "Play" && p.completed)
+					.filter((p) => p.mode === mode && p.completed)
 					.map((p) => p.num);
 				setCompletedLevels(completedNums);
 			});
-	}, [user]);
+	}, [user, mode]);
 
 	/**
 	 * Navigue vers la page du niveau.
@@ -70,10 +76,10 @@ const Choice = () => {
 					<td
 						key={index}
 						onClick={goToExo}
-						url={"/Exercise/Play/" + (index + 1)}
+						url={"/Exercise/" + mode + "/" + (index + 1)}
 						className={isCompleted ? "levelCompleted" : ""}
 					>
-						<p url={"/Exercise/Play/" + (index + 1)}>Niveau {index + 1} {isCompleted && "✓"}</p>
+						<p url={"/Exercise/" + mode + "/" + (index + 1)}>Niveau {index + 1} {isCompleted && "✓"}</p>
 					</td>
 				);
 			}

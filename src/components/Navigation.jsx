@@ -7,21 +7,6 @@ const Navigation = () => {
 	const nbTuto = 7;
 	const { user, loading, logout } = useAuth();
 
-	function CreateTuto(props)
-	{
-		const res = [];
-		for (let index = 0; index < nbTuto; index++)
-		{
-			res.push(
-				<li className="exo" key={index}>
-					<NavLink exact="true" to={"/Exercise/Tutorial/" + (index + 1)}>Tutoriel {index + 1}</NavLink>
-				</li>
-			);
-		}
-
-		return res;
-	}
-
 	return (
 		<div className="navigation">
 			<ul className="navbar">
@@ -29,12 +14,7 @@ const Navigation = () => {
 					<div>Menu</div>
 					<ul>
 						<li><NavLink exact="true" to="/">Accueil</NavLink></li>
-						<li className="choose">
-							<div>Tutoriel</div>
-							<ul>
-								<CreateTuto></CreateTuto>
-							</ul>
-						</li>
+						<li><NavLink exact="true" to="/Tutorials">Tutoriel</NavLink></li>
 						<li><NavLink exact="true" to="/Levels">Choisir un niveau</NavLink></li>
 						<li><NavLink exact="true" to="/Exercise/Create">Créer un niveau</NavLink></li>
 						<li><NavLink exact="true" to="/About">À propos</NavLink></li>
@@ -83,6 +63,10 @@ const Navigation = () => {
 
 			{window.location.pathname === "/Levels" && (
 				<div id="titrePage">{"Choix du niveau"}</div>
+			)}
+
+			{window.location.pathname === "/Tutorials" && (
+				<div id="titrePage">{"Choix du tutoriel"}</div>
 			)}
 
 			{window.location.pathname === "/Exercise/Create" && (
