@@ -666,7 +666,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (openFileJson !== "") {
 			link.download = openFileJson;
 		} else {
-			link.download("ouput.json");
+			link.download = "output.json";
 		}
 		link.href = url;
 		link.click();
