@@ -1628,7 +1628,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 			tmpTabIndentation.push(indentationDemonstration);
 
-			if (demonstration.length === 0 || num !== 0) {
+			if (tmpDemonstration.length === 0 || num !== 0) {
 				tmpDemonstration.push([
 					indentationDemonstration + indentation,
 					msg,
@@ -2417,7 +2417,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				addLineDemonstration([res], [0], 0, true);
 				allFalse(tmp);
 				setSavedGame(tmp);
-			} catch (error) {}
+			} catch (error) {
+				console.error("Erreur init niveau :", error);
+			}
 		}
 		if (mode === "Create") {
 			allFalse([[], []]);
