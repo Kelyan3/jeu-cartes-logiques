@@ -2824,7 +2824,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			</div>
 			{/* Message d'aide en mode tutoriel */}
 			{mode === "Tutorial" && messageTutorial !== "" && (
-				<div className="message tutoriel">
+				<div className="toast toastTutorial">
 					{messageTutorial.map((element, index) => {
 						return <div key={index}>{element}</div>;
 					})}
@@ -2832,7 +2832,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			)}
 			{/* Message d'erreur si on essaye de faire un mouvement illégal (ex: vouloir séparer une carte qui n'a pas une liaison "et") */}
 			{messageErreur !== "" && (
-				<div className="message error">{messageErreur}</div>
+				<div className="toast toastError">{messageErreur}</div>
 			)}
 			<GameTab.Provider value={game}>
 				{/* Ajout des decks */}
