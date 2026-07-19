@@ -2788,15 +2788,18 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				)}
 				{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
 				{mode === "Create" && (
-					<input
-						type="file"
-						accept="application/json"
-						onChange={openFile}
-					></input>
+					<label className="fileButton">
+						{openFileJson !== "" ? openFileJson : "Choisir un fichier"}
+						<input
+							type="file"
+							accept="application/json"
+							onChange={openFile}
+						></input>
+					</label>
 				)}
 				{/* Copie du jeu actuel en format JSON dans le presse-papier */}
 				{mode === "Create" && (
-					<button onClick={saveAsFile}>Téléchargé le fichier</button>
+					<button className="fileDownload" onClick={saveAsFile}>Télécharger le fichier</button>
 				)}
 				{
 					<span id="checkBoxSimple">
@@ -2875,63 +2878,26 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					content={
 						<>
 							<b>Choisissez une couleur</b>
-							<div onChange={choixCouleur}>
-								<input
-									type="radio"
-									value="red"
-									name="couleur"
-								/>{" "}
-								{" Rouge "}
-								<input
-									type="radio"
-									value="yellow"
-									name="couleur"
-								/>{" "}
-								{" Jaune "}
-								<input
-									type="radio"
-									value="blue"
-									name="couleur"
-								/>{" "}
-								{" Bleue "}
-								<input
-									type="radio"
-									value="orange"
-									name="couleur"
-								/>{" "}
-								{" Orange "}
-								<input
-									type="radio"
-									value="green"
-									name="couleur"
-								/>{" "}
-								{" Verte "}
-								<input
-									type="radio"
-									value="purple"
-									name="couleur"
-								/>{" "}
-								{" Violette "}
-								<input
-									type="radio"
-									value="black"
-									name="couleur"
-								/>{" "}
-								{" Noir "}
-								<input
-									type="radio"
-									value="white"
-									name="couleur"
-								/>{" "}
-								{" Blanc "}
+							<div className="colorGrid" onChange={choixCouleur}>
+								{[
+									["red", "Rouge"],
+									["yellow", "Jaune"],
+									["blue", "Bleue"],
+									["orange", "Orange"],
+									["green", "Verte"],
+									["purple", "Violette"],
+									["black", "Noir"],
+									["white", "Blanc"],
+								].map(([value, label]) => (
+									<label className="colorSwatchLabel" key={value}>
+										<input type="radio" value={value} name="couleur" />
+										<span className="colorSwatch" style={{ backgroundColor: value }}></span>
+										<span className="colorSwatchName">{label}</span>
+									</label>
+								))}
 							</div>
-							<button
-								onClick={function () {
-									setPopupAddCard(false);
-								}}
-							>
-								X
-							</button>
+
+							<button className="popupClose" onClick={function () {setPopupAddCard(false);}}>✕</button>
 						</>
 					}
 				/>
@@ -2943,35 +2909,21 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					content={
 						<>
 							<b>Choisissez une liaison</b>
-							<div onChange={choixLiaison}>
-								<input type="radio" value="et" name="liaison" />{" "}
-								{"et "}
-								<input
-									type="radio"
-									value="ou"
-									name="liaison"
-								/>{" "}
-								{"ou "}
-								<input
-									type="radio"
-									value="=>"
-									name="liaison"
-								/>{" "}
-								{"=> "}
-								<input
-									type="radio"
-									value="<=>"
-									name="liaison"
-								/>{" "}
-								{"<=> "}
+							<div className="connectorGrid" onChange={choixLiaison}>
+								{[
+									["et", "∧", "Et"],
+									["ou", "∨", "Ou"],
+									["=>", "⇒", "Implique"],
+									["<=>", "⇔", "Équivaut"],
+								].map(([value, symbol, label]) => (
+									<label className="connectorLabel" key={value}>
+										<input type="radio" value={value} name="liaison" />
+										<span className="connectorSymbol">{symbol}</span>
+										<span className="connectorName">{label}</span>
+									</label>
+								))}
 							</div>
-							<button
-								onClick={function () {
-									setPopupFusion(false);
-								}}
-							>
-								X
-							</button>
+							<button className="popupClose" onClick={function () {setPopupFusion(false);}}>✕</button>
 						</>
 					}
 				/>

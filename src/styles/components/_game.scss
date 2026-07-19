@@ -97,6 +97,50 @@
 	transition: border-color .15s ease, box-shadow .15s ease;
 }
 
+.game .bouton .fileButton {
+	display: inline-flex;
+	align-items: center;
+	height: 42px;
+	padding: 0 16px;
+	margin: 6px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: var(--bg-base);
+	color: var(--text-muted);
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	cursor: pointer;
+	transition: border-color .15s ease, color .15s ease;
+}
+
+.game .bouton .fileButton input[type="file"] {
+	display: none;
+}
+
+.game .bouton .fileButton:hover {
+	border-color: var(--accent-cyan);
+	color: var(--accent-cyan);
+}
+
+.game .bouton .fileDownload {
+	height: 42px;
+	padding: 0 16px;
+	margin: 6px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--accent-cyan);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	transition: background .15s ease, box-shadow .15s ease;
+}
+
+.game .bouton .fileDownload:hover {
+	background: rgba(94, 234, 212, 0.1);
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+}
+
 .game .bouton .buttonAction img {
 	height: 35px;
 	width: auto;

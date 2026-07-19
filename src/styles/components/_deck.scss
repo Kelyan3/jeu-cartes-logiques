@@ -79,3 +79,54 @@
 .other2 {
 	grid-area: other2;
 }
+
+.deckToolbar {
+	display: flex;
+	justify-content: center;
+	gap: 6px;
+	margin-bottom: 12px;
+}
+
+.deckAction {
+	position: relative;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+	color: var(--text-muted);
+	transition: border-color .15s ease, color .15s ease;
+}
+
+.deckAction svg {
+	width: 16px;
+	height: 16px;
+}
+
+.deckActionSymbol {
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 600;
+	font-size: 15px;
+}
+
+.deckTooltip {
+	visibility: hidden;
+	position: absolute;
+	top: 120%;
+	left: 50%;
+	transform: translateX(-50%);
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-primary);
+	font-size: 11px;
+	white-space: nowrap;
+	padding: 4px 8px;
+	border-radius: 6px;
+	z-index: 50;
+}
+
+.deckAction:hover .deckTooltip {
+	visibility: visible;
+}
