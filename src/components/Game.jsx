@@ -1594,24 +1594,32 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		return StringToLatex(res);
 	};
 	const addLineDemonstration = (msgArray, indentationArray, num, reset) => {
-		if (reset === undefined) {
+		if (reset === undefined)
 			reset = false;
-		}
+
 		let tmpTabIndentation = [];
 		let tmpDemonstration = [];
 		let indentation = 0;
 		let tmpTabIndiceDemonstration = [];
+
+		/**
+		 * Base de départ pour l'indexation : -1 si on réinitialise le niveau
+		 * (la première ligne doit alors pointer vers l'index 0, cohérent avec
+		 * lastGame vide), sinon on repart de la dernière valeur connue.
+		 */
+		let baseIndice = -1;
 		if (!reset) {
 			tmpTabIndentation = [...tabIndentation];
 			tmpDemonstration = [...demonstration];
 			indentation = indentationDemonstration;
-			tmpTabIndiceDemonstration = tabIndiceDemonstration;
+			tmpTabIndiceDemonstration = [...tabIndiceDemonstration];
+			baseIndice = tabIndiceDemonstration[tabIndiceDemonstration.length - 1];
 		}
 
 		msgArray.forEach((msg, index) => {
-			if (indentationArray[index] === undefined) {
+			if (indentationArray[index] === undefined)
 				indentationArray[index] = 0;
-			}
+
 			indentation += indentationArray[index];
 
 			tmpTabIndentation.push(indentationDemonstration);
@@ -1623,9 +1631,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				]);
 			}
 
-			tmpTabIndiceDemonstration.push(
-				tabIndiceDemonstration[tabIndiceDemonstration.length - 1] + 1
-			);
+			tmpTabIndiceDemonstration.push(baseIndice + 1);
 		});
 
 		setDemonstration(tmpDemonstration);
@@ -2285,6 +2291,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		let id = event.currentTarget.id.substring(4, 20),
 			indiceRecu = parseInt(id, 10),
 			indiceRetour = tabIndiceDemonstration[indiceRecu];
+
+		if (indiceRetour === undefined)
+			return;
+
 		if (indiceRetour !== lastGame.length) {
 			setNavigation(true);
 			let tmpLastGame = [...lastGame],
