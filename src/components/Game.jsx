@@ -961,20 +961,24 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			// Met à jour le jeu avec la dernière sauvegarde & désélectionne toutes les cartes
 			allFalse(tmpFutureGame);
 			setSavedGame(tmpFutureGame);
-			let demonstrationTmp = [...demonstration];
-			demonstrationTmp.pop();
-			setDemonstration(demonstrationTmp);
-			// Supprime la dernière sauvegrade du jeu
+			
+			/**
+			 * Ne retire une ligne de démonstration que s'il en existe une pour cette
+			 * action (certaines actions, notamment en mode Création, sauvegardent le
+			 * jeu sans ajouter de ligne de démonstration).
+			 */
+			if (demonstration.length > 0) {
+				let demonstrationTmp = [...demonstration];
+				demonstrationTmp.pop();
+				setDemonstration(demonstrationTmp);
+
+				let tabIndentationTmp = [...tabIndentation];
+				tabIndentationTmp.pop();
+				setTabIndentation(tabIndentationTmp);
+			}
+
+			// Supprime la dernière sauvegarde du jeu
 			tmpLastGame.pop();
-			// Met à jour le tableau des sauvegardes
-			let tmpDemonstration = [];
-			for (let i = 0; i <= lastGame.length - 1; i++)
-				tmpDemonstration.push(demonstration[i]);
-			let tmpTabDemonstration = [];
-			for (let i = 0; i <= lastGame.length - 1; i++)
-				tmpTabDemonstration.push(tabIndentation[i]);
-			setDemonstration(tmpDemonstration);
-			setTabIndentation(tmpTabDemonstration);
 			setLastGame(tmpLastGame);
 		} else allFalseGame();
 	};
