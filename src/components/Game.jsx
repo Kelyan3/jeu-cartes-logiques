@@ -2407,7 +2407,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				tmp[0].forEach((element) => {
 					res.push("On a ");
 					res.push(element.copy());
-					res.push(".");
+					res.push(". ");
 				});
 				if (tmp.length === 2 && tmp[1].length > 0) {
 					res.push("Montrons ");
@@ -2633,7 +2633,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	return (
 		<div className="game">
-			{win && (
+			{win && numero + 2 <= nbExo && (
 				<button className="buttonWin" onClick={nextExercise}>
 					Niveau suivant
 				</button>
@@ -2968,7 +2968,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 								className="closeButton"
 								onClick={function () {
 									setPopupWin(false);
-									if (mode === "Tutorial") nextExercise();
+									if (mode === "Tutorial")
+										nextExercise();
 								}}
 							>
 								✖
@@ -2981,29 +2982,28 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 									return (
 										<div
 											key={index}
-											style={
-												index === 1
-													? {
-															marginLeft:
-																20 +
-																element[0] * 20,
-															marginTop: 20,
-													  }
-													: {
-															marginLeft:
-																20 +
-																element[0] * 20,
-													  }
+											style={index === 1 ?
+												{ marginLeft: 20 + element[0] * 20, marginTop: 20, } :
+												{ marginLeft: 20 + element[0] * 20, }
 											}
 										>
-											<Latex>
-												{constructDemonstration(
-													element[1]
-												)}
-											</Latex>
+											<Latex>{constructDemonstration(element[1])}</Latex>
 										</div>
 									);
 								})}
+							</div>
+							<div className="popupWinActions">
+								<button
+									className="popupSecondary"
+									onClick={function() {
+										setPopupWin(false);
+									}}
+								>
+									Revoir le niveau
+								</button>
+								{numero + 2 <= nbExo && (
+									<button className="popupPrimary" onClick={nextExercise}>Niveau suivant</button>
+								)}
 							</div>
 						</>
 					}

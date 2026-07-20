@@ -8,6 +8,11 @@
 	margin-top: 0;
 }
 
+.choice h2::after {
+	left: 0;
+	transform: none;
+}
+
 .choice table {
 	width: 100%;
 	margin: 24px auto 40px auto;

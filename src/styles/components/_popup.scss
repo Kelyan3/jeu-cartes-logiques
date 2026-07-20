@@ -179,3 +179,44 @@
 	font-size: 12px;
 	color: var(--text-muted);
 }
+
+.popupWinActions {
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.popupPrimary {
+	padding: 10px 22px;
+	border: 1px solid var(--accent-cyan);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--accent-cyan);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	transition: background .15s ease, box-shadow .15s ease;
+}
+
+.popupPrimary:hover {
+	background: rgba(94, 234, 212, 0.1);
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+}
+
+.popupSecondary {
+	padding: 10px 22px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--text-muted);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	transition: border-color .15s ease, color .15s ease;
+}
+
+.popupSecondary:hover {
+	border-color: var(--accent-cyan);
+	color: var(--accent-cyan);
+}

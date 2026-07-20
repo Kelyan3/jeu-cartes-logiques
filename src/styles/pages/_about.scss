@@ -1,68 +1,144 @@
 .about {
-	min-width: 100vw;
+	min-height: 100vh;
 	width: 100%;
 	display: flex;
 	justify-content: center;
-	padding-top: 90px;
-	padding-bottom: 60px;
+	align-items: flex-start;
+	padding: 120px 20px 60px 20px;
+	box-sizing: border-box;
 }
 
-.about #credits {
-	width: min(600px, 90vw);
-	height: fit-content;
+.credits-container {
+	max-width: 680px;
+	width: 100%;
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
-	border-radius: 12px;
-	padding: 40px 48px;
+	border-radius: 16px;
+	padding: 48px;
 	text-align: center;
 }
 
-.about #credits > a:first-of-type {
+.credits-container h2 {
+	color: var(--text-primary);
+	font-size: 1.8rem;
+	box-sizing: border-box;
+}
+
+.logo-unc-link {
 	display: block;
 	width: fit-content;
-	margin: 0 auto 20px auto;
+	margin: 0 auto 32px auto;
 	background: #FFFFFF;
-	border-radius: 10px;
-	padding: 10px 16px;
+	border-radius: 12px;
+	padding: 12px 24px;
+	border: 1px solid var(--border-subtle);
 }
 
-.about #credits img {
-	height: 70px;
+.logo-unc {
+	height: 60px;
 	width: auto;
-	display: block;
+	object-fit: contain;
 }
 
-.about #credits p {
+.project-lead {
+	margin: 24px 0;
+}
+
+.project-lead .eyebrow {
+	display: inline-block;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
 	color: var(--text-muted);
-	line-height: 1.6;
-	margin-top: 20px;
+	margin-bottom: 4px;
 }
 
-.about #credits ul {
-	list-style: none;
-	padding: 0;
-	margin-top: 16px;
-	display: flex;
-	gap: 10px;
-}
-
-.about #credits li {
+.project-lead p {
+	font-size: 1.1rem;
 	color: var(--text-primary);
-	font-weight: 500;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
 }
 
-.about #credits .linkedin {
-	height: 18px;
-	width: auto;
-	border-radius: 0;
-	opacity: 0.8;
-	transition: opacity .15s ease;
+.separator {
+	border: 0;
+	height: 1px;
+	background: var(--border-subtle);
+	margin: 32px 0;
 }
 
-.about #credits .linkedin:hover {
+.team-section {
+	margin-bottom: 32px;
+}
+
+.team-section h3 {
+	font-size: 1rem;
+	color: var(--text-muted);
+	margin-bottom: 16px;
+	font-weight: 600;
+}
+
+.students-grid {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 16px;
+}
+
+.students-grid.two-columns {
+	grid-template-columns: repeat(2, 1fr);
+	max-width: 440px;
+	margin: 0 auto;
+}
+
+.students-grid li {
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 14px 10px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.students-grid li span {
+	color: var(--text-primary);
+	font-weight: 500;
+	font-size: 0.95rem;
+}
+
+.linkedin-badge {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.linkedin-icon {
+	height: 20px;
+	width: auto;
+	opacity: 0.7;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.linkedin-badge:hover .linkedin-icon {
 	opacity: 1;
+	transform: scale(1.1);
+}
+
+@media (max-width: 600px) {
+	.students-grid, 
+	.students-grid.two-columns {
+		grid-template-columns: 1fr;
+		max-width: 100%;
+	}
+	
+	.credits-container {
+		padding: 24px;
+	}
 }

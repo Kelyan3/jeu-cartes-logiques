@@ -9,15 +9,14 @@
 }
 
 #regles {
-	width: min(720px, 90vw);
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
 	padding: 40px 48px;
-	margin-top: 24px;
 }
 
 #regles h1 {
+	font-size: 40px;
 	margin-bottom: 32px;
 }
 
@@ -26,6 +25,7 @@
 	text-align: left;
 	margin-top: 32px;
 	margin-bottom: 16px;
+	font-size: 32px;
 }
 
 #regles h2::after {
@@ -34,7 +34,7 @@
 }
 
 #regles ul {
-	padding-left: 20px;
+	padding-left: 36px;
 }
 
 #regles li {

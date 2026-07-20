@@ -43,24 +43,24 @@
 .game .buttonWin {
 	background: var(--bg-surface);
 	border: 1px solid var(--accent-cyan);
-	box-shadow: 0 0 20px rgba(94, 234, 212, 0.3);
+	box-shadow: 0 0 24px rgba(94, 234, 212, 0.35);
 	border-radius: 12px;
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
 	color: var(--text-primary);
-	font-size: 20px;
-	height: 90px;
-	left: 50%;
-	margin-left: -163px;
-	margin-top: -45px;
-	position: absolute;
-	top: 40%;
-	width: 326px;
-	transition: box-shadow .15s ease;
+	font-size: 16px;
+	height: 52px;
+	padding: 0 24px;
+	position: fixed;
+	bottom: 28px;
+	left: 28px;
+	z-index: 70;
+	transition: box-shadow .15s ease, transform .15s ease;
 }
 
 .game .buttonWin:hover {
-	box-shadow: 0 0 28px rgba(94, 234, 212, 0.5);
+	box-shadow: 0 0 32px rgba(94, 234, 212, 0.5);
+	transform: translateY(-2px);
 }
 
 .game .bouton {
