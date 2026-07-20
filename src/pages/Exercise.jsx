@@ -11,12 +11,31 @@ const Exercise = () => {
 	let mode = useParams().mode;
 	const [ex, setEx] = useState();
 	const navigate = useNavigate();
-	const nbExo = 36;
-	const nbTuto = 7;
+	const [manifest, setManifest] = useState(null);
 	const [nbExoConfondu, setNbExoConfondu] = useState(0);
 
+	/**
+	 * Nombre de niveaux par défaut, utilisé en repli si le manifeste
+	 * n'a pas encore été chargé ou est indisponible.
+	 */
+	const defaultCounts = { Play: 36, Tutorial: 7 };
+
 	useEffect(() => {
+		fetch("/json/manifest.json")
+			.then((response) => response.json())
+			.then((data) => setManifest(data))
+			.catch(() => setManifest(defaultCounts));
+	}, []);
+
+	useEffect(() => {
+		// On attend d'avoir le manifeste (ou son repli) avant de valider le niveau demandé.
+		if (manifest === null)
+			return;
+
 		let tmpEx = [];
+		const nbExo = manifest.Play ?? defaultCounts.Play;
+		const nbTuto = manifest.Tutorial ?? defaultCounts.Tutorial;
+
 		if (mode === "Play" && tmpNum <= nbExo)
 		{
 			setNbExoConfondu(nbExo);
@@ -45,7 +64,7 @@ const Exercise = () => {
 			setEx([[], []]);
 		else
 			navigate("/NotFound");
-	}, [tmpNum, mode]);
+	}, [tmpNum, mode, manifest]);
 
 	return (
 		<div className="home">

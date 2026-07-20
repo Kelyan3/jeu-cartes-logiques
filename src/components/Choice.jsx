@@ -4,9 +4,11 @@ import { useAuth } from "../context/AuthContext";
 
 const Choice = ({ mode }) => {
 	/**
-	 * Configuration selon le mode : nombre de niveaux et chapitrage.
+	 * Configuration par défaut, utilisée en attendant que le manifeste
+	 * (nombre réel de niveaux) soit chargé, et comme repli si le manifeste
+	 * est absent ou illisible.
 	 */
-	const config = {
+	const defaultConfig = {
 		Play: {
 			jsonCount: 36,
 			difficulty: [
@@ -21,13 +23,42 @@ const Choice = ({ mode }) => {
 		},
 	};
 
-	const { jsonCount, difficulty } = config[mode];
+	const [jsonCount, setJsonCount] = useState(defaultConfig[mode].jsonCount);
+	const [difficulty, setDifficulty] = useState(defaultConfig[mode].difficulty);
 
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const [completedLevels, setCompletedLevels] = useState([]);
 
 	const API = import.meta.env.DEV ? "http://localhost:80" : "";
+
+	/**
+	 * Charge le nombre réel de niveaux depuis le manifeste généré,
+	 * et étend la dernière catégorie affichée si de nouveaux niveaux
+	 * ont été ajoutés au-delà de ce qui était prévu manuellement.
+	 */
+	useEffect(() => {
+		fetch("/json/manifest.json")
+			.then((response) => response.json())
+			.then((manifest) => {
+				const count = manifest[mode];
+				if (!count)
+					return;
+
+				setJsonCount(count);
+				setDifficulty((prevDifficulty) => {
+					const updated = prevDifficulty.map((cat) => [...cat]);
+					const lastCategory = updated[updated.length - 1];
+					if (count > lastCategory[1])
+						lastCategory[1] = count;
+
+					return updated;
+				})
+			})
+			.catch(() => {
+				// Manifeste absent ou invalide : on garde la configuration par défaut.
+			});
+	}, [mode]);
 
 	useEffect(() => {
 		if (!user)
