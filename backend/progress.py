@@ -43,3 +43,10 @@ def save_progress(user_id, mode, num, completed, score=0):
 				(user_id, mode, num, completed, score),
 			)
 			conn.commit()
+
+def reset_progress(user_id):
+	"""Supprime toute la progression d'un utilisateur."""
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			cur.execute("DELETE FROM user_progress WHERE user_id = %s", (user_id,),)
+			conn.commit()

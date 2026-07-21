@@ -8,7 +8,7 @@ from dotenv import dotenv_values
 
 from database import get_database
 from auth import *
-from progress import get_progress, save_progress
+from progress import *
 
 
 config = dotenv_values(".env")
@@ -113,6 +113,13 @@ def progress_post():
 
 	save_progress(current_user.id, mode, num, completed, score)
 	return jsonify({"ok": True})
+
+
+@app.route("/api/progress", methods=["DELETE"])
+@login_required
+def progress_delete():
+    reset_progress(current_user.id)
+    return jsonify({"ok": True})
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=80)

@@ -9,8 +9,23 @@ const Profile = () => {
 	const [tutorialCompleted, setTutorialCompleted] = useState(0);
 	const [tutorialTotal, setTutorialTotal] = useState(0);
 	const [loadingStats, setLoadingStats] = useState(true);
+	const [resetting, setResetting] = useState(false);
 
 	const API = import.meta.env.DEV ? "http://localhost:80" : "";
+
+	const handleReset = () => {
+		const confirmed = window.confirm("Réinitialiser toute votre progression ? Cette action est irréversible.");
+		if (!confirmed)
+			return;
+
+		setResetting(true);
+		fetch(`${API}/api/progress`, { method: "DELETE", credentials: "include", })
+			.then(() => {
+				setPlayCompleted(0);
+				setTutorialCompleted(0);
+			})
+			.finally(() => setResetting(false));
+	};
 
 	useEffect(() => {
 		if (!user)
@@ -57,6 +72,10 @@ const Profile = () => {
 							<div className="progressCount">{playCompleted} / {playTotal}</div>
 
 							<div className="tutorialCount">Tutoriels complétés : {tutorialCompleted} / {tutorialTotal}</div>
+
+							<button className="resetButton" onClick={handleReset}>
+								{resetting ? "Réinitialisation..." : "Réinitialiser ma progression"}
+							</button>
 						</div>
 					</>
 				)}
