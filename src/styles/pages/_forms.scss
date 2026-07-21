@@ -91,3 +91,65 @@
 	opacity: 0.5;
 	cursor: default;
 }
+
+.profileCard {
+	width: min(420px, 90vw);
+	text-align: center;
+}
+
+.profileLoading {
+	color: var(--text-muted);
+	margin-top: 20px;
+}
+
+.progressBlock {
+	margin-top: 28px;
+	text-align: left;
+}
+
+.progressLabel {
+	display: flex;
+	justify-content: space-between;
+	font-size: 13px;
+	color: var(--text-muted);
+	margin-bottom: 8px;
+
+}
+
+.progressLabel span:last-child {
+	color: var(--accent-amber);
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 600;
+}
+
+.progressTrack {
+	width: 100%;
+	height: 10px;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 999px;
+	overflow: hidden;
+}
+
+.progressFill {
+	height: 100%;
+	background: var(--accent-amber);
+	box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+	border-radius: 999px;
+	transition: width .4s ease;
+}
+
+.progressCount {
+	margin-top: 8px;
+	font-size: 12px;
+	color: var(--text-muted);
+	text-align: right;
+}
+
+.tutorialCount {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid var(--border-subtle);
+	font-size: 14px;
+	color: var(--text-muted);
+}

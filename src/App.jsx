@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+
 import About from "./pages/About";
 import Exercise from "./pages/Exercise";
 import Forms from "./pages/Forms";
@@ -10,6 +11,7 @@ import Tutorials from "./pages/Tutorials";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 
 const App = () => {
 	let url_add = "";
@@ -36,6 +38,7 @@ const App = () => {
 					<Route path="/Tutorials" exact element={<Tutorials />} />
 					<Route path="/Login" exact element={<Login />} />
 					<Route path="/Register" exact element={<Register />} />
+					<Route path="/Profile" exact element={<Profile />} />
 					<Route path="*" element={<NotFound />} />
 				</Routes>
 			</BrowserRouter>

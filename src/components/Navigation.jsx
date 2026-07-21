@@ -37,9 +37,8 @@ const Navigation = () => {
 					<li className="choose">
 						<div>{user.username}</div>
 						<ul>
-							<li>
-								<div onClick={logout} className="logoutLink">Déconnexion</div>
-							</li>
+							<li><NavLink to="/Profile">Mon profil</NavLink></li>
+							<li><div onClick={logout} className="logoutLink">Déconnexion</div></li>
 						</ul>
 					</li>
 				)}
