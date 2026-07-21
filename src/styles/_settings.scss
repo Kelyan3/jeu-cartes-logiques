@@ -1,11 +1,25 @@
 :root {
 	--bg-base: #0B0E14;
+	--bg-base-rgb: 11, 14, 20;
 	--bg-surface: #151A24;
+	--bg-surface-alt: #1B212F;
 	--accent-cyan: #5EEAD4;
 	--accent-amber: #FACC15;
 	--text-primary: #E4E7EC;
 	--text-muted: #8B93A7;
 	--border-subtle: #232938;
+}
+
+[data-theme="light"] {
+	--bg-base: #c5cfe3;
+	--bg-base-rgb: 247, 248, 250;
+	--bg-surface: #FFFFFF;
+	--bg-surface-alt: #dfe0e2;
+	--accent-cyan: #0D9488;
+	--accent-amber: #B45309;
+	--text-primary: #1E293B;
+	--text-muted: #64748B;
+	--border-subtle: #E2E8F0;
 }
 
 #root {

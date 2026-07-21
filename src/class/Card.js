@@ -79,7 +79,7 @@ export default class Card {
 		if (this.link === "et")
 			res += "^";
 		else if (this.link === "ou")
-			res += "ou";
+			res += "∨";
 		else if (this.link === "=>")
 			res += "=>";
 		else if (this.link === "<=>")

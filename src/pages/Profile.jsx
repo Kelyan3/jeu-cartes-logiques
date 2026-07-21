@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
+
 import { useAuth } from "../context/AuthContext";
+import { useTheme } from "../context/ThemeContext";
 
 const Profile = () => {
 	const { user } = useAuth();
+	const { theme, toggleTheme } = useTheme();
+
 	const [playCompleted, setPlayCompleted] = useState(0);
 	const [playTotal, setPlayTotal] = useState(0);
 	const [tutorialCompleted, setTutorialCompleted] = useState(0);
@@ -72,6 +76,15 @@ const Profile = () => {
 							<div className="progressCount">{playCompleted} / {playTotal}</div>
 
 							<div className="tutorialCount">Tutoriels complétés : {tutorialCompleted} / {tutorialTotal}</div>
+
+							<div className="preferencesBlock">
+								<span className="eyebrow">Préférences</span>
+								<label className="themeSwitch">
+									<input type="checkbox" checked={theme === "dark"} onChange={toggleTheme} />
+									<span className="themeSwitchTrack"></span>
+									<span className="themeSwitchLabel">Mode sombre</span>
+								</label>
+							</div>
 
 							<button className="resetButton" onClick={handleReset}>
 								{resetting ? "Réinitialisation..." : "Réinitialiser ma progression"}

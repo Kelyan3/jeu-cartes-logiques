@@ -177,3 +177,63 @@
 	opacity: 0.5;
 	cursor: default;
 }
+
+.preferencesBlock {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid var(--border-subtle);
+	text-align: left;
+}
+
+.preferencesBlock .eyebrow {
+	display: block;
+	margin-bottom: 14px;
+}
+
+.themeSwitch {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+}
+
+.themeSwitch input {
+	display: none;
+}
+
+.themeSwitchTrack {
+	position: relative;
+	width: 44px;
+	height: 24px;
+	border-radius: 999px;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	transition: border-color .2s ease;
+}
+
+.themeSwitchTrack::after {
+	content: "";
+	position: absolute;
+	top: 2px;
+	left: 2px;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--text-muted);
+	transition: transform .2s ease, background .2s ease;
+}
+
+.themeSwitch input:checked + .themeSwitchTrack {
+	border-color: var(--accent-cyan);
+}
+
+.themeSwitch input:checked + .themeSwitchTrack::after {
+	transform: translateX(20px);
+	background: var(--accent-cyan);
+	box-shadow: 0 0 8px rgba(94, 234, 212, 0.5);
+}
+
+.themeSwitchLabel {
+	font-size: 14px;
+	color: var(--text-primary);
+}

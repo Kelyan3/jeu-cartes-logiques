@@ -9,7 +9,7 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0 32px;
-	background: rgba(11, 14, 20, 0.85);
+	background: rgba(var(--bg-base-rgb), 0.85);
 	backdrop-filter: blur(8px);
 	border-bottom: 1px solid var(--border-subtle);
 }

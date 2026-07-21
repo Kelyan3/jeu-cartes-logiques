@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import { AuthProvider } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import About from "./pages/About";
 import Exercise from "./pages/Exercise";
@@ -26,23 +28,25 @@ const App = () => {
 	}
 
 	return (
-		<AuthProvider>
-			<BrowserRouter>
-				<Routes>
-					<Route path="/" exact element={<Home />} />
-					<Route path="/Exercise/:mode/:num" exact element={<Exercise />} />
-					<Route path="/Exercise/:mode" exact element={<Exercise />} />
-					<Route path="/About" exact element={<About />} />
-					<Route path="/Forms" exact element={<Forms />} />
-					<Route path="/Levels" exact element={<Levels />} />
-					<Route path="/Tutorials" exact element={<Tutorials />} />
-					<Route path="/Login" exact element={<Login />} />
-					<Route path="/Register" exact element={<Register />} />
-					<Route path="/Profile" exact element={<Profile />} />
-					<Route path="*" element={<NotFound />} />
-				</Routes>
-			</BrowserRouter>
-		</AuthProvider>
+		<ThemeProvider>
+			<AuthProvider>
+				<BrowserRouter>
+					<Routes>
+						<Route path="/" exact element={<Home />} />
+						<Route path="/Exercise/:mode/:num" exact element={<Exercise />} />
+						<Route path="/Exercise/:mode" exact element={<Exercise />} />
+						<Route path="/About" exact element={<About />} />
+						<Route path="/Forms" exact element={<Forms />} />
+						<Route path="/Levels" exact element={<Levels />} />
+						<Route path="/Tutorials" exact element={<Tutorials />} />
+						<Route path="/Login" exact element={<Login />} />
+						<Route path="/Register" exact element={<Register />} />
+						<Route path="/Profile" exact element={<Profile />} />
+						<Route path="*" element={<NotFound />} />
+					</Routes>
+				</BrowserRouter>
+			</AuthProvider>
+		</ThemeProvider>
 	);
 };
 

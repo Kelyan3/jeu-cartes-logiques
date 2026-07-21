@@ -2643,81 +2643,42 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{false && <button onClick={getNextMove}>Aide</button>}
 				{/* Revient à la partie avant l'ajout d'une carte */}
 				<div>
-					<button
-						id="back"
-						className="buttonAction "
-						onClick={retourEnArriere}
-					>
-						<img
-							src={"/img/retour_arriere.png"}
-							alt={"Retour arrière"}
-						/>
+					<button id="back" className="buttonAction " onClick={retourEnArriere}>
+						<span className="buttonFormula">↶</span>
 						<span className="tooltiptext">Retour arrière</span>
 					</button>
+					<span className="tooltiptext">Retour arrière</span>
 				</div>
 				{/* Bouton pour obtenir les 2 parties d'une carte "et" */}
 				{mode !== "Create" && (
 					<div>
-						<button
-							id="addAnd"
-							className={
-								"buttonAction " +
-								(mode === "Tutorial" && numero === 0
-									? "boutonSelection"
-									: "")
-							}
-							onClick={addCardAnd}
-						>
-							<img
-								src={"/img/ajout_carte_et.png"}
-								alt={"Séparation"}
-							/>
+						<button id="addAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 0 ? "boutonSelection" : "")} onClick={addCardAnd}>
+							<span className="buttonFormula">[1∧2] → [1] [2]</span>
 							<span className="tooltiptext">Séparation</span>
 						</button>
+						<span className="tooltiptext">Séparation</span>
 					</div>
 				)}
 				{/* Bouton pour obtenir la partie droite d'une carte "=>" si l'on a sélectionné une autre carte qui
 			est égale à la partie gauche */}
 				{mode !== "Create" && (
 					<div>
-						<button
-							id="addImplique"
-							className={
-								"buttonAction " +
-								(mode === "Tutorial" && numero === 1
-									? "boutonSelection"
-									: "")
-							}
-							onClick={addCardFuse}
-						>
-							<img
-								src={"/img/ajout_carte_implique.png"}
-								alt={"Implique"}
-							/>
+						<button id="addImplique" className={"buttonAction " + (mode === "Tutorial" && numero === 1 ? "boutonSelection" : "")} onClick={addCardFuse}>
+							<span className="buttonFormula">[1] [1⇒2] → [2]</span>
 							<span className="tooltiptext">Implique</span>
 						</button>
+						<span className="tooltiptext">Implique</span>
 					</div>
 				)}
 				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte
 			sélectionnée) & la partie droite (2ème carte sélectionnée). La carte créée aura une liaison "et" */}
 				{mode !== "Create" && (
 					<div>
-						<button
-							id="fuseAnd"
-							className={
-								"buttonAction " +
-								(mode === "Tutorial" && numero === 2
-									? "boutonSelection"
-									: "")
-							}
-							onClick={fuseCardAnd}
-						>
-							<img
-								src={"/img/fusion_carte_et.png"}
-								alt={"Fusion"}
-							/>
+						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
+							<span className="buttonFormula">[1] [2] → [1∧2]</span>
 							<span className="tooltiptext">Fusion</span>
 						</button>
+						<span className="tooltiptext">Fusion</span>
 					</div>
 				)}
 				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte
@@ -2725,72 +2686,40 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				/!\ Pour l'instant ce bouton n'est pas affiché car je n'y vois aucune utilité à voir pour les prochains exercices ! */}
 				{false && mode !== "Create" && (
 					<button className={"buttonAction "} onClick={fuseCardFuse}>
-						<img
-							src={"/img/fusion_carte_et.png"}
-							alt={"Fusion Carte =>"}
-						/>
+						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
+							<span className="buttonFormula">[1] [2] → [1∧2]</span>
+							<span className="tooltiptext">Fusion</span>
+						</button>
 						<span className="tooltiptext">Fusion Carte {"=>"}</span>
 					</button>
 				)}
 				{/* Ajout objectif secondaire */}
 				{mode !== "Create" && (
 					<div>
-						<button
-							id="addGoal"
-							className={
-								"buttonAction " +
-								(mode === "Tutorial" && numero === 3
-									? "boutonSelection"
-									: "")
-							}
-							onClick={addObjectif}
-						>
-							<img
-								src={"/img/ajout_objectif.png"}
-								alt={"+ Objectif"}
-							/>
+						<button id="addGoal" className={"buttonAction " + (mode === "Tutorial" && numero === 3 ? "boutonSelection" : "")} onClick={addObjectif}>
+							<span className="buttonFormula">+ 🏁</span>
 							<span className="tooltiptext">+ Objectif</span>
 						</button>
+						<span className="tooltiptext">+ Objectif</span>
 					</div>
 				)}
 				{mode !== "Create" && (
 					<div>
-						<button
-							id="tiersExclus"
-							className={
-								"buttonAction " +
-								(mode === "Tutorial" && numero === 6
-									? "boutonSelection"
-									: "")
-							}
-							onClick={tiersExlus}
-						>
-							<img
-								src={"/img/tiers_exclus.png"}
-								alt={"tiers-exclus"}
-							/>
+						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExlus}>
+							<span className="buttonFormula">¬¬[1] → [1]</span>
 							<span className="tooltiptext">Tiers Exclus</span>
 						</button>
+						<span className="tooltiptext">Tiers Exclus</span>
 					</div>
 				)}
 				{mode !== "Create" && (
-					<button
-						id="transitivite"
-						className={
-							"buttonAction " +
-							(mode === "Tutorial" &&
-							(numero === 4 || numero === 5)
-								? "boutonSelection"
-								: "")
-						}
-						onClick={transitivite}
-					>
-						<img
-							src={"/img/transitivite.png"}
-							alt={"Transitivité"}
-						></img>
+					<div>
+						<button id="transitivite" className={"buttonAction " + (mode === "Tutorial" && (numero === 4 || numero === 5) ? "boutonSelection" : "")} onClick={transitivite}>
+							<span className="buttonFormula">[1⇒2]+[2⇒3]→[1⇒3]</span>
+							<span className="tooltiptext">Transitivité</span>
+						</button>
 						<span className="tooltiptext">Transitivité</span>
-					</button>
+					</div>
 				)}
 				{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
 				{mode === "Create" && (
