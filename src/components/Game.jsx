@@ -439,7 +439,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Creat ou pour faire des tests !
+	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
 	 * Fait apparaître le popup qui nous demande la couleur de la carte qu'on veut ajouter.
 	 * @param {number} deckIndice - l'indice du deck où l'on ajoute une carte
 	 */
@@ -451,7 +451,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Creat ou pour faire des tests !
+	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
 	 * Crée une carte avec la couleur sélectionnée (ne ferme pas le popup quand on sélectionne une couleur).
 	 * @param {Event} event - reçoit la couleur cliquée ({@link event.target.value}) ;
 	 *                      - on le met à false si on veut faire plusieurs fois la même couleur ({@link event.target.checked})
@@ -480,7 +480,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Creat ou pour faire des tests !
+	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
 	 * Crée une carte complexe avec les 2 cartes sélectionnées (cette fonction est appelée à la fin de {@link update()} en mode création).
 	 * @param {Event} event - reçoit la liaison cliquée ({@link event.target.value})
 	 */
@@ -551,7 +551,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Creat ou pour faire des tests !
+	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
 	 * Supprime la carte qui est sélectionnée.
 	 */
 	const deleteCard = () => {
@@ -568,6 +568,21 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			// Actualise le jeu et désélectionne tout
 			allFalse(tmp);
 		} else allFalseGame();
+	};
+
+	/**
+	 * Ouvre la popup de confirmation avant de supprimer une carte.
+	 * Si aucune carte n'est sélectionnée, désélectionne simplement tout
+	 * (comme le faisait auparavant deleteCard() dans ce cas).
+	 */
+	const confirmDeleteCard = () => {
+		if (selecCard1 === -1 && selecDeck1 === -1)
+		{
+			allFalseGame();
+			return;
+		}
+
+		setPopupDeleteCard(true);
 	};
 
 	const returnNonCard = (tmp) => {
@@ -2772,7 +2787,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							updateGame={update}
 							indice={index}
 							addCardFunc={addCard}
-							deleteCardFunc={deleteCard}
+							deleteCardFunc={confirmDeleteCard}
 							transformIntoNonCard={transformIntoNonCard}
 							nbDeck={game.length}
 							mode={mode}
@@ -2875,15 +2890,15 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 								{game[selecDeck1][selecCard1].toString()} : [
 								{selecDeck1}][{selecCard1}] ?
 							</b>
-							<br></br>
-							<button onClick={deleteCard}>Oui</button>
-							<button
-								onClick={function () {
-									setPopupDeleteCard(false);
-								}}
-							>
-								Annuler
-							</button>
+							<br />
+							<div className="popupDeleteActions">
+								<button className="btnSecondary" onClick={() => setPopupDeleteCard(false)}>
+									Annuler
+								</button>
+								<button className="btnDanger" onClick={deleteCard}>
+									Supprimer
+								</button>
+							</div>
 						</>
 					}
 				/>

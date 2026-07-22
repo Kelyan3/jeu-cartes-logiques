@@ -125,11 +125,6 @@
 	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
 }
 
-.game .bouton .buttonAction img {
-	height: 35px;
-	width: auto;
-	filter: brightness(0) invert(1) opacity(0.85);
-}
 
 .game .bouton .tooltiptext {
 	visibility: hidden;
@@ -192,6 +187,49 @@
 	border: 1px solid var(--accent-cyan) !important;
 	border-radius: 8px;
 	box-shadow: 0 0 12px rgba(94, 234, 212, 0.5);
+}
+
+.popupDeleteActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 20px;
+}
+
+.btnSecondary {
+	margin-top: 24px;
+	padding: 10px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--accent-cyan);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	transition: background .15s ease, box-shadow .15s ease;
+}
+
+.btnSecondary:hover {
+	background: rgba(94, 234, 212, 0.1);
+	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+}
+
+.btnDanger {
+	margin-top: 24px;
+	padding: 10px;
+	border: 1px solid rgba(248, 113, 113, 0.4);
+	border-radius: 8px;
+	background: transparent;
+	color: #F87171;
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	transition: background .15s ease, box-shadow .15s ease;
+}
+
+.btnDanger:hover {
+	background: rgba(248, 113, 113, 0.1);
+	box-shadow: 0 0 12px rgba(248, 113, 113, 0.2);
 }
 
 .game .toast {
