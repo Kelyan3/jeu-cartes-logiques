@@ -94,51 +94,17 @@ const Deck = ({
 				{mode === "Create" && (
 					<div className="deckToolbar">
 						<button className="deckAction" onClick={addCardToDeck}>
-							<svg viewBox="0 0 24 24" fill="none">
-								<path
-									d="M12 5v14M5 12h14"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-								/>
-							</svg>
+							<p>+</p>
 							<span className="deckTooltip">Ajouter une carte</span>
 						</button>
 
 						<button className="deckAction" onClick={deleteCardToDeck}>
-							<svg viewBox="0 0 24 24" fill="none">
-								<polyline
-									points="3 6 5 6 21 6"
-									stroke="currentColor"
-									strokeWidth="1.6"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-								<path
-									d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-									stroke="currentColor"
-									strokeWidth="1.6"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-								<line
-									x1="10" y1="11" x2="10" y2="17"
-									stroke="currentColor"
-									strokeWidth="1.6"
-									strokeLinecap="round"
-								/>
-								<line
-									x1="15" y1="11" x2="15" y2="17"
-									stroke="currentColor"
-									strokeWidth="1.6"
-									strokeLinecap="round"
-								/>
-							</svg>
+							<p>🗑</p>
 							<span className="deckTooltip">Supprimer une carte</span>
 						</button>
 
 						<button className="deckAction deckActionSymbol" onClick={transformIntoNonCard}>
-							¬
+							<p>¬</p>
 							<span className="deckTooltip">Transformer en carte négative</span>
 						</button>
 					</div>

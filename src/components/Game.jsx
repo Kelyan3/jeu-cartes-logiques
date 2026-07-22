@@ -2418,9 +2418,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				addLineDemonstration([res], [0], 0, true);
 				allFalse(tmp);
 				setSavedGame(tmp);
-			} catch (error) {
-				console.error("Erreur init niveau :", error);
-			}
+			} catch (error) {}
 		}
 		if (mode === "Create") {
 			allFalse([[], []]);

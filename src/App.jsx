@@ -23,8 +23,7 @@ const App = () => {
 	if (!import.meta.env.DEV)
 	{
 		fetch(url_add + "/getDatabase")
-			.then((response) => response.json())
-			.then((data) => console.log(data[0][1]));
+			.then((response) => response.json());
 	}
 
 	return (

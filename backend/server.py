@@ -13,7 +13,7 @@ from progress import *
 
 config = dotenv_values(".env")
 
-app = Flask(__name__, static_folder="./build")
+app = Flask(__name__, static_folder="./dist")
 app.secret_key = config.get("SECRET_KEY", secrets.token_hex(32))
 CORS(app, origins="http://localhost:5173", supports_credentials=True)
 

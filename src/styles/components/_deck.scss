@@ -78,8 +78,8 @@
 
 .deckAction {
 	position: relative;
-	width: 32px;
-	height: 32px;
+	width: 64px;
+	height: 64px;
 	display: flex;
 	align-items: center;
 	background: var(--bg-base);
@@ -89,15 +89,15 @@
 	transition: border-color .15s ease, color .15s ease;
 }
 
-.deckAction svg {
-	width: 16px;
-	height: 16px;
+.deckAction > p {
+	text-align: center;
+	font-size: 32px;
 }
 
 .deckActionSymbol {
 	font-family: 'JetBrains Mono', monospace;
 	font-weight: 600;
-	font-size: 15px;
+	font-size: 32px;
 }
 
 .deckTooltip {
