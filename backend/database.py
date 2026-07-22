@@ -14,11 +14,11 @@ CONN_PARAMS = os.getenv("DATABASE_URL")
 
 # Si ce n'est pas le cas, on la construit bloc par bloc à partir des variables de .env
 if not CONN_PARAMS:
-	user = os.getenv("USER", "postgres")
-	password = os.getenv("PASSWORD", "")
-	host = os.getenv("HOST", "localhost")
-	port = os.getenv("PORT", "5432")
-	database = os.getenv("DATABASE", "cartes_logiques")
+	user = os.getenv("DB_USER", "postgres")
+	password = os.getenv("DB_PASSWORD", "")
+	host = os.getenv("DB_HOST", "localhost")
+	port = os.getenv("DB_PORT", "5432")
+	database = os.getenv("DB_NAME", "cartes_logiques")
 	
 	options = urllib.parse.quote_plus("--search-path=public")
 	CONN_PARAMS = "postgresql://{}:{}@{}:{}/{}?options={}".format(user, password, host, port, database, options)
