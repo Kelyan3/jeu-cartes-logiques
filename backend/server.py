@@ -32,13 +32,14 @@ IS_PRODUCTION = os.environ.get("RENDER") is not None
 app.config["SESSION_COOKIE_SAMESITE"] = "None" if IS_PRODUCTION else "Lax"
 app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
 
+frontend_url = os.environ.get("FRONTEND_URL", "").rstrip("/")
 CORS(
-    app,
-    origins=[
-        "http://localhost:5173",
-        os.environ.get("FRONTEND_URL", ""),
+	app,
+	origins=[
+		"http://localhost:5173",
+		frontend_url,
 	],
-    supports_credentials=True,
+	supports_credentials=True,
 )
 
 login_manager = LoginManager(app)
