@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "predev": "node scripts/generate-manifest.js",
+    "prebuild": "node scripts/generate-manifest.js",
     "generate-manifest": "node scripts/generate-manifest.js",
     "lint": "eslint .",
     "preview": "vite preview"

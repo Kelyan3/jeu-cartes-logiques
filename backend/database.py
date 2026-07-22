@@ -1,16 +1,27 @@
 import os
 import urllib.parse
-
-from dotenv import dotenv_values
 import psycopg
+from dotenv import load_dotenv
 
-os.chdir(os.path.dirname(__file__))
+# Charge les variables définies dans le fichier .env
+load_dotenv()
 
-config = dotenv_values(".env")
+# Chemin absolu vers data.sql
+FILENAME_DB_SCHEMA = os.path.join(os.path.dirname(__file__), "data.sql")
 
-FILENAME_DB_SCHEMA = "data.sql"
-options = urllib.parse.quote_plus("--search-path=public")
-CONN_PARAMS = f"postgresql://{config['USER']}:{config['PASSWORD']}@{config['HOST']}:{config['PORT']}/{config['DATABASE']}?options={options}"
+# On vérifie si une URL de connexion globale est définie.
+CONN_PARAMS = os.getenv("DATABASE_URL")
+
+# Si ce n'est pas le cas, on la construit bloc par bloc à partir des variables de .env
+if not CONN_PARAMS:
+	user = os.getenv("USER", "postgres")
+	password = os.getenv("PASSWORD", "")
+	host = os.getenv("HOST", "localhost")
+	port = os.getenv("PORT", "5432")
+	database = os.getenv("DATABASE", "cartes_logiques")
+	
+	options = urllib.parse.quote_plus("--search-path=public")
+	CONN_PARAMS = "postgresql://{}:{}@{}:{}/{}?options={}".format(user, password, host, port, database, options)
 
 
 def reset_table():

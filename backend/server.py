@@ -1,20 +1,32 @@
 import os
 import secrets
+import logging
 
 from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from dotenv import dotenv_values
+from dotenv import load_dotenv
 
 from database import get_database
 from auth import *
 from progress import *
 
-
-config = dotenv_values(".env")
+# Charge les variables définies dans le fichier .env
+load_dotenv()
 
 app = Flask(__name__, static_folder="./dist")
-app.secret_key = config.get("SECRET_KEY", secrets.token_hex(32))
+
+secret_key = os.getenv("SECRET_KEY")
+if not secret_key:
+	print(
+		"ATTENTION! Aucune SECRET_KEY définie dans le fichier .env. "
+		"Une clé temporaire sera utilisée et changera à chaque redémarrage "
+		"du serveur, et par conséquent, tous les utilisateurs seront déconnectés. "
+		"N'oubliez pas d'ajouter \"SECRET_KEY=<key>\" dans votre fichier .env."
+	)
+	secret_key = secrets.token_hex(32)
+
+app.secret_key = secret_key
 CORS(app, origins="http://localhost:5173", supports_credentials=True)
 
 login_manager = LoginManager(app)
@@ -118,8 +130,8 @@ def progress_post():
 @app.route("/api/progress", methods=["DELETE"])
 @login_required
 def progress_delete():
-    reset_progress(current_user.id)
-    return jsonify({"ok": True})
+	reset_progress(current_user.id)
+	return jsonify({"ok": True})
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=80)
