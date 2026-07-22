@@ -1,43 +1,17 @@
 .game {
-	grid-area: m;
 	position: relative;
 	padding: 90px 5% 40px 5%;
-	display: grid;
-	grid-template-columns: 20% 30% 30% 20%;
-	grid-template-areas:
-		"b b b b"
-		"t t t t"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"start other1 other2 goal"
-		"d d d d";
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	width: 100%;
+}
+
+.game .deckRow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	width: 100%;
 }
 
 .game .buttonWin {
@@ -64,7 +38,6 @@
 }
 
 .game .bouton {
-	grid-area: b;
 	align-items: center;
 	margin: auto;
 	position: sticky;
@@ -290,7 +263,6 @@
 }
 
 .game .demonstration {
-	grid-area: d;
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;

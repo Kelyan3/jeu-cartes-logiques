@@ -2343,6 +2343,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		str = str.replaceAll("non", " ¬ ");
 		str = str.replaceAll("<=>", " ⇔ ");
 		str = str.replaceAll("=>", " ⇒ ");
+		str = str.replaceAll("∨", " ∨ ");
 		return str;
 	};
 
@@ -2766,24 +2767,26 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				<div className="toast toastError">{messageErreur}</div>
 			)}
 			<GameTab.Provider value={game}>
-				{/* Ajout des decks */}
-				{game.map((deck, index) => (
-					<Deck
-						updateGame={update}
-						indice={index}
-						addCardFunc={addCard}
-						deleteCardFunc={deleteCard}
-						transformIntoNonCard={transformIntoNonCard}
-						nbDeck={game.length}
-						mode={mode}
-						objectif={tabObjectif}
-						cardHelp={cardHelp}
-						cardHelp2={cardHelp2}
-						isWin={win}
-						affichageSimple={affichageSimple}
-						key={index}
-					></Deck>
-				))}
+				<div className="deckRow">
+					{/* Ajout des decks */}
+					{game.map((deck, index) => (
+						<Deck
+							updateGame={update}
+							indice={index}
+							addCardFunc={addCard}
+							deleteCardFunc={deleteCard}
+							transformIntoNonCard={transformIntoNonCard}
+							nbDeck={game.length}
+							mode={mode}
+							objectif={tabObjectif}
+							cardHelp={cardHelp}
+							cardHelp2={cardHelp2}
+							isWin={win}
+							affichageSimple={affichageSimple}
+							key={index}
+						></Deck>
+					))}
+				</div>
 			</GameTab.Provider>
 			{/* Affichage de la démonstration de logique mathématique de l'exercice */}
 			<div className="demonstration" onCopy={copyHandler}>

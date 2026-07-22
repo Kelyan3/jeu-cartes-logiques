@@ -26,7 +26,7 @@
 .deck h3 {
 	color: var(--text-primary);
 	text-align: center;
-	margin-bottom: 10%;
+	margin-bottom: 10px;
 	padding: 14px 0;
 	border-bottom: 1px solid var(--border-subtle);
 	font-size: 16px;
@@ -56,28 +56,17 @@
 	color: var(--accent-cyan);
 }
 
-.start {
-	grid-area: start;
+.start, .other1, .other2, .goal {
+	flex: 1 1 0;
+	min-width: 200px;
 }
 
 .start .deck {
 	border-color: var(--accent-cyan);
 }
 
-.goal {
-	grid-area: goal;
-}
-
 .goal .deck {
 	border-color: var(--accent-amber);
-}
-
-.other1 {
-	grid-area: other1;
-}
-
-.other2 {
-	grid-area: other2;
 }
 
 .deckToolbar {
