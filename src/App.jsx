@@ -16,16 +16,6 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 
 const App = () => {
-	let url_add = "";
-	if (import.meta.env.DEV)
-		url_add = "http://localhost:80";
-
-	if (!import.meta.env.DEV)
-	{
-		fetch(url_add + "/getDatabase")
-			.then((response) => response.json());
-	}
-
 	return (
 		<ThemeProvider>
 			<AuthProvider>
