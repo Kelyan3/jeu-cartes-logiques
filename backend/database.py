@@ -19,9 +19,8 @@ if not CONN_PARAMS:
 	host = os.getenv("DB_HOST", "localhost")
 	port = os.getenv("DB_PORT", "5432")
 	database = os.getenv("DB_NAME", "cartes_logiques")
-	
 	options = urllib.parse.quote_plus("--search_path=public")
-	CONN_PARAMS = "postgresql://{}:{}@{}:{}/{}?options={}".format(user, password, host, port, database, options)
+	CONN_PARAMS = "postgresql://{}:{}@{}:{}/{}?sslmode=require&options={}".format(user, password, host, port, database, options)
 
 
 def reset_table():
