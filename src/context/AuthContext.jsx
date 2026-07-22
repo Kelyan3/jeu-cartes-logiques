@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { API_BASE_URL as API } from "../config/api";
 
 const AuthContext = createContext(null)
-const API = import.meta.env.DEV ? "http://localhost:80" : "";
 
 
 export const AuthProvider = ({ children }) => {

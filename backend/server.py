@@ -27,7 +27,19 @@ if not secret_key:
 	secret_key = secrets.token_hex(32)
 
 app.secret_key = secret_key
-CORS(app, origins="http://localhost:5173", supports_credentials=True)
+
+IS_PRODUCTION = os.environ.get("RENDER") is not None
+app.config["SESSION_COOKIE_SAMESITE"] = "None" if IS_PRODUCTION else "Lax"
+app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
+
+CORS(
+    app,
+    origins=[
+        "http://localhost:5173",
+        os.environ.get("FRONTEND_URL", ""),
+	],
+    supports_credentials=True,
+)
 
 login_manager = LoginManager(app)
 

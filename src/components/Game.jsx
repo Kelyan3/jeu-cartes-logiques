@@ -8,6 +8,7 @@ export const GameTab = React.createContext();
 import Latex from "./Latex";
 
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL as API } from "../config/api";
 
 
 const Game = ({ mode, ex, numero, nbExo }) => {
@@ -1741,7 +1742,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (!user || mode === "Create")
 			return;
 
-		const API = import.meta.env.DEV ? "http://localhost:80" : "";
 		fetch(`${API}/api/progress`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },

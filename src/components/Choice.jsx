@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL as API } from "../config/api";
 
 const Choice = ({ mode }) => {
 	/**
@@ -29,8 +30,6 @@ const Choice = ({ mode }) => {
 	const navigate = useNavigate();
 	const { user } = useAuth();
 	const [completedLevels, setCompletedLevels] = useState([]);
-
-	const API = import.meta.env.DEV ? "http://localhost:80" : "";
 
 	/**
 	 * Charge le nombre réel de niveaux depuis le manifeste généré,

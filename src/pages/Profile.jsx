@@ -4,6 +4,8 @@ import Navigation from "../components/Navigation";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 
+import { API_BASE_URL as API } from "../config/api";
+
 const Profile = () => {
 	const { user } = useAuth();
 	const { theme, toggleTheme } = useTheme();
