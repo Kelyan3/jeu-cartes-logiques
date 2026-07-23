@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 
 const App = () => {
 	return (
@@ -31,6 +32,7 @@ const App = () => {
 						<Route path="/Login" exact element={<Login />} />
 						<Route path="/Register" exact element={<Register />} />
 						<Route path="/Profile" exact element={<Profile />} />
+						<Route path="/Settings" exact element={<Settings />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</BrowserRouter>

@@ -15,6 +15,7 @@ const Navigation = () => {
 					<div>Menu</div>
 					<ul>
 						<li><NavLink to="/" end>Accueil</NavLink></li>
+						<li><NavLink to="/Settings">Paramètres</NavLink></li>
 						<li><NavLink to="/Tutorials">Tutoriel</NavLink></li>
 						<li><NavLink to="/Levels">Choisir un niveau</NavLink></li>
 						<li><NavLink to="/Exercise/Create">Créer un niveau</NavLink></li>
