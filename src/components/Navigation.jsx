@@ -19,6 +19,7 @@ const Navigation = () => {
 						<li><NavLink to="/Tutorials">Tutoriel</NavLink></li>
 						<li><NavLink to="/Levels">Choisir un niveau</NavLink></li>
 						<li><NavLink to="/Exercise/Create">Créer un niveau</NavLink></li>
+						<li><NavLink to="/Leaderboard">Classement</NavLink></li>
 						<li><NavLink to="/About">À propos</NavLink></li>
 						<li><NavLink to="/Forms">Votre avis</NavLink></li>
 					</ul>

@@ -50,3 +50,27 @@ def reset_progress(user_id):
 		with conn.cursor() as cur:
 			cur.execute("DELETE FROM user_progress WHERE user_id = %s", (user_id,),)
 			conn.commit()
+
+def get_leaderboard():
+	"""
+	Récupère, pour chaque utilisateur, son nombre de niveaux "Play" complétés.
+	Les tutoriels ne sont pas comptabilisés (cohérent avec la page Profil).
+	"""
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			cur.execute(
+				"""
+				SELECT u.username, COUNT(p.id) AS completed
+	   			FROM users u
+				LEFT JOIN user_progress p ON p.user_id = u.id
+				AND p.mode = 'Play'
+				AND p.completed = TRUE
+				GROUP BY u.username
+				ORDER BY completed DESC, u.username ASC
+	  			"""
+			)
+			rows = cur.fetchall()
+			return [
+				{"username": username, "completed": completed}
+				for username, completed in rows
+			]

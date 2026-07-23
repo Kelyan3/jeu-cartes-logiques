@@ -15,6 +15,7 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Leaderboard from "./pages/Leaderboard";
 
 const App = () => {
 	return (
@@ -33,6 +34,7 @@ const App = () => {
 						<Route path="/Register" exact element={<Register />} />
 						<Route path="/Profile" exact element={<Profile />} />
 						<Route path="/Settings" exact element={<Settings />} />
+						<Route path="/Leaderboard" exact element={<Leaderboard />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</BrowserRouter>

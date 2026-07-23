@@ -46,3 +46,55 @@
 	color: var(--text-primary);
 	font-weight: 600;
 }
+
+.leaderboardCard {
+	width: min(720px, 92vw);
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 40px 48px;
+	margin-top: 24px;
+	text-align: center;
+}
+
+.leaderboardTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 24px;
+	text-align: left;
+}
+
+.leaderboardTable th {
+	font-family: 'Sora', sans-serif;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+	padding-bottom: 12px;
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+.leaderboardTable td {
+	padding: 14px 0;
+	border-bottom: 1px solid var(--border-subtle);
+	color: var(--text-primary);
+	font-size: 14px;
+}
+
+.leaderboardTable tr:last-child td {
+	border-bottom: none;
+}
+
+.leaderboardProgress {
+	display: inline-block;
+	width: 120px;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+.leaderboardPercent {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 12px;
+	color: var(--accent-amber);
+	vertical-align: middle;
+}

@@ -146,5 +146,11 @@ def progress_delete():
 	reset_progress(current_user.id)
 	return jsonify({"ok": True})
 
+
+@app.route("/api/leaderboard", methods=["GET"])
+def leaderboard():
+	return jsonify(get_leaderboard())
+
+
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=80)
