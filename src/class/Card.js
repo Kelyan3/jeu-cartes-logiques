@@ -45,7 +45,7 @@ export default class Card {
 			case "purple": return "Mauve";
 			case "black": return "Vrai";
 			case "white": return "Faux";
-			default: "Non définie";
+			default: return "Non définie";
 		}
 	};
 
