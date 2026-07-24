@@ -11,106 +11,17 @@ import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL as API } from "../config/api";
 
 
+/**
+ * Carte qui n'existera jamais dans un deck (constante, ne change jamais).
+ */
+const cardError = new Card(-1, "error", false, null, null, null, false, false);
+
+
 const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
 
-	/**
-	 *
-	 * @param {number} indexDeck
-	 * @param {number} indexCard
-	 */
-	const changeHover = (indexDeck, indexCard) => {
-		const tmp = [...game];
-		tmp[currentCardArrow[0]][currentCardArrow[1]].hover = false;
-		tmp[indexDeck][indexCard].hover = true;
-		setGame(tmp);
-		setcurrentCardArrow([indexDeck, indexCard]);
-	};
-
-	const [currentCardArrow, setcurrentCardArrow] = useState(undefined);
-
-	document.onkeydown = (event) => {
-		if (event.code.toLowerCase().includes("arrow")) {
-			event.preventDefault();
-			if (currentCardArrow === undefined) {
-				const tmp = [...game];
-				tmp[0][0].hover = true;
-				setGame(tmp);
-				setcurrentCardArrow([0, 0]);
-			} else if (event.code.toLowerCase().includes("down")) {
-				const futurHover = Math.min(
-					currentCardArrow[1] + 1,
-					game[currentCardArrow[0]].length - 1
-				);
-				changeHover(currentCardArrow[0], futurHover);
-			} else if (event.code.toLowerCase().includes("up")) {
-				const futurHover = Math.max(currentCardArrow[1] - 1, 0);
-				changeHover(currentCardArrow[0], futurHover);
-			} else if (event.code.toLowerCase().includes("left")) {
-				const futurHover = Math.max(currentCardArrow[0] - 1, 0);
-				changeHover(
-					futurHover,
-					Math.min(currentCardArrow[1], game[futurHover].length - 1)
-				);
-			} else if (event.code.toLowerCase().includes("right")) {
-				const futurHover = Math.min(
-					currentCardArrow[0] + 1,
-					game.length - 1
-				);
-				changeHover(
-					futurHover,
-					Math.min(currentCardArrow[1], game[futurHover].length - 1)
-				);
-			}
-		} else if (
-			currentCardArrow !== undefined &&
-			event.code.toLowerCase().includes("space")
-		) {
-			event.preventDefault();
-			update(currentCardArrow[0], currentCardArrow[1]);
-		}
-		switch (event.code) {
-			case "KeyQ":
-				addCardAnd();
-				break;
-			case "KeyW":
-				addCardFuse();
-				break;
-			case "KeyE":
-				fuseCardAnd();
-				break;
-			case "KeyR":
-				addObjectif();
-				break;
-			case "KeyT":
-				retourEnArriere();
-				break;
-			case "Escape":
-				const tmp = [...game];
-				tmp[currentCardArrow[0]][currentCardArrow[1]].hover = false;
-				setGame(tmp);
-				setcurrentCardArrow(undefined);
-				break;
-			default:
-				break;
-		}
-	};
-
-	/** Carte qui n'existera jamais dans un deck */
-	let cardError = new Card(
-		-1,
-		"error",
-		false,
-		null,
-		null,
-		null,
-		false,
-		false
-	);
-
-	const [openFileJson, setOpenFileJson] = useState("");
-
-	/** Tableau où sont réunies toutes les cartes & decks.
+	/** 
+	 *  Tableau où sont réunies toutes les cartes & decks.
 	 *  Il est disposé de cette manière :
 	 *  ┌─────────────┬────────────────────┬───────────────┐
 	 *  │ Deck départ │ Deck sous-objectif │ Deck objectif │
@@ -128,6 +39,118 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 *  - game[n-1][0] = objectif principal
 	 */
 	const [game, setGame] = useState([[]]);
+
+	/**
+	 *
+	 * @param {number} indexDeck
+	 * @param {number} indexCard
+	 */
+	const changeHover = (indexDeck, indexCard) => {
+		const tmp = [...game];
+		tmp[currentCardArrow[0]][currentCardArrow[1]].hover = false;
+		tmp[indexDeck][indexCard].hover = true;
+		setGame(tmp);
+		setcurrentCardArrow([indexDeck, indexCard]);
+	};
+
+	const [currentCardArrow, setcurrentCardArrow] = useState(undefined);
+
+	/**
+	 * Attribue un identifiant stable à chaque tableau "deck", pour que React
+	 * ne confonde pas deux colonnes différentes quand une colonne est supprimée
+	 * du milieu du plateau (ex: résolution d'un objectif secondaire).
+	 */
+	const deckKeysRef = React.useRef(new WeakMap());
+	const deckIdCounterRef = React.useRef(0);
+
+	const getDeckKey = (deck) => {
+		if (!deckKeysRef.current.has(deck)) {
+			deckIdCounterRef.current += 1;
+			deckKeysRef.current.set(deck, "deck-" + deckIdCounterRef.current);
+		}
+		return deckKeysRef.current.get(deck);
+	}
+
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+			if (event.code.toLowerCase().includes("arrow")) {
+				event.preventDefault();
+				const isCurrentPositionInvalid =
+					currentCardArrow === undefined ||
+					currentCardArrow[0] >= game.length ||
+					currentCardArrow[1] >= game[currentCardArrow[0]].length;
+				if (isCurrentPositionInvalid) {
+					const tmp = [...game];
+					tmp[0][0].hover = true;
+					setGame(tmp);
+					setcurrentCardArrow([0, 0]);
+				} else if (event.code.toLowerCase().includes("down")) {
+					const futurHover = Math.min(
+						currentCardArrow[1] + 1,
+						game[currentCardArrow[0]].length - 1
+					);
+					changeHover(currentCardArrow[0], futurHover);
+				} else if (event.code.toLowerCase().includes("up")) {
+					const futurHover = Math.max(currentCardArrow[1] - 1, 0);
+					changeHover(currentCardArrow[0], futurHover);
+				} else if (event.code.toLowerCase().includes("left")) {
+					const futurHover = Math.max(currentCardArrow[0] - 1, 0);
+					changeHover(
+						futurHover,
+						Math.min(currentCardArrow[1], game[futurHover].length - 1)
+					);
+				} else if (event.code.toLowerCase().includes("right")) {
+					const futurHover = Math.min(
+						currentCardArrow[0] + 1,
+						game.length - 1
+					);
+					changeHover(
+						futurHover,
+						Math.min(currentCardArrow[1], game[futurHover].length - 1)
+					);
+				}
+			} else if (
+				currentCardArrow !== undefined &&
+				event.code.toLowerCase().includes("space")
+			) {
+				event.preventDefault();
+				update(currentCardArrow[0], currentCardArrow[1]);
+			}
+			switch (event.key.toLowerCase()) {
+				case "q":
+					addCardAnd();
+					break;
+				case "w":
+					addCardFuse();
+					break;
+				case "e":
+					fuseCardAnd();
+					break;
+				case "r":
+					addObjectif();
+					break;
+				case "t":
+					retourEnArriere();
+					break;
+				case "escape":
+					if (currentCardArrow !== undefined) {
+						const tmp = [...game];
+						tmp[currentCardArrow[0]][currentCardArrow[1]].hover = false;
+						setGame(tmp);
+						setcurrentCardArrow(undefined);
+					}
+					break;
+				default:
+					break;
+			}
+		};
+
+		document.addEventListener("keydown", handleKeyDown);
+
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [game, currentCardArrow]);
+
+	const [openFileJson, setOpenFileJson] = useState("");
 
 	// Le nombre de cartes sélectionnées
 	const [nbSelec, setNbSelec] = useState(0);
@@ -279,8 +302,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			// N'affiche plus les deux cartes d'aide
 			setCardHelp(cardError);
 			setCardHelp2(cardError);
-			// Copie du jeu dans tmp
-			let tmp = [...game],
+
+			/**
+			 * Copie du jeu dans tmp (copie aussi le deck concerné, pas seulement
+			 * le tableau extérieur, pour ne pas modifier `game` avant setGame())
+			 */
+			let tmp = game.map((d, di) => (di === i ? [...d] : d)),
 				// La carte sur laquelle on a cliqué
 				currentCard = tmp[i][j],
 				// Copie du nombre de carte sélectionnée
@@ -686,6 +713,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		}
 		link.href = url;
 		link.click();
+		URL.revokeObjectURL(url);
 	};
 
 	/**
@@ -1051,10 +1079,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			return;
 		}
 		// Ajoute si les 2 cartes à séparer n'existent pas déjà dans le deck
-		if (
-			containCard(game, deckI, game[deckI][cardI].left) ||
-			containCard(game, deckI, game[deckI][cardI].left)
-		) {
+		if (containCard(game, deckI, game[deckI][cardI].left) ||
+			containCard(game, deckI, game[deckI][cardI].right))
+		{
 			error("Les cartes que vous voulez ajouter existe déjà !");
 			return;
 		}
@@ -1303,10 +1330,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				let deckI = Math.max(selecDeck1, selecDeck2),
 					cardI = Math.max(selecCard1, selecCard2);
 				// Si le 1er sous-objectif choisi n'est pas l'objectif principal
-				if (
-					true ||
-					!(game.length === 2 && (cardI !== 0 || deckI === 0))
-				) {
+				if (!(game.length === 2 && (cardI !== 0 || deckI === 0))) {
 					// Si le sous-objectif n'existe pas déjà
 					if (!deckContain(deckI, cardI)) {
 						// Si la carte choisie pour créer le sous-objectif a une liaison principal =>
@@ -1489,7 +1513,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 *
 	 * @returns
 	 */
-	const tiersExlus = () => {
+	const tiersExclus = () => {
 		if (navigation || win) return;
 		// S'il n'y a qu'une carte de sélectionné
 		if (
@@ -2173,7 +2197,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {Card} cardTest - la carte que l'on cherche
 	 * @returns {true|false} true ou false
 	 */
-	const cardExist = (cardTest) => {
+	const cardExists = (cardTest) => {
 		// Variable que l'on va retourner (false par défaut)
 		let bool = false;
 		// Parcourt le jeu
@@ -2254,8 +2278,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		 *  et qu'elle existe.
 		 */
 		bool =
-			(cardExist(card1) || card2.link === "et") &&
-			cardExist(card2) &&
+			(cardExists(card1) || card2.link === "et") &&
+			cardExists(card2) &&
 			affiche[1][0] < game.length - 1;
 		// Vérifie si un objectif avec une liaison "=>" a eu son deck de créé
 		if (objectif.link === "=>" && game.length === tabObjectif.length + 1) {
@@ -2719,7 +2743,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				)}
 				{mode !== "Create" && (
 					<div>
-						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExlus}>
+						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExclus}>
 							<span className="buttonFormula">¬¬[1] → [1]</span>
 							<span className="tooltiptext">Tiers Exclus</span>
 						</button>
@@ -2796,7 +2820,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							cardHelp2={cardHelp2}
 							isWin={win}
 							affichageSimple={affichageSimple}
-							key={index}
+							key={getDeckKey(deck)}
 						></Deck>
 					))}
 				</div>
@@ -2811,10 +2835,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							onClick={demonstrationClickHandler}
 							style={
 								index === 1
-									? {
-											marginLeft: 20 + element[0] * 20,
-											marginTop: 20,
-									  }
+									? {marginLeft: 20 + element[0] * 20, marginTop: 20, }
 									: { marginLeft: 20 + element[0] * 20 }
 							}
 						>
