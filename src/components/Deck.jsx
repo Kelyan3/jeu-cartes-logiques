@@ -11,8 +11,6 @@ const Deck = ({
 	nbDeck,
 	mode,
 	objectif,
-	cardHelp,
-	cardHelp2,
 	isWin,
 	affichageSimple,
 	suppr,
@@ -124,8 +122,6 @@ const Deck = ({
 									deckIndice={indice}
 									cardIndice={index}
 									update={update}
-									cardHelp={cardHelp}
-									cardHelp2={cardHelp2}
 									isWin={isWin}
 									affichageSimple={affichageSimple}
 								/>

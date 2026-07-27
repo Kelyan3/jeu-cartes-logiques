@@ -6,8 +6,6 @@ const Card = ({
 	deckIndice,
 	cardIndice,
 	update,
-	cardHelp,
-	cardHelp2,
 	isWin,
 	affichageSimple,
 }) => {
@@ -43,11 +41,10 @@ const Card = ({
 	 * @param {Card} currentCard - La carte sur laquelle on est actuellement
 	 * @param {number} count
 	 * @param {true|false} selec - true si la carte est sélectionnée, sinon false
-	 * @param {true|false} help
 	 * @param {number} originalCount
 	 * @returns {JSX.Element}
 	 */
-	const recursiveRender = (currentCard, count, selec, help, originalCount) => {
+	const recursiveRender = (currentCard, count, selec, originalCount) => {
 		recursiveRender.count++;
 		if (currentCard.color !== null)
 		{
@@ -58,7 +55,7 @@ const Card = ({
 			return (
 				<span
 					key={recursiveRender.count}
-					className={`card_simple ` + (selec && currentCard.color !== "transparent" ? "selectionner " : "") + (help ? "help " : "")}
+					className={`card_simple ` + (selec && currentCard.color !== "transparent" ? "selectionner " : "")}
 					style={style}
 				></span>
 			);
@@ -83,11 +80,11 @@ const Card = ({
 		return (
 			<span className={className} key={recursiveRender.count}>
 				{[
-					recursiveRender(currentCard.left, count - 1, selec, help, originalCount),
+					recursiveRender(currentCard.left, count - 1, selec, originalCount),
 					<span key={recursiveRender.count + "link"} className={`link ${link}`}>
 						<Latex>{afficheLink(currentCard.link)}</Latex>
 					</span>,
-					recursiveRender(currentCard.right, count - 1, selec, help, originalCount),
+					recursiveRender(currentCard.right, count - 1, selec, originalCount),
 				]}
 			</span>
 		);
@@ -102,7 +99,6 @@ const Card = ({
 	function RenderCard(props) {
 		let currentCard = props.currentCard;
 		let selec = props.selec;
-		let help = props.help
 
 		if (currentCard === undefined)
 			return <span></span>;
@@ -113,7 +109,7 @@ const Card = ({
 		const profondeurCard = currentCard.getProfondeur();
 		recursiveRender.count = 0;
 
-		return recursiveRender(currentCard, profondeurCard, selec, help, profondeurCard);
+		return recursiveRender(currentCard, profondeurCard, selec, profondeurCard);
 	}
 
 	/**
@@ -167,10 +163,6 @@ const Card = ({
 						<RenderCard
 							currentCard={game[deckIndice][cardIndice]}
 							selec={game[deckIndice][cardIndice].active}
-							help={
-								(cardHelp[0] === deckIndice && cardHelp[1] === cardIndice) ||
-								(cardHelp2[0] === deckIndice && cardHelp2[1] === cardIndice)
-							}
 						></RenderCard>
 					</div>
 				);

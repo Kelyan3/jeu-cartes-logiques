@@ -1560,68 +1560,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		}
 	};
 
-	/**
-	 * Exactement la même fonction que {@link fuseCardAnd()} sauf que la carte créée a une liaison "=>".
-	 */
-	const fuseCardFuse = () => {
-		// Si 2 cartes sont sélectionnées
-		if (
-			selecCard1 !== -1 &&
-			selecCard2 !== -1 &&
-			selecDeck1 !== -1 &&
-			selecDeck2 !== -1
-		) {
-			// Copie du jeu actuel
-			let tmp = [...game],
-				/** Vérifie si la 1ère carte sélectionnée est une carte composé au maximum de 2 cartes.
-				 *  Le jeu ne prend pas en compte les cartes composées de plus de 4 cartes.
-				 */
-				bool = tmp[selecDeck1][selecCard1].isSimpleOrDouble();
-			/** Vérifie si la 2ème carte sélectionnée est une carte composé au maximum de 2 cartes.
-			 *  Le jeu ne prend pas en compte les cartes composées de plus de 4 cartes.
-			 */
-			if (bool && tmp[selecDeck2][selecCard2].isSimpleOrDouble()) {
-				// Sauvegarde du jeu actuel
-				saveGame();
-				// Prend le deck le plus haut
-				let finalDeck = Math.max(selecDeck1, selecDeck2),
-					// Copie les 2 cartes sélectionnées
-					tmpCard1 = tmp[selecDeck1][selecCard1].copy(),
-					tmpCard2 = tmp[selecDeck2][selecCard2].copy();
-				tmpCard1.id = 0;
-				tmpCard2.id = 1;
-				// Ajoute la nouvelle carte dans le deck le plus haut avec les 2 autres cartes & une liaison "=>"
-				let cardToAdd = new Card(
-					tmp[finalDeck].length,
-					null,
-					false,
-					"=>",
-					tmpCard1,
-					tmpCard2,
-					true,
-					false
-				);
-				addToGame(tmp, finalDeck, cardToAdd);
-				// Met à jour le jeu & désélectionne toutes les cartes
-				allFalse(tmp);
-				setSavedGame(tmp);
-				// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
-				isWin();
-			} else {
-				if (bool)
-					error(
-						"On ne peut unir que des cartes simples et doubles, ce qui n'est pas le cas de cette carte : " +
-							tmp[selecDeck2][selecCard2].toString()
-					);
-				else
-					error(
-						"On ne peut unir que des cartes simples et doubles, ce qui n'est pas le cas de cette carte : " +
-							tmp[selecDeck1][selecCard1].toString()
-					);
-			}
-		} else error("Vous devez sélectionner deux cartes !");
-	};
-
 	const constructDemonstration = (tab) => {
 		let res = "";
 		tab.forEach((element) => {
@@ -1730,22 +1668,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Appellée avec le sélecteur, reçoit le numéro puis redirige le site vers l'exercice correspondant.
-	 * @param {Event} event - le sélecteur (le numéro est dans {@link event.target.value})
-	 */
-	/* const changeExercise = (event) => {
-		// Numéro de l'exercice demandée
-		let value = event.target.value;
-		// Si le sélecteur n'est pas sur "Choisir un exercice"
-		if (value !== "") {
-		  // Création de l'url
-		  let url = "/Exercise" + mode + value;
-		  // Redirection vers l'exercice voulu
-		  navigate(url);
-		}
- 	} */
-
-	/**
 	 * Redirige vers le prochain exercice si il existe.
 	 */
 	const nextExercise = () => {
@@ -1803,30 +1725,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Teste une carte pour voir si on peut avoir la carte objectif en utilisant la liaision "=>".
-	 * @param {Card}         card - la carte que l'on teste
-	 * @param {Card} cardObjectif - la carte que l'on veut obtenir
-	 * @returns {true|false} true ou false
-	 */
-	const isObtainableImplique = (card, cardObjectif) => {
-		// Variable que l'on va retourner (false par défaut)
-		let bool = false;
-		// Si la carte que l'on teste a une liaison
-		if (card.color === null) {
-			/** Si la carte a une liaison "=>" & que la partie droite de cette carte est égale à la carte
-			 *  objectif ou si avec la partie droite de la carte on peut avoir l'objectif, on retourne true.
-			 */
-			if (
-				(card.link === "=>" && card.right.equals(cardObjectif)) ||
-				isObtainableImplique(card.right, cardObjectif) ||
-				isObtainableEt(card.right, cardObjectif)
-			)
-				bool = true;
-		}
-		return bool;
-	};
-
-	/**
 	 * Parcourt le deck passé en paramètre (tmp[deckId]) et regarde s'il existe une carte qui est égale à la
 	 * carte passée en paramètre.
 	 *    Si oui renvoie true.
@@ -1867,262 +1765,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Cherche de manière récursive un objectif : elle cherche à trouver un moyen de créer cardTest avec une
-	 * autre carte, s'il y a un moyen elle va chercher à créer cette autre carte jusqu'à tomber sur une carte
-	 * simple existante.
-	 * @param {Card[][]} tmp - tableau du jeu temporaire
-	 * @param {Card}          cardTest - la dernière carte trouvée pour aller à l'objectif
-	 * @param {number}          deckId - indice du deck de la dernière carte trouvée pour aller à l'objectif
-	 * @param {number}    deckObjectif - numéro de l'objectif
-	 * @param {Card[]}     chemin - le chemin de cartes actuel
-	 * @returns {Card[]} le chemin
-	 */
-	const recursiveSoluce = (tmp, cardTest, deckId, deckObjectif, chemin) => {
-		/** L'indice 1 de chemin est false par défaut : il n'a pas trouvé une carte permettant de créer la carte
-		 *  {@link cardTest}. On est au début donc il ne sait pour l'instant pas comment la créer.
-		 */
-		chemin[1] = false;
-		// Variable temporaire pour le chemin
-		let tmpChemin,
-			// Comme on effecture la boucle à l'envers, cette variable est le véritable index des cartes de la boucle
-			deckIndex = 0;
-		/** Vérifie si la carte que l'on cherche a une liaison "et" et qu'elle n'existe pas dans le numéro du
-		 *  deck qui correspond à l'objectif.
-		 */
-		if (
-			cardTest.link === "et" &&
-			!containCard(tmp, deckObjectif, cardTest)
-		) {
-			if (containCard(tmp, deckId, cardTest)) {
-				// Ajoute la carte test dans le chemin
-				chemin[0].push([deckId, tabObjectif[deckObjectif][1]]);
-			}
-			// Cherche la partie gauche de la carte "et"
-			tmpChemin = [
-				...recursiveSoluce(
-					tmp,
-					cardTest.left,
-					deckIndex,
-					deckObjectif,
-					chemin
-				),
-			];
-			// Copie le résultat dans le tableau chemin
-			chemin = [...tmpChemin];
-			// S'il a trouvé une solution pour la partie gauche
-			if (chemin[1]) {
-				// Copie le tableau
-				tmp = copyGame();
-				// Cherche la partie droite de la carte "et"
-				tmpChemin = [
-					...recursiveSoluce(
-						tmp,
-						cardTest.right,
-						deckIndex,
-						deckObjectif,
-						chemin
-					),
-				];
-				// Copie de tmpChemin dans chemin
-				chemin = [...tmpChemin];
-			}
-		}
-		/** Si aucune solution n'a été trouvé jusque-là et que la carte que l'on cherche est l'objectif
-		 *  et qu'elle a une liaison "=>"
-		 */
-		if (!chemin[1] && deckId === tmp.length - 1 && cardTest.link === "=>") {
-			// Ajoute un deck avant l'objectif
-			tmp.splice(tmp.length - 1, 0, []);
-			// Copie la partie gauche de l'objectif dans le deck qui vient d'être créé
-			tmp[tmp.length - 2].push(cardTest.left.copy());
-			// Copie la partie droite de l'objectif dans le deck objectif
-			tmp[tmp.length - 1].push(cardTest.right.copy());
-			// Ajoute le second objectif dans le chemin
-			chemin[0].push([tmp.length - 1, tmp[tmp.length - 1].length - 1]);
-			// Cherche à valider ce second objectif
-			tmpChemin = [
-				...recursiveSoluce(
-					tmp,
-					tmp[tmp.length - 1][tmp[tmp.length - 1].length - 1],
-					tmp.length - 1,
-					deckObjectif + 1,
-					chemin
-				),
-			];
-			// Copie le résultat dans le tableau chemin
-			chemin = [...tmpChemin];
-			// Si le second objectif est résolu
-			if (chemin[1]) {
-				// Rajoute ce que l'on cherche dans le deck qui a le numéro de l'objectif
-				tmp[deckObjectif].push(cardTest.copy());
-			}
-		}
-		// Si aucune solution n'a été trouvé jusque-là
-		if (!chemin[1]) {
-			// Parcourt tous les decks en commençant par la fin
-			tmp.slice()
-				.reverse()
-				.forEach((deck, i) => {
-					// Véritable indice de deck
-					deckIndex = tmp.length - 1 - i;
-					// Parcourt les cartes du deck
-					deck.forEach((card, cardIndex) => {
-						// Si le numéro du deck que l'on parcourt est inférieur ou égal à celui de l'objectif
-						if (deckObjectif >= deckIndex) {
-							/** Condition d'arrêt si on trouve une solution :
-							 *  - si aucune solution n'a été trouvé jusque-là ;
-							 *  - si le deck où l'on est n'est pas dans l'objectif ;
-							 *  - si le deck est dans le numéro de l'objectif
-							 *    (@example numéro objectif = 0 & deck départ = 0 & cette carte existe).
-							 */
-							if (
-								!chemin[1] &&
-								deckIndex !== tmp.length - 1 &&
-								deckIndex <= deckObjectif &&
-								containCard(tmp, deckIndex, cardTest)
-							) {
-								// On a trouvé une solution
-								chemin[1] = true;
-								// Vérifie que l'on ajoute pas la carte si elle est déjà ajoutée en dernier
-								if (
-									!tmp[chemin[0][chemin[0].length - 1][0]][
-										chemin[0][chemin[0].length - 1][1]
-									].equals(cardTest)
-								) {
-									// Ajoute cette carte dans le chemin
-									chemin[0].push([
-										deckIndex,
-										getIndice(tmp, deckIndex, cardTest),
-									]);
-								}
-							}
-							/** Condition d'arrêt si on trouve une solution :
-							 *  - si aucune solution n'a été trouvé jusque-là ;
-							 *  - si le deck où l'on est n'est pas dans l'objectif ;
-							 *  - si on peut avoir {@link cardTest} en passant par une carte qui a une liaison "=>".
-							 */
-							if (
-								!chemin[1] &&
-								deckIndex !== tmp.length - 1 &&
-								isObtainableImplique(card, cardTest)
-							) {
-								// Vérifie si la partie droite de la carte que l'on vient de tester est une carte double
-								if (card.right.color === null) {
-									// Vérifie si la partie droite de la carte que l'on vient de tester a une liaison "=>"
-									if (card.right.link === "=>") {
-										/** Vérifie si l'on peut avoir la partie gauche de la partie droite de la carte que l'on
-										 *  vient de tester.
-										 *  @example : | bleu |    |jaune |
-										 *             |  et  | => |  =>  |
-										 *             |rouge |    |orange|
-										 *  On cherche du orange, on vérifie si on a du jaune car s'il y en a pas ça ne sert à rien
-										 *  de chercher "bleu et rouge".
-										 */
-										tmpChemin = [
-											...recursiveSoluce(
-												tmp,
-												card.right.left,
-												deckIndex,
-												deckObjectif,
-												chemin
-											),
-										];
-										chemin = [...tmpChemin];
-									}
-									/* Pas sûr & pas d'exemple pour le tester.
-									else {
-									  tmpChemin = [...recursiveSoluce(tmp, card.right, deckIndex, deckObjectif, chemin)];
-									  chemin    = [...tmpChemin];
-									}
-									*/
-								} else {
-									// Si la partie droite de la carte est simple on cherche la partie gauche
-									chemin[1] = true;
-								}
-								// Si on a trouvé une solution pour la partie droite
-								if (chemin[1]) {
-									// Ajoute la carte au chemin
-									chemin[0].push([deckIndex, cardIndex]);
-									// Cherche la partie gauche de la carte
-									tmpChemin = [
-										...recursiveSoluce(
-											tmp,
-											card.left,
-											deckIndex,
-											deckObjectif,
-											chemin
-										),
-									];
-									// Copie le résultat dans le tableau chemin
-									chemin = [...tmpChemin];
-								}
-								// Si l'on n'a pas trouvé de solution
-								if (!chemin[1]) {
-									// Si la partie gauche de la carte a une liaison "=>"
-									if (
-										card.color === null &&
-										card.left.link === "=>"
-									) {
-										// Ajout de la partie gauche de la carte parcourue dans les objectifs
-										tmp[tmp.length - 1].push(
-											card.left.copy()
-										);
-										// Cherche la carte ajoutée dans les objectifs
-										tmpChemin = [
-											...recursiveSoluce(
-												tmp,
-												card.left,
-												tmp.length - 1,
-												deckObjectif,
-												chemin
-											),
-										];
-										// Copie le résultat dans le tableau chemin
-										chemin = [...tmpChemin];
-									}
-								}
-							}
-							/** Condition d'arrêt si on trouve une solution :
-							 *  - si aucune solution n'a été trouvé jusque-là ;
-							 *  - si la carte n'est pas dans le deck objectif ;
-							 *  - si on peut avoir {@link cardTest} en passant par une carte qui a une liaison "et".
-							 *  @example On cherche une carte rouge si on a une carte rouge & jaune, on peut la séparer
-							 *  pour avoir du rouge.
-							 */
-							if (
-								!chemin[1] &&
-								deckIndex !== tmp.length - 1 &&
-								isObtainableEt(card, cardTest)
-							) {
-								// Ajoute la carte au chemin
-								chemin[0].push([deckIndex, cardIndex]);
-								// Ajoute les 2 parties de la carte "et" au deck
-								tmp[deckId].push(card.right.copy());
-								tmp[deckId].push(card.left.copy());
-								/** Cherche à nouveau la cardTest avec les 2 nouvelles cartes ajoutées. Cela ajoute une carte
-								 *  dans le chemin ce qui permet de différencier la séparation d'une carte & l'utilisation
-								 *  d'une carte "et" avec une carte "=>".
-								 */
-								tmpChemin = [
-									...recursiveSoluce(
-										tmp,
-										cardTest,
-										deckIndex,
-										deckObjectif,
-										chemin
-									),
-								];
-								// Copie le résultat dans le tableau chemin
-								chemin = [...tmpChemin];
-							}
-						}
-					});
-				});
-		}
-		return chemin;
-	};
-
-	/**
 	 * Renvoie le numéro de l'objectif associé à l'indice de la carte dans le deck.
 	 * @param {number} objectif - indice de la carte de l'objectif que l'on cherche dans le deck
 	 * @returns {number} le numéro de l'objectif
@@ -2140,34 +1782,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		});
 		return res;
 	};
-
-	/** Met dans la console tous les mouvements à faire pour gagner la partie.
-	 *  /!\ Fonction inutilisée pour l'instant. Ne marche pas normalement.
-	 */
-	/* const soluceExercise = () => {
-		let tmp      = [...game],
-			chemin   = [[], false],
-			objectif = tmp[1][0],
-			result   = recursiveSoluce(tmp,objectif,1,0,chemin),
-			affiche;
-		if (result[1]) {
-		  if (objectif.link === "=>") {
-			affiche = result[0].reverse();
-			for (let i = 0; i < affiche.length-1; i++) {
-			  if (affiche[i].color !== null ) {
-				if (affiche[i+1].link === "=>") {
-				}
-				i++;
-			  }
-			  else if (affiche[i].link === "=>") {
-			  }
-			}
-		  }
-		  else if (objectif.link === "et") { }
-		  else { }
-		}
-		tmp = null;
-  	} */
 
 	/**
 	 * Fait une copie du jeu actuel en créant un nouveau tableau & en copiant toutes les cartes.
@@ -2213,117 +1827,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		});
 		// Retourne la variable
 		return bool;
-	};
-
-	/* const testResolve = () => {
-		let tmp       = copyGame(),
-			chemin    = [[], false],
-			deckId    = tmp.length-1,
-			cardId    = tmp[tmp.length-1].length-1,
-			objectif  = tmp[deckId][cardId],
-			result    = recursiveSoluce(tmp, objectif, deckId, getNumObjectif(cardId), chemin),
-			tmpResult = [...result[0],
-			affiche   = tmpResult.reverse();
-  	} */
-
-	/**
-	 * Cherche le prochain coup qui amène à finir l'exercice :
-	 *    S'il y a 1 carte au prochain coup elle ira dans {@link cardHelp} ;
-	 *    S'il y en a 2 elles iront dans {@link cardHelp} et {@link cardHelp2}.
-	 */
-	const getNextMove = () => {
-		/** Copie le jeu dans une variable temporaire. */
-		let tmp = copyGame(),
-			/** Initialise le chemin : indice 0 aucune carte & indice 1 aucune solution trouvé. */
-			chemin = [[], false],
-			// On cherche l'objectif le plus éloigné dans le deck objectif
-			deckId = tmp.length - 1,
-			cardId = tmp[tmp.length - 1].length - 1,
-			/** L'objectif que l'on cherche. */
-			objectif = tmp[deckId][cardId],
-			/** Cherche l'objectif. */
-			result = recursiveSoluce(
-				tmp,
-				objectif,
-				deckId,
-				getNumObjectif(cardId),
-				chemin
-			),
-			/** Copie du tableau de cartes pour trouver l'objectif. */
-			tmpResult = [...result[0]],
-			/** La 1ère carte dans result est l'objectif donc la dernière est le prochain coup à jouer donc
-			 *  on inverse le tableau pour jouer avec l'indice 0 & 1.
-			 */
-			affiche = tmpResult.reverse(),
-			// Initialisation des variables
-			bool = false,
-			card1,
-			card2;
-		try {
-			card1 = game[affiche[0][0]][affiche[0][1]];
-			if (card1 === undefined) card1 = cardError;
-		} catch {
-			card1 = cardError;
-		}
-		try {
-			card2 = game[affiche[1][0]][affiche[1][1]];
-			if (card2 === undefined) card2 = cardError;
-		} catch {
-			card2 = cardError;
-		}
-		// Souvent la carte la plus importante
-		let res1 = [affiche[0][0], affiche[0][1]],
-			res2 = [affiche[1][0], affiche[1][1]];
-		/** Vérifie si les 2 dernières cartes reçues existent dans jeu ou si la 2ème carte est une carte "et"
-		 *  et qu'elle existe.
-		 */
-		bool =
-			(cardExists(card1) || card2.link === "et") &&
-			cardExists(card2) &&
-			affiche[1][0] < game.length - 1;
-		// Vérifie si un objectif avec une liaison "=>" a eu son deck de créé
-		if (objectif.link === "=>" && game.length === tabObjectif.length + 1) {
-			res1 = [deckId, cardId];
-			setCardHelp(res1);
-			setCardHelp2(cardError);
-		}
-		// Vérifie si la 2ème carte est une carte "et"
-		else if (card2.link === "et") {
-			setCardHelp(res2);
-			setCardHelp2(cardError);
-		} else {
-			// Si les 2 cartes trouvées existent
-			if (bool) {
-				setCardHelp(res1);
-				setCardHelp2(res2);
-			}
-			// Si elles n'existent pas
-			else {
-				/** Si les 2 cartes n'existent pas, c'est qu'il doit y aboir un sous-objectif à créer
-				 *  qui ne soit pas dans le deck objectif.
-				 */
-				let tmpCard = cardError;
-				game.forEach((deck, decki) => {
-					deck.forEach((card, cardi) => {
-						/** Cherche une carte avec une liaison "=>" dont la partie gauche a une liaison "=>".
-						 *  (pour l'instant c'est le seul cas connu pour créer un sous-objectif dans le deck
-						 *  à partir d'une carte qui ne soit pas dans le deck objectif.
-						 */
-						if (card.color === null && card.link === "=>") {
-							if (
-								card.left.color === null &&
-								card.left.link === "=>" &&
-								card.left.left.equals(objectif)
-							) {
-								tmpCard = [decki, cardi];
-							}
-						}
-					});
-				});
-				setCardHelp(tmpCard);
-				setCardHelp2(cardError);
-			}
-		}
 	};
 
 	/**
@@ -2677,8 +2180,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				</button>
 			)}
 			<div className="bouton">
-				{/* Affiche la ou les 2 cartes qui sont le prochain mouvement logique dans le but de finir l'exercice */}
-				{false && <button onClick={getNextMove}>Aide</button>}
 				{/* Revient à la partie avant l'ajout d'une carte */}
 				<div>
 					<button id="back" className="buttonAction " onClick={retourEnArriere}>
@@ -2718,18 +2219,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 						<span className="tooltiptext">Fusion</span>
 					</div>
-				)}
-				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte
-				sélectionnée) & la partie droite (2ème carte sélectionnée). La carte créée aura une liaison "et".
-				/!\ Pour l'instant ce bouton n'est pas affiché car je n'y vois aucune utilité à voir pour les prochains exercices ! */}
-				{false && mode !== "Create" && (
-					<button className={"buttonAction "} onClick={fuseCardFuse}>
-						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
-							<span className="buttonFormula">[1] [2] → [1∧2]</span>
-							<span className="tooltiptext">Fusion</span>
-						</button>
-						<span className="tooltiptext">Fusion Carte {"=>"}</span>
-					</button>
 				)}
 				{/* Ajout objectif secondaire */}
 				{mode !== "Create" && (
@@ -2940,10 +2429,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							>
 								✖
 							</span>
-							<div
-								className="demonstration-win"
-								onCopy={copyHandler}
-							>
+							<div className="demonstration-win" onCopy={copyHandler}>
 								{demonstration.map((element, index) => {
 									return (
 										<div
@@ -2959,12 +2445,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 								})}
 							</div>
 							<div className="popupWinActions">
-								<button
-									className="popupSecondary"
-									onClick={function() {
-										setPopupWin(false);
-									}}
-								>
+								<button className="popupSecondary" onClick={function() {setPopupWin(false);}}>
 									Revoir le niveau
 								</button>
 								{numero + 2 <= nbExo && (
