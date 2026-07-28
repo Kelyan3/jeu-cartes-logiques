@@ -1,12 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const PopupForms = props => {
+const PopupForms = () => {
 	return (
 		<div className="popupForms-box">
-			<div className="bigbox" style={{ width: props.size + "%" }}>
+			<div className="bigbox">
 				<div className="box">
-					<NavLink exact="true" to="/Forms">Votre avis nous intéresse</NavLink>
+					<NavLink to="/Forms">Votre avis nous intéresse</NavLink>
 				</div>
 			</div>
 		</div>

@@ -5,7 +5,7 @@ import Popup from "./Popup";
 import Card from "../class/Card";
 
 export const GameTab = React.createContext();
-import Latex from "./Latex";
+import LogicText from "./LogicText";
 
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL as API } from "../config/api";
@@ -1601,7 +1601,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				res += displayCard.toString();
 			}
 		});
-		return StringToLatex(res);
+		return stringToLogicText(res);
 	};
 
 	/**
@@ -1933,7 +1933,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * 
 	 * @returns {string} - la chaîne de caractères formattée en Latex
 	 */
-	const StringToLatex = (str) => {
+	const stringToLogicText = (str) => {
 		str = str.replaceAll("^", " ∧ ");
 		str = str.replaceAll("non", " ¬ ");
 		str = str.replaceAll("<=>", " ⇔ ");
@@ -2374,7 +2374,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 									: { marginLeft: 20 + element[0] * 20 }
 							}
 						>
-							<Latex>{constructDemonstration(element[1])}</Latex>
+							<LogicText>{constructDemonstration(element[1])}</LogicText>
 						</div>
 					);
 				})}

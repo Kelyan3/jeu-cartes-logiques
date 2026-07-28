@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { GameTab } from "./Game";
-import Latex from "./Latex";
+import LogicText from  "./LogicText";
 
 const Card = ({
 	deckIndice,
@@ -84,7 +84,7 @@ const Card = ({
 				{[
 					recursiveRender(currentCard.left, count - 1, selec, originalCount),
 					<span key={recursiveRender.count + "link"} className={`link ${link}`}>
-						<Latex>{afficheLink(currentCard.link)}</Latex>
+						<LogicText>{afficheLink(currentCard.link)}</LogicText>
 					</span>,
 					recursiveRender(currentCard.right, count - 1, selec, originalCount),
 				]}
