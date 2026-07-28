@@ -1,18 +1,14 @@
 export default class Card {
 	/**
 	 * @param {number} id
-	 * @param {string|null} color - couleurs disponibles :
-	 *                              rouge  ("red")    ;
-	 *                              jaune  ("yellow") ;
-	 *                              bleu   ("blue")   ;
-	 *                              orange ("orange")
+	 * @param {string|null} color - couleur de la carte, voir {@link getColor} pour la liste complète des valeurs possibles.
 	 * @param {true|false} active
-	 * @param {""|"et"|"=>"} link - ""    = carte simple ;
-	 *                              "¬"   = liaison "¬"  ;
-	 *                              "et"  = liaison "et" ;
-	 *                              "ou"  = liaison "ou" ;
-	 *                              "=>"  = liaison "⇒" ;
-	 *                              "<=>" = liaison "⟺"
+	 * @param {""|"et"|"ou"|"=>"|"<=>"|"non"} link - ""    = carte simple ;
+	 *                                               "non" = liaison "¬"  ;
+	 *                                               "et"  = liaison "et" ;
+	 *                                               "ou"  = liaison "ou" ;
+	 *                                               "=>"  = liaison "⇒" ;
+	 *                                               "<=>" = liaison "⟺"
 	 * @param {Card|null} left
 	 * @param {Card|null} right
 	 */
@@ -29,7 +25,7 @@ export default class Card {
 	}
 
 	/**
-	 * Traduit la couleur de la carte, de base en anglais, en français afin de l'afficher en format LaTeX.
+	 * Traduit la couleur de la carte, de base en anglais, en français afin de l'afficher dans le texte.
 	 * 
 	 * @param {string} color - La couleur de la carte.
 	 * 
@@ -56,7 +52,7 @@ export default class Card {
 	 * Carte triple : "(couleur liaison (couleur liaison (couleur))"
 	 * Carte quadruple : ((couleur liaison couleur) liaison (couleur liaison couleur))
 	 * 
-	 * @example "(rouge∧jaune) ⇒ bleu"
+	 * @example "(Rouge^Jaune)=>Bleue"
 	 * 
 	 * @returns {string} Un string plus lisible.
 	 */
@@ -179,7 +175,8 @@ export default class Card {
 	}
 
 	/**
-	 * @param {true|false} state Booléen qui définit si une carte est sélectionnée ou pas.
+	 * @param {true|false} state Booléen qui définit si la carte doit être considérée comme "nouvelle"
+	 *                           (affecte l'animation d'apparition sur le plateau).
 	 */
 	setOld(state)
 	{
@@ -192,7 +189,8 @@ export default class Card {
 	}
 
 	/**
-	 * @param {true|false} state Booléen qui définit si une carte est sélectionnée ou pas.
+	 * @param {true|false} state Booléen qui définit si la carte est en cours de suppression
+	 *                            (affecte son affichage/animation avant retrait définitif).
 	 */
 	setDel(state)
 	{
@@ -430,7 +428,7 @@ export default class Card {
 	/**
 	 * Si la carte est censé être une carte "ou", renvoie la carte au format "ou" pour l'affichage.
 	 * 
-	 * @returns {Card} - La carte au format "ou" si c'est une carte "ou", sinon la cartede base
+	 * @returns {Card} - La carte au format "ou" si c'est une carte "ou", sinon la carte de base
 	 */
 	ifOuReturnOuCard()
 	{

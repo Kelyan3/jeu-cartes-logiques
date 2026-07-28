@@ -127,13 +127,11 @@ const Choice = ({ mode }) => {
 	}
 
 	/**
-	 * Renvoie la liste de choix des niveaux.
-	 * 
-	 * @param {*} props - Attributs?
+	 * Renvoie la liste de choix des niveaux, regroupés par catégorie de difficulté.
 	 * 
 	 * @returns {JSX.Element[]}
 	 */
-	function AfficheChoice(props)
+	function AfficheChoice()
 	{
 		const res = [];
 		difficulty.forEach((category, index) => {

@@ -19,7 +19,7 @@ const Card = ({
 	}
 
 	/**
-	 * Convertit les liaisons en symboles LaTeX.
+	 * Convertit les liaisons en symboles unicode affichés sur les cartes.
 	 * 
 	 * @param {string} str - La liaison.
 	 * 
@@ -37,6 +37,8 @@ const Card = ({
 	};
 
 	/**
+	 * Construit récursivement l'affichage d'une carte (simple ou composée de sous-cartes reliées
+	 * par un connecteur), en gérant l'orientation d'affichage selon la profondeur de récursion.
 	 * 
 	 * @param {Card} currentCard - La carte sur laquelle on est actuellement
 	 * @param {number} count
@@ -91,10 +93,11 @@ const Card = ({
 	};
 
 	/**
+	 * Affiche la carte donnée en props, ou un élément vide si elle n'existe pas encore.
 	 * 
-	 * @param {JSX.Element} props
+	 * @param {{currentCard: Card, selec: boolean}} props
 	 * 
-	 * @returns {JSX.Elements}
+	 * @returns {JSX.Element}
 	 */
 	function RenderCard(props) {
 		let currentCard = props.currentCard;
@@ -139,13 +142,6 @@ const Card = ({
 
 		return { width: "15vw", height: "28vh" };
 	}
-
-	useEffect((_) => {
-		return (_) => {
-			if (false)
-				console.log("Toto");
-		};
-	});
 
 	return (
 		<GameTab.Consumer>

@@ -27,21 +27,21 @@ const Deck = ({
 	}
 
 	/**
-	 * @see Card#addCard()
+	 * @see Game#addCard - fonction transmise via la prop addCardFunc.
 	 */
 	const addCardToDeck = () => {
 		addCardFunc(indice);
 	}
 
 	/**
-	 * @see Card#deleteCard()
+	 * @see Game#confirmDeleteCard - fonction transmise via la prop deleteCardFunc.
 	 */
 	const deleteCardToDeck = () => {
 		deleteCardFunc();
 	}
 
 	/**
-	 * @returns {"start"|"goal"|"other"}
+	 * @returns {"start"|"goal"|string} "start", "goal", ou "otherN" (N = indice du deck).
 	 */
 	const setClassname = () => {
 		if (indice === 0)
@@ -57,7 +57,8 @@ const Deck = ({
 	 * 
 	 * @param {number} i - La position de l'objectif
 	 * 
-	 * @returns {string|-1} soit "principal", soit "secondaire" suivi de son numéro
+	 * @returns {string|-1} "principal", "secondaire" suivi de son numéro, ou -1 si cette carte
+	 *                       n'est l'objectif d'aucun numéro (position sans objectif associé).
 	 */
 	const getObjectifNum = (i) => {
 		let num = -1;

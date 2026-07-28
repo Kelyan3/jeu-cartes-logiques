@@ -1,5 +1,5 @@
 /**
- * Découpe la chaîne reçue en segments texte / math et affiche chaque segment avec le bon rendu
+ * Affiche le texte reçu avec le style typographique utilisé pour la notation logique
  */
 const Latex = ({ children }) => {
 	return <span className="math-text">{children}</span>;

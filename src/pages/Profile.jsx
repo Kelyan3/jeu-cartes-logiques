@@ -15,8 +15,10 @@ const Profile = () => {
 	const [loadingStats, setLoadingStats] = useState(true);
 	const [resetting, setResetting] = useState(false);
 
-	const API = import.meta.env.DEV ? "http://localhost:80" : "";
-
+	/**
+	 * Supprime toute la progression de l'utilisateur en base de données,
+	 * après confirmation, et remet les compteurs affichés à zéro localement.
+	 */
 	const handleReset = () => {
 		const confirmed = window.confirm("Réinitialiser toute votre progression ? Cette action est irréversible.");
 		if (!confirmed)
@@ -31,6 +33,11 @@ const Profile = () => {
 			.finally(() => setResetting(false));
 	};
 
+	/**
+	 * Charge en parallèle le nombre total de niveaux (manifeste) et la progression
+	 * de l'utilisateur connecté, pour calculer le pourcentage de niveaux Play complétés
+	 * et le compteur de tutoriels complétés.
+	 */
 	useEffect(() => {
 		if (!user)
 			return;
@@ -50,6 +57,7 @@ const Profile = () => {
 			.finally(() => setLoadingStats(false));
 	}, [user]);
 
+	// Évite une division par zéro si le manifeste n'a pas encore chargé playTotal.
 	const playPercent = playTotal > 0 ? Math.round((playCompleted / playTotal) * 100) : 0;
 
 	return (
