@@ -19,7 +19,8 @@ if not CONN_PARAMS:
 	host = os.getenv("DB_HOST", "localhost")
 	port = os.getenv("DB_PORT", "5432")
 	database = os.getenv("DB_NAME", "cartes_logiques")
-	CONN_PARAMS = "postgresql://{}:{}@{}:{}/{}?sslmode=require".format(user, password, host, port, database)
+	sslparams = "" if host in ("localhost", "127.0.0.1") else "?sslmode=require"
+	CONN_PARAMS = "postgresql://{}:{}@{}:{}/{}{}".format(user, password, host, port, database, sslparams)
 
 
 def reset_table():
