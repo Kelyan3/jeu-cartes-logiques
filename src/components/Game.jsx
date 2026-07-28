@@ -1671,7 +1671,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {number} deck - indice du deck
 	 * @param {number} card - indice de la carte
 	 * 
-	 * @returns {true|false} true ou false
+	 * @returns {boolean} true ou false
 	 */
 	const deckContain = (deck, card) => {
 		// Variable que l'on va retourner (false par défaut)
@@ -1748,7 +1748,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Teste une carte pour voir si en utilisant le bouton pour séparer une carte on peut obtenir la carte (carteObjectif).
 	 * @param {Card} card - la carte que l'on teste
 	 * @param {Card} cardObjectif - la carte que l'on veut obtenir
-	 * @returns {true|false} true ou false
+	 * @returns {boolean} true ou false
 	 */
 	const isObtainableEt = (card, cardObjectif) => {
 		// Variable que l'on va retourner (false par défaut)
@@ -1775,7 +1775,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {Card[][]} tmp - tableau du jeu temporaire
 	 * @param {number}          deckId - indice du deck de la dernière carte trouvée pour aller à l'objectif
 	 * @param {Card}              card - la carte à trouver
-	 * @returns {true|false} true ou false
+	 * @returns {boolean} true ou false
 	 */
 	const containCard = (tmp, deckId, card) => {
 		// Variable que l'on va retourner (false par défaut)
@@ -1852,11 +1852,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	/**
 	 * Regarde si la carte passée en paramètre existe dans le jeu actuel
-	 * et qu'elle ne sois pas dans les objectifs.
+	 * et qu'elle ne soit pas dans les objectifs.
 	 *
 	 * @param {Card} cardTest - la carte que l'on cherche
 	 *
-	 * @returns {true|false} true ou false
+	 * @returns {boolean} true ou false
 	 */
 	const cardExists = (cardTest) => {
 		// Variable que l'on va retourner (false par défaut)
@@ -1877,7 +1877,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Recupère le numéro de la démonstration et met le jeu à ce moment-là de la partie.
+	 * Récupère le numéro de la démonstration et met le jeu à ce moment-là de la partie.
 	 *
 	 * @param {Event} event - on utilise event.target.id
 	 */
@@ -1929,9 +1929,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Remplace les notations logiques brutes (^, =>, <=>, non, ∨) par leurs symboles unicode
 	 * espacés, pour un affichage plus lisible dans le texte des démonstrations.
 	 * 
-	 * @param {string} str - la chaîne de caractères à formatter
+	 * @param {string} str - la chaîne de caractères à formater
 	 * 
-	 * @returns {string} - la chaîne de caractères formattée pour l'affichage
+	 * @returns {string} - la chaîne de caractères formatée pour l'affichage
 	 */
 	const stringToLogicText = (str) => {
 		str = str.replaceAll("^", " ∧ ");
@@ -2040,14 +2040,14 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				setMessageTutorial([
 					'Dans ce niveau nous allons apprendre le bouton "Implique".',
 					"Ce bouton a besoin de deux cartes pour fonctionner.",
-					"Sélectionner deux cartes.",
+					"Sélectionnez deux cartes.",
 				]);
 				break;
 			case 2:
 				setMessageTutorial([
 					'Dans ce niveau nous allons apprendre le quatrième bouton "Fusion".',
 					"Ce bouton a besoin de deux cartes pour fonctionner.",
-					"Sélectionner deux cartes.",
+					"Sélectionnez deux cartes.",
 				]);
 				break;
 			case 3:
@@ -2062,7 +2062,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					'Cliquer sur le bouton "Affichage Simplifié" pour faire apparaître la carte blanche. Lorsqu’on l’obtient, la partie est gagnée qu’importe l’objectif.',
 					'Ensuite, le bouton "Transitivité" a besoin de deux cartes avec un connecteur "⟹" pour fonctionner. Il faut que ces cartes soient de la même forme que dans le symbole du bouton.',
 					'On obtient alors une carte avec le connecteur "⟹".',
-					"Sélectionner deux cartes.",
+					"Sélectionnez deux cartes.",
 				]);
 				break;
 			case 5:
@@ -2070,7 +2070,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					'Dans ce niveau nous allons apprendre le bouton "Transitivité" avec le connecteur "⟺".',
 					'Il fonctionne de la même manière qu’avec le connecteur "⟹", il faut que les cartes sélectionnées soient de la même forme que dans le symbole du bouton.',
 					'On obtient alors une carte avec le connecteur "⟺".',
-					"Sélectionner deux cartes.",
+					"Sélectionnez deux cartes.",
 				]);
 				break;
 			case 6:
@@ -2392,7 +2392,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 									["blue", "Bleue"],
 									["orange", "Orange"],
 									["green", "Verte"],
-									["purple", "Violette"],
+									["purple", "Mauve"],
 									["black", "Noir"],
 									["white", "Blanc"],
 								].map(([value, label]) => (

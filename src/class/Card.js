@@ -2,7 +2,7 @@ export default class Card {
 	/**
 	 * @param {number} id
 	 * @param {string|null} color - couleur de la carte, voir {@link getColor} pour la liste complète des valeurs possibles.
-	 * @param {true|false} active
+	 * @param {boolean} active
 	 * @param {""|"et"|"ou"|"=>"|"<=>"|"non"} link - ""    = carte simple ;
 	 *                                               "non" = liaison "¬"  ;
 	 *                                               "et"  = liaison "et" ;
@@ -162,7 +162,7 @@ export default class Card {
 	 * - Change l'attribut "active"
 	 * - Regarde si "left" & "right" sont null. S'ils ne le sont pas, on appelle la même fonction sur eux.
 	 * 
-	 * @param {true|false} state Booléen qui définit si une carte est sélectionnée ou pas.
+	 * @param {boolean} state Booléen qui définit si une carte est sélectionnée ou pas.
 	 */
 	select(state)
 	{
@@ -175,7 +175,7 @@ export default class Card {
 	}
 
 	/**
-	 * @param {true|false} state Booléen qui définit si la carte doit être considérée comme "nouvelle"
+	 * @param {boolean} state Booléen qui définit si la carte doit être considérée comme "nouvelle"
 	 *                           (affecte l'animation d'apparition sur le plateau).
 	 */
 	setOld(state)
@@ -189,7 +189,7 @@ export default class Card {
 	}
 
 	/**
-	 * @param {true|false} state Booléen qui définit si la carte est en cours de suppression
+	 * @param {boolean} state Booléen qui définit si la carte est en cours de suppression
 	 *                            (affecte son affichage/animation avant retrait définitif).
 	 */
 	setDel(state)
@@ -206,7 +206,7 @@ export default class Card {
 	 * 
 	 * @param {Card} card - L'autre carte à comparer.
 	 * 
-	 * @returns {true|false} True si identiques, sinon False.
+	 * @returns {boolean} True si identiques, sinon False.
 	 */
 	equals(card)
 	{
@@ -279,7 +279,7 @@ export default class Card {
 	/**
 	 * Vérifie si la carte complexe a une de ses cartes qui possède le connecteur "=>".
 	 * 
-	 * @returns {true|false} true si la carte possède le connecteur "=>", sinon false
+	 * @returns {boolean} true si la carte possède le connecteur "=>", sinon false
 	 */
 	haveImpliqueLinkRecur()
 	{
@@ -296,7 +296,7 @@ export default class Card {
 	/**
 	 * Vérifie si la carte de l'objectif possède le connecteur "et".
 	 * 
-	 * @returns {true|false} true si la carte possède le connecteur "et", sinon false
+	 * @returns {boolean} true si la carte possède le connecteur "et", sinon false
 	 */
 	isCardEtObjectif()
 	{
@@ -315,7 +315,7 @@ export default class Card {
 	/**
 	 * Vérifie si la carte possède le connecteur "<=>".
 	 * 
-	 * @returns {true|false} true si la carte possède le connecteur "<=>", sinon false
+	 * @returns {boolean} true si la carte possède le connecteur "<=>", sinon false
 	 */
 	isDoubleArrow()
 	{
@@ -353,7 +353,7 @@ export default class Card {
 	/**
 	 * Vérifie si la carte est une carte "non".
 	 * 
-	 * @returns {true|false} true si la carte est une carte "non", sinon false
+	 * @returns {boolean} true si la carte est une carte "non", sinon false
 	 */
 	isNonCard()
 	{
@@ -372,7 +372,7 @@ export default class Card {
 	/**
 	 * Vérifie si l'on peut utiliser le bouton "Tiers-Exclus" sur la carte.
 	 * 
-	 * @returns {true|false} true si l'on peut l'utiliser, sinon false
+	 * @returns {boolean} true si l'on peut l'utiliser, sinon false
 	 */
 	canUseTiersExclus()
 	{
@@ -410,7 +410,7 @@ export default class Card {
 	/**
 	 * Vérifie si la carte possède le connecteur "ou".
 	 * 
-	 * @returns {true|false} true si la carte correspond à une carte avec un connecteur "ou", sinon false
+	 * @returns {boolean} true si la carte correspond à une carte avec un connecteur "ou", sinon false
 	 */
 	isOuCard() {
 		if (this.color !== null)

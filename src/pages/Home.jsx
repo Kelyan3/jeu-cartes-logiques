@@ -33,7 +33,7 @@ const Home = () => {
 				<ul>
 					<li>La <strong>banque</strong> est une zone de jeu qui contient, à tout instant, toutes les cartes possibles du jeu en un nombre illimité d'exemplaires, elle n'est pas représentée durant la partie.</li>
 					<li>
-						Le joueur peut intéragir avec la banque de deux façons :
+						Le joueur peut interagir avec la banque de deux façons :
 						<ul>
 							<li><strong>Obtenir</strong> une carte (la rajouter dans la LPU),</li>
 							<li><strong>Emprunter</strong> une carte (la rajouter temporairement à la LPU avec l'obligation de la rendre plus tard dans la partie).</li>
@@ -43,7 +43,7 @@ const Home = () => {
 
 				<h2>La LPU</h2>
 				<ul>
-					<li>La <strong>LPU</strong> est la liste des cartes que le joueur possède à un moment donné dans la prtie, c'est-à-dire les cartes dont il peut activer le{" "} <strong>pouvoir d'utilisation</strong>.</li>
+					<li>La <strong>LPU</strong> est la liste des cartes que le joueur possède à un moment donné dans la partie, c'est-à-dire les cartes dont il peut activer le{" "} <strong>pouvoir d'utilisation</strong>.</li>
 					<li>Le joueur peut représenter à la banque une ou plusieurs cartes de la LPU afin d'<strong>obtenir</strong>{" "} (c'est-à-dire rajouter à la LPU) une ou plusieurs nouvelles cartes.</li>
 					<li>Lorsqu'une carte est dans la LPU, la LPU contient autant de copies de cette carte que l'on souhaite.</li>
 					<li>Lorsque le joueur obtient une carte, si cette carte était déjà dans la LPU, il ne se passe rien.</li>
@@ -59,7 +59,7 @@ const Home = () => {
 				<h2>Les types de cartes</h2>
 				<ul>
 					<li>La <strong>carte blanche</strong> : la présenter permet d'obtenir n'importe quelle carte de la banque.</li>
-					<li>Les <strong>cartes monochromes</strong> (rouge, jaune, bleue, marron, etc.) qui n'ont pas de pouvoir spécifique.</li>
+					<li>Les <strong>cartes monochromes</strong> (rouge, jaune, bleue, orange, vert, etc.) qui n'ont pas de pouvoir spécifique.</li>
 					<li>
 						Les <strong>cartes avec un connecteur</strong> : cartes en deux parties séparées par un rectangle gris qui contient un symbole dont le pouvoir dépend du{" "} <strong>connecteur</strong> et des cartes connectées :
 						<ul>

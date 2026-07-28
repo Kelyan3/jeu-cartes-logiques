@@ -10,8 +10,9 @@ export const AuthProvider = ({ children }) => {
 
 	useEffect(() => {
 		fetch(`${API}/api/me`, { credentials: "include" })
-			.then((response => response.json()))
+			.then((response) => response.json())
 			.then((data) => setUser(data))
+			.catch(() => setUser(null))
 			.finally(() => setLoading(false));
 	}, []);
 

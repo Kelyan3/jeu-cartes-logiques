@@ -23,7 +23,7 @@ Projet développé dans le cadre d'un projet tutoré à l'Université de la Nouv
 
 ## Fonctionnalités
 
-- Jeu de Cartes Logiques avec plusieurs mécaniques (sépération, implication, fusion, ajout d'objectif, tiers exclu, transitivité).
+- Jeu de Cartes Logiques avec plusieurs mécaniques (séparation, implication, fusion, ajout d'objectif, tiers exclus, transitivité).
 - Parcours de tutoriels guidés pour apprendre chaque mécanique.
 - Éditeur de niveaux intégré (mode "Créer un niveau"), export/import au format JSON.
 - Comptes utilisateurs (inscription, connexion, session persistante).
