@@ -2,14 +2,7 @@ import React, { useEffect } from "react";
 import { GameTab } from "./Game";
 import LogicText from  "./LogicText";
 
-const Card = ({
-	deckIndice,
-	cardIndice,
-	update,
-	isWin,
-	affichageSimple,
-}) => {
-
+const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 	/**
 	 * Fonction qui détecte le clique sur une carte & qui appelle la fonction {@link update()} passée par le
 	 * component Deck.

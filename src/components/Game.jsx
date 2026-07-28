@@ -1931,7 +1931,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * 
 	 * @param {string} str - la chaîne de caractères à formatter
 	 * 
-	 * @returns {string} - la chaîne de caractères formattée en Latex
+	 * @returns {string} - la chaîne de caractères formattée pour l'affichage
 	 */
 	const stringToLogicText = (str) => {
 		str = str.replaceAll("^", " ∧ ");
@@ -2485,7 +2485,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 												{ marginLeft: 20 + element[0] * 20, }
 											}
 										>
-											<Latex>{constructDemonstration(element[1])}</Latex>
+											<LogicText>{constructDemonstration(element[1])}</LogicText>
 										</div>
 									);
 								})}
