@@ -17,7 +17,7 @@
 .game .buttonWin {
 	background: var(--bg-surface);
 	border: 1px solid var(--accent-cyan);
-	box-shadow: 0 0 24px rgba(94, 234, 212, 0.35);
+	box-shadow: var(--shadow-soft);
 	border-radius: 12px;
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
@@ -29,11 +29,11 @@
 	bottom: 28px;
 	left: 28px;
 	z-index: 70;
-	transition: box-shadow .15s ease, transform .15s ease;
+	transition: background .15s ease, transform .15s ease, border-color .15s ease;
 }
 
 .game .buttonWin:hover {
-	box-shadow: 0 0 32px rgba(94, 234, 212, 0.5);
+	box-shadow: rgba(var(--accent-rgb), 0.1);
 	transform: translateY(-2px);
 }
 
@@ -121,8 +121,7 @@
 }
 
 .game .bouton .fileDownload:hover {
-	background: rgba(94, 234, 212, 0.1);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+	background: rgba(var(--accent-rgb), 0.1);
 }
 
 
@@ -168,7 +167,7 @@
 
 .game .bouton .buttonAction:hover {
 	border-color: var(--accent-cyan);
-	box-shadow: 0 0 10px rgba(94, 234, 212, 0.3);
+	box-shadow: rgba(var(--accent-rgb), 0.08);
 }
 
 .game .bouton .buttonAction:hover .tooltiptext {
@@ -186,7 +185,7 @@
 .game .bouton .boutonSelection {
 	border: 1px solid var(--accent-cyan) !important;
 	border-radius: 8px;
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.5);
+	box-shadow: rgba(var(--accent-rgb), 0.12);
 }
 
 .popupDeleteActions {
@@ -210,26 +209,24 @@
 }
 
 .btnSecondary:hover {
-	background: rgba(94, 234, 212, 0.1);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+	background: rgba(var(--accent-rgb), 0.1);
 }
 
 .btnDanger {
 	margin-top: 24px;
 	padding: 10px;
-	border: 1px solid rgba(248, 113, 113, 0.4);
+	border: 1px solid var(--danger);
 	border-radius: 8px;
 	background: transparent;
-	color: #F87171;
+	color: var(--danger);
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
 	font-size: 13px;
-	transition: background .15s ease, box-shadow .15s ease;
+	transition: background .15s ease;
 }
 
 .btnDanger:hover {
-	background: rgba(248, 113, 113, 0.1);
-	box-shadow: 0 0 12px rgba(248, 113, 113, 0.2);
+	background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
 .game .toast {
@@ -248,7 +245,8 @@
 	max-width: 90%;
 	margin: 16px auto 0;
 	background: var(--bg-surface);
-	border: 1px solid rgba(94, 234, 212, 0.4);
+	border: 1px solid var(--accent-cyan);
+	box-shadow: var(--shadow-soft);
 	animation: toast-in-flow .2s ease;
 }
 
@@ -259,7 +257,8 @@
 	z-index: 60;
 	max-width: 320px;
 	background: var(--bg-surface);
-	border: 1px solid rgba(248, 113, 113, 0.4);
+	border: 1px solid var(--danger);
+	box-shadow: var(--shadow-soft);
 	animation: toast-in-right .2s ease;
 }
 
@@ -306,9 +305,11 @@
 	border-radius: 12px;
 	color: var(--text-primary);
 	margin-top: 40px;
-	padding: 16px;
+	padding: 20px 18px;
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 14px;
+	box-shadow: var(--shadow-soft);
+	line-height: 1.55;
 }
 
 .game .demonstration div {
@@ -321,7 +322,7 @@
 }
 
 .game .demonstration div:hover {
-	background: rgba(94, 234, 212, 0.08);
+	background: rgba(var(--accent-rgb), 0.08);
 	color: var(--accent-cyan);
 }
 
@@ -377,5 +378,4 @@
 	background: var(--accent-cyan);
 	left: 39px;
 	top: -5px;
-	box-shadow: 0 0 8px rgba(94, 234, 212, 0.5);
 }

@@ -63,10 +63,14 @@
 
 .start .deck {
 	border-color: var(--accent-cyan);
+	border-width: 2px;
+	box-shadow: var(--shadow-soft);
 }
 
 .goal .deck {
 	border-color: var(--accent-amber);
+	border-width: 2px;
+	box-shadow: var(--shadow-soft);
 }
 
 .deckToolbar {

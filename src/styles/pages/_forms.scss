@@ -60,11 +60,11 @@
 
 .forms .field input:focus {
 	border-color: var(--accent-cyan);
-	box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.15);
+	box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2);
 }
 
 .forms .formError {
-	color: #F87171;
+	color: var(--danger);
 	font-size: 14px;
 	margin-bottom: 14px;
 }
@@ -79,12 +79,11 @@
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
 	font-size: 15px;
-	transition: background .15s ease, box-shadow .15s ease;
+	transition: background .15s ease;
 }
 
 .forms .authSubmit:hover:not(:disabled) {
-	background: rgba(94, 234, 212, 0.1);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+	background: rgba(var(--accent-rgb), 0.1);
 }
 
 .forms .authSubmit:disabled {
@@ -134,7 +133,6 @@
 .progressFill {
 	height: 100%;
 	background: var(--accent-amber);
-	box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
 	border-radius: 999px;
 	transition: width .4s ease;
 }
@@ -158,19 +156,18 @@
 	margin-top: 24px;
 	width: 100%;
 	padding: 10px;
-	border: 1px solid rgba(248, 113, 113, 0.4);
+	border: 1px solid var(--danger);
 	border-radius: 8px;
 	background: transparent;
-	color: #F87171;
+	color: var(--danger);
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
 	font-size: 13px;
-	transition: background .15s ease, box-shadow .15s ease;
+	transition: background .15s ease;
 }
 
 .resetButton:hover:not(:disabled) {
-	background: rgba(248, 113, 113, 0.1);
-	box-shadow: 0 0 12px rgba(248, 113, 113, 0.2);
+	background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
 .resetButton:disabled {
@@ -230,7 +227,6 @@
 .themeSwitch input:checked + .themeSwitchTrack::after {
 	transform: translateX(20px);
 	background: var(--accent-cyan);
-	box-shadow: 0 0 8px rgba(94, 234, 212, 0.5);
 }
 
 .themeSwitchLabel {

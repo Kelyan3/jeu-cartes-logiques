@@ -1,5 +1,5 @@
 .card_simple {
-	border: 2px solid rgba(228, 231, 236, 0.15);
+	border: 2px solid var(--border-subtle);
 	border-radius: 8px;
 }
 
@@ -21,9 +21,9 @@
 	position: relative;
 	right: 19px;
 	border-radius: 6px;
-	background: var(--bg-base);
+	background: var(--bg-surface);
 	border: 1px solid var(--accent-cyan);
-	box-shadow: 0 0 8px rgba(94, 234, 212, 0.25);
+	box-shadow: var(--shadow-soft);
 	font-size: 15px;
 	display: flex;
 	height: fit-content;
@@ -84,14 +84,10 @@
 	transform: scale(1.06);
 }
 
-.help {
-	border: 2px dashed var(--accent-amber);
-	border-radius: 8px;
-	box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
-}
-
 .selectionner {
 	border: 2px solid var(--accent-cyan);
 	border-radius: 8px;
-	box-shadow: 0 0 16px rgba(94, 234, 212, 0.5);
+	box-shadow: var(--shadow-soft);
+	outline: 2px solid rgba(var(--accent-rgb), 0.25);
+	outline-offset: 2px;
 }

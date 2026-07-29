@@ -42,13 +42,14 @@
 
 .choice td:hover {
 	border-color: var(--accent-cyan);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.25);
+	box-shadow: var(--shadow-soft);
+	background: rgba(var(--accent-rgb), 0.06);
 	transform: translateY(-2px);
 }
 
 .choice .levelCompleted {
 	border-color: var(--accent-amber) !important;
-	background: rgba(250, 204, 21, 0.08) !important;
+	background: color-mix(in srgb, var(--accent-amber) 12%, var(--bg-surface)) !important;
 }
 
 .choice .levelCompleted p {

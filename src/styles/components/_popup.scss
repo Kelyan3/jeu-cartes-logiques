@@ -8,8 +8,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(11, 14, 20, 0.7);
-	backdrop-filter: blur(4px);
+	background: var(--overlay);
+	backdrop-filter: blur(3px);
 }
 
 .popup-box .bigbox {
@@ -21,8 +21,8 @@
 .popup-box .box {
 	color: var(--text-primary);
 	background: var(--bg-surface);
-	border: 1px solid var(--accent-cyan);
-	box-shadow: 0 0 32px rgba(94, 234, 212, 0.25);
+	border: 1px solid var(--border-subtle);
+	box-shadow: var(--shadow-soft);
 	border-radius: 16px;
 	padding: 32px;
 	text-align: center;
@@ -110,7 +110,6 @@
 
 .colorSwatchLabel:hover .colorSwatch {
 	border-color: var(--accent-cyan);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.4);
 	transform: scale(1.08);
 }
 
@@ -171,8 +170,9 @@
 }
 
 .connectorLabel:hover, .connectorSymbol {
-	box-shadow: 0 0 16px rgba(94, 234, 212, 0.5);
-	transform: scale(1.08);
+	box-shadow: var(--shadow-soft);
+	transform: scale(1.06);
+	background: rgba(var(--accent-rgb), 0.1);
 }
 
 .connectorName {
@@ -200,8 +200,7 @@
 }
 
 .popupPrimary:hover {
-	background: rgba(94, 234, 212, 0.1);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+	background: rgba(var(--accent-rgb), 0.1);
 }
 
 .popupSecondary {

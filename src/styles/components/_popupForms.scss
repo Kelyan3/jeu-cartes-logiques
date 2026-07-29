@@ -10,8 +10,8 @@
     border: 1px solid var(--accent-cyan);
     border-radius: 10px;
     padding: 12px 18px;
-    box-shadow: 0 0 16px rgba(94, 234, 212, 0.15);
-    transition: box-shadow .15s ease;
+    box-shadow: var(--shadow-soft);
+    transition: border-color .15s ease;
 }
 
 .popupForms-box .box a {
@@ -23,5 +23,5 @@
 }
 
 .popupForms-box .box:hover {
-    box-shadow: 0 0 24px rgba(94, 234, 212, 0.3);
+    border-color: var(--accent-cyan);
 }

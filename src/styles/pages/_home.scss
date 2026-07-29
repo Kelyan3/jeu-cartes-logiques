@@ -13,6 +13,8 @@
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
 	padding: 40px 48px;
+	box-shadow: var(--shadow-soft);
+	max-width: min(820px, 94vw);
 }
 
 #regles h1 {
@@ -55,6 +57,7 @@
 	padding: 40px 48px;
 	margin-top: 24px;
 	text-align: center;
+	box-shadow: var(--shadow-soft);
 }
 
 .leaderboardTable {

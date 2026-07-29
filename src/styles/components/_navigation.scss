@@ -9,9 +9,10 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0 32px;
-	background: rgba(var(--bg-base-rgb), 0.85);
+	background: var(--bg-surface);
 	backdrop-filter: blur(8px);
 	border-bottom: 1px solid var(--border-subtle);
+	box-shadow: var(--shadow-soft);
 }
 
 .brand {
@@ -85,11 +86,11 @@
 
 .choose ul li a:hover,
 .choose ul li .logoutLink:hover {
-	background: rgba(94, 234, 212, 0.08);
+	background: rgba(var(--accent-rgb), 0.1);
 	color: var(--accent-cyan);
 }
 
 .choose ul li a.active {
 	color: var(--accent-cyan);
-	background: rgba(94, 234, 212, 0.08);
+	background: rgba(var(--accent-rgb), 0.1);
 }

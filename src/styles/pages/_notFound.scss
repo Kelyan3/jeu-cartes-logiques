@@ -27,10 +27,9 @@
 	text-decoration: none;
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
-	transition: background .15s ease, box-shadow .15s ease;
+	transition: background .15s ease, border-color .15s ease;
 }
 
 #notFound .backHome:hover {
-	background: rgba(94, 234, 212, 0.1);
-	box-shadow: 0 0 12px rgba(94, 234, 212, 0.2);
+	background: rgba(var(--accent-rgb), 0.1);
 }
