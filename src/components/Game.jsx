@@ -153,67 +153,84 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	const [openFileJson, setOpenFileJson] = useState("");
 
-	// Le nombre de cartes sélectionnées
+	/**
+	 * Le nombre de cartes sélectionnées.
+	 */
 	const [nbSelec, setNbSelec] = useState(0);
 
-	// Indice du deck de la 1ère carte sélectionnée
+	/**
+	 * Indice du deck de la 1ère carte sélectionnée
+	 */
 	const [selecDeck1, setSelecDeck1] = useState(-1);
 
-	// Indice de la carte dans le deck de la 1ère carte sélectionnée
+	/**
+	 * Indice de la carte dans le deck de la 1ère carte sélectionnée
+	 */
 	const [selecCard1, setSelecCard1] = useState(-1);
 
-	// Indice du deck de la 2ème carte sélectionnée
+	/**
+	 * Indice du deck de la 2ème carte sélectionnée
+	 */
 	const [selecDeck2, setSelecDeck2] = useState(-1);
 
-	// Indice de la carte dans le deck de la 2ème carte sélectionnée
+	/**
+	 * Indice de la carte dans le deck de la 2ème carte sélectionnée
+	 */
 	const [selecCard2, setSelecCard2] = useState(-1);
 
-	/** Variable gérant le popup d'ajout de carte en mode création
-	 *  - false = on ne voit pas le popup
-	 *  - true  = on voit le popup
+	/**
+	 * Variable gérant le popup d'ajout de carte en mode création
+	 * - false = on ne voit pas le popup
+	 * - true  = on voit le popup
 	 */
 	const [popupAddCard, setPopupAddCard] = useState(false);
 
-	/** Variable gérant le popup de suppression de carte en mode création.
-	 *  - false = on ne voit pas le popup
-	 *  - true  = on voit le popup
+	/**
+	 * Variable gérant le popup de suppression de carte en mode création.
+	 * - false = on ne voit pas le popup
+	 * - true  = on voit le popup
 	 */
 	const [popupDeleteCard, setPopupDeleteCard] = useState(false);
 
-	/** Indice du deck dans lequel sera ajouté la carte en mode création avec le bouton "Ajout carte"
-	 *  ou en sélectionnant deux cartes en choisissant la liaison.
+	/**
+	 * Indice du deck dans lequel sera ajouté la carte en mode création avec le bouton "Ajout carte"
+	 * ou en sélectionnant deux cartes en choisissant la liaison.
 	 */
 	const [indiceDeckAddCard, setIndiceDeckAddCard] = useState(0);
 
-	/** Popup en mode création pour choisir la liaison quand deux cartes sont sélectionnées.
-	 *  - false = on ne voit pas le popup
-	 *  - true  = on voit le popup
+	/**
+	 * Popup en mode création pour choisir la liaison quand deux cartes sont sélectionnées.
+	 * - false = on ne voit pas le popup
+	 * - true  = on voit le popup
 	 */
 	const [popupFusion, setPopupFusion] = useState(false);
 
-	/** Popup quand on finit un exercice (objectif principal dans le deck 0).
-	 *  - false = on ne voit pas le popup
-	 *  - true  = on voit le popup
+	/**
+	 * Popup quand on finit un exercice (objectif principal dans le deck 0).
+	 * - false = on ne voit pas le popup
+	 * - true  = on voit le popup
 	 */
 	const [popupWin, setPopupWin] = useState(false);
 
 	// Tableau de sauvegarde de copie de l'ancien tableau "game"
 	const [lastGame, setLastGame] = useState([]);
 
-	/** Message à afficher en cas de coup illégal.
-	 *  Si le message est "" on affiche rien.
+	/**
+	 * Message à afficher en cas de coup illégal. Si le message est "" on affiche rien.
 	 */
 	const [messageErreur, setMessageError] = useState("");
 
-	/** Message tutoriel à afficher en mode tutoriel.
-	 *  Attention c'est un tableau de strings.
-	 *  Si le message est "" on affiche rien.
+	/**
+	 * Message tutoriel à afficher en mode tutoriel.
+	 * Attention c'est un tableau de strings.
+	 * Si le message est "" on affiche rien.
 	 */
 	const [messageTutorial, setMessageTutorial] = useState("");
 
-	/** Tableau des objectifs.
-	 *  Sous cette forme : [numero objectif, indice de la carte dans le deck, (numero != indice)]
-	 *  Il se peut qu'il y ait des cartes entre les sous-objectifs comme dans l'exercice 5.
+	/**
+	 * Tableau des objectifs.
+	 * Sous cette forme : [numero objectif, indice de la carte dans le deck, (numero != indice)]
+	 * Il se peut qu'il y ait des cartes entre les sous-objectifs comme dans l'exercice 5.
 	 */
 	const [tabObjectif, setTabObjectif] = useState([[0, 0, false]]);
 
@@ -653,9 +670,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const gameOutput = () => {
 		// Le tableau que l'on va retourner
 		let res = [[], []];
-		/** Transforme toutes les cartes en objets (avec seulement les informations essentielles).
-		 *  - la couleur ou liaison + left + right
-		 *  - la carte est ajoutée dans le tableau retourné
+
+		/**
+		 * Transforme toutes les cartes en objets (avec seulement les informations essentielles).
+		 * - la couleur ou liaison + left + right
+		 * - la carte est ajoutée dans le tableau retourné
 		 */
 		game.forEach(function (deck, index) {
 			deck.forEach(function (card) {
@@ -783,9 +802,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		let num = -1,
 			// Deck de l'objectif
 			deck = tmp.length - 1;
-		/** Cherche parmi les cartes de l'objectif s'il y a une carte dont la partie droite
-		 *  est égale à la carte envoyée en paramètre.
-		 *  Si oui {@link num} prend la valeur de l'index de cette carte.
+
+		/**
+		 * Cherche parmi les cartes de l'objectif s'il y a une carte dont la partie droite
+		 * est égale à la carte envoyée en paramètre.
+		 * Si oui {@link num} prend la valeur de l'index de cette carte.
 		 */
 		tmp[deck].forEach((element, index) => {
 			// Vérifie si la couleur est null (si elle est null la carte est au moins double)
@@ -1168,9 +1189,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		}
 		// Copie du jeu actuel
 		let tmp = [...game],
-			/** Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
-			 *  Met le résultat dans {@link bool}.
-			 *  On ne met pas directement la condition dans le if car on veut savoir avec quelle condition on y est rentré.
+			/**
+			 * Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
+			 * Met le résultat dans {@link bool}.
+			 * On ne met pas directement la condition dans le if car on veut savoir avec quelle condition on y est rentré.
 			 */
 			bool =
 				tmp[selecDeck2][selecCard2].link === "=>" &&
@@ -1684,9 +1706,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		game[game.length - 1].forEach((element) => {
 			// Si le deck passé en paramètre est l'objectif
 			if (deck === game.length - 1) {
-				// si il y a une carte dans les objectif qui est egale
-				// a la partie droite de la carte que l'on a passer en paramètre
-				/** S'il y a une carte dans les objectifs qui est égale à la partie droite
+				/**
+				 * S'il y a une carte dans les objectifs qui est égale à la partie droite
 				 * de la carte que l'on a passé en paramètre.
 				 */
 				if (
@@ -1755,8 +1776,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		let bool = false;
 		// Si la carte que l'on teste a une liaison
 		if (card.color === null) {
-			/** Si la carte a une liaison "et" & que la partie gauche ou droite de cette carte est égale
-			 *  à la carte objectif on retourne true.
+			/**
+			 * Si la carte a une liaison "et" & que la partie gauche ou droite de cette carte est égale
+			 * à la carte objectif on retourne true.
 			 */
 			if (
 				card.link === "et" &&
@@ -1865,8 +1887,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		game.forEach((deck, index) => {
 			// Parcourt le deck
 			deck.forEach((card) => {
-				/** La carte ne doit pas être dans les objectifs et on regarde dans le deck si la carte est égale
-				 *  à {@link cardTest}, si oui {@link bool} est true.
+				/**
+				 * La carte ne doit pas être dans les objectifs et on regarde dans le deck si la carte est égale
+				 * à {@link cardTest}, si oui {@link bool} est true.
 				 */
 				if (index !== game.length - 1 && card.equals(cardTest))
 					bool = true;
@@ -2018,7 +2041,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				addLineDemonstration([res], [0], 0, true);
 				allFalse(tmp);
 				setSavedGame(tmp);
-			} catch (error) {}
+			} catch (error) {
+				console.error("Erreur lors du chargement de l'exercice :", error);
+			}
 		}
 		if (mode === "Create") {
 			allFalse([[], []]);

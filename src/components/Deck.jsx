@@ -114,11 +114,11 @@ const Deck = ({
 						return game[indice].map((card, index) => (
 							<div key={index}>
 								{mode !== "Create" && indice === nbDeck - 1 && getObjectifNum(index) !== -1 && (
-									<b>
-										Objectif {getObjectifNum(index)} : <br></br>
-									</b>
-								)}
-								
+										<b>
+											Objectif {getObjectifNum(index)} : <br />
+										</b>
+									)}
+									
 								<Card
 									deckIndice={indice}
 									cardIndice={index}

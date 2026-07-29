@@ -38,25 +38,32 @@
 }
 
 .game .bouton {
+	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
-	margin: auto;
+	justify-content: center;
+	gap: 8px;
+	margin: 0 auto;
 	position: sticky;
 	top: 74px;
 	z-index: 20;
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
-	padding: 8px 12px;
+	padding: 8px 10px;
 	width: fit-content;
+	max-width: calc(100% - 24px);
+	box-shadow: var(--shadow-soft);
 }
 
-.game .bouton div {
-	display: inline-block;
+.game .bouton > div {
+	display: flex;
+	align-items: center;
 }
 
 .game .bouton button {
 	cursor: pointer;
-	margin: 20px;
+	margin: 3px;
 	position: relative;
 }
 
@@ -155,14 +162,19 @@
 }
 
 .game .bouton #checkBoxSimple {
-	margin: 6px;
+	display: inline-flex;
+	align-items: center;
+	height: 42px;
+	margin: 0;
+	padding: 0 4px 0 8px;
 	position: relative;
-	top: -6px;
+	border-left: 1px solid var(--border-subtle);
+	margin-left: 4px;
 }
 
 .game .bouton #checkBoxSimple .tooltiptext {
-	top: 180%;
-	width: 200px;
+	top: calc(100% + 8px);
+	width: 160px;
 }
 
 .game .bouton .buttonAction:hover {
@@ -335,8 +347,12 @@
 .game [type="checkbox"]:not(:checked) + label,
 .game [type="checkbox"]:checked + label {
 	cursor: pointer;
-	padding-left: 75px;
+	padding-left: 52px;
 	position: relative;
+	display: inline-flex;
+	align-items: center;
+	height: 42px;
+	margin: 0;
 }
 
 .game [type="checkbox"]:not(:checked) + label:before,
@@ -352,22 +368,24 @@
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 20px;
-	height: 32px;
+	height: 26px;
+	width: 48px;
 	left: 0;
-	top: -8px;
+	top: 50%;
+	transform: translateY(-50%);
 	transition: border-color .2s;
-	width: 68px;
 }
 
 .game [type="checkbox"]:not(:checked) + label:after,
 .game [type="checkbox"]:checked + label:after {
 	background: var(--text-muted);
 	border-radius: 50%;
-	height: 26px;
+	height: 20px;
+	width: 20px;
 	left: 3px;
-	top: -5px;
-	transition: all .2s;
-	width: 26px;
+	top: 50%;
+	transform: translateY(-50%);
+	transition: left .2s ease, background .2s ease;
 }
 
 .game [type="checkbox"]:checked + label:before {
@@ -376,6 +394,7 @@
 
 .game [type="checkbox"]:checked + label:after {
 	background: var(--accent-cyan);
-	left: 39px;
-	top: -5px;
+	left: 25px;
+	top: 50%;
+	transform: translateY(-50%);
 }
