@@ -94,3 +94,54 @@
 	color: var(--accent-cyan);
 	background: rgba(var(--accent-rgb), 0.1);
 }
+
+.navLink {
+	display: block;
+	padding: 10px 14px;
+	border-radius: 8px;
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 14px;
+	color: var(--text-muted);
+	text-decoration: none;
+	transition: background .15s ease, color .15s ease;
+}
+
+.navLink:hover {
+	background: rgba(var(--accent-rgb), 0.1);
+	color: var(--accent-cyan);
+}
+
+.navLink.active {
+	color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.1);
+}
+
+.themeNavItem {
+	display: flex;
+	align-items: center;
+	margin-left: 4px;
+	padding-left: 12px;
+	border-left: 1px solid var(--border-subtle);
+}
+
+.themeIconButton {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: var(--bg-base);
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.themeIconButton:hover {
+	border-color: var(--accent-cyan);
+	color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.1);
+}
