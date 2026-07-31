@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/authHooks";
-import { useTheme } from "../context/themeHooks";
+import { useAuth } from "../hooks/authHooks";
+import { useTheme } from "../hooks/themeHooks";
 
 
 const Navigation = () => {

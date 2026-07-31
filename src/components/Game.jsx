@@ -6,7 +6,7 @@ import LogicText from "./LogicText";
 
 import Card from "../class/Card";
 import { GameTab } from "../context/GameTab";
-import { useAuth } from "../context/authHooks";
+import { useAuth } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
 

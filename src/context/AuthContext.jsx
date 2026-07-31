@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { AuthContext } from "./authHooks";
+import { AuthContext } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
 

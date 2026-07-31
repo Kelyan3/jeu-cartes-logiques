@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authHooks";
+import { useAuth } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
 const Choice = ({ mode }) => {
