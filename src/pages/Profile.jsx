@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navigation from "../components/Navigation";
 
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authHooks";
 
 import { API_BASE_URL as API } from "../config/api";
 

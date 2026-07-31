@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
 const Choice = ({ mode }) => {
@@ -61,10 +61,7 @@ const Choice = ({ mode }) => {
 
 	useEffect(() => {
 		if (!user)
-		{
-			setCompletedLevels([]);
 			return;
-		}
 
 		fetch(`${API}/api/progress`, { credentials: "include" })
 			.then((response) => response.json())
@@ -75,6 +72,8 @@ const Choice = ({ mode }) => {
 				setCompletedLevels(completedNums);
 			});
 	}, [user, mode]);
+
+	const visibleCompletedLevels = user ? completedLevels : [];
 
 	/**
 	 * Navigue vers la page du niveau.
@@ -101,7 +100,7 @@ const Choice = ({ mode }) => {
 		{
 			if (index < jsonCount)
 			{
-				const isCompleted = completedLevels.includes(index + 1);
+				const isCompleted = visibleCompletedLevels.includes(index + 1);
 				row.push(
 					<td
 						key={index}
@@ -131,7 +130,7 @@ const Choice = ({ mode }) => {
 	 * 
 	 * @returns {JSX.Element[]}
 	 */
-	function AfficheChoice()
+	function afficheChoice()
 	{
 		const res = [];
 		difficulty.forEach((category, index) => {
@@ -167,7 +166,7 @@ const Choice = ({ mode }) => {
 
 	return (
 		<div className="choice">
-			<AfficheChoice></AfficheChoice>
+			{afficheChoice()}
 		</div>
 	);
 };

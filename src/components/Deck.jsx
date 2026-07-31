@@ -1,6 +1,5 @@
-import React from "react";
 import Card from "./Card";
-import { GameTab } from "./Game";
+import { GameTab } from "../context/GameTab";
 
 const Deck = ({
 	updateGame,
@@ -13,8 +12,6 @@ const Deck = ({
 	objectif,
 	isWin,
 	affichageSimple,
-	suppr,
-	nouveau,
 }) => {
 
 	/**

@@ -1,7 +1,6 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/authHooks";
+import { useTheme } from "../context/themeHooks";
 
 
 const Navigation = () => {

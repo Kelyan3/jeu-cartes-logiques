@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { GameTab } from "./Game";
+import { GameTab } from "../context/GameTab";
 import LogicText from  "./LogicText";
 
 const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
@@ -32,15 +31,17 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 	/**
 	 * Construit récursivement l'affichage d'une carte (simple ou composée de sous-cartes reliées
 	 * par un connecteur), en gérant l'orientation d'affichage selon la profondeur de récursion.
-	 * 
+	 *
 	 * @param {Card} currentCard - La carte sur laquelle on est actuellement
 	 * @param {number} count
 	 * @param {true|false} selec - true si la carte est sélectionnée, sinon false
 	 * @param {number} originalCount
+	 * @param {string} path - chemin ("L"/"R" empilés) jusqu'à cette sous-carte depuis la racine,
+	 *                        utilisé comme clé React unique.
+	 *
 	 * @returns {JSX.Element}
 	 */
-	const recursiveRender = (currentCard, count, selec, originalCount) => {
-		recursiveRender.count++;
+	const recursiveRender = (currentCard, count, selec, originalCount, path) => {
 		if (currentCard.color !== null)
 		{
 			let style = { backgroundColor: currentCard.color };
@@ -49,7 +50,7 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 
 			return (
 				<span
-					key={recursiveRender.count}
+					key={path}
 					className={`card_simple ` + (selec && currentCard.color !== "transparent" ? "selectionner " : "")}
 					style={style}
 				></span>
@@ -59,9 +60,8 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 		if (affichageSimple)
 			currentCard = currentCard.displayGoodCard();
 
-		let className = "carte_container_horizon";
+		let className = "carte_container_vertical";
 		let link = "link_vertical";
-		className = "carte_container_vertical";
 
 		if (count % 2 !== 0 || (originalCount === 2 && count === 2))
 		{
@@ -73,13 +73,13 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 			link = "link_vertical2";
 
 		return (
-			<span className={className} key={recursiveRender.count}>
+			<span className={className} key={path}>
 				{[
-					recursiveRender(currentCard.left, count - 1, selec, originalCount),
-					<span key={recursiveRender.count + "link"} className={`link ${link}`}>
+					recursiveRender(currentCard.left, count - 1, selec, originalCount, path + "L"),
+					<span key={path + "link"} className={`link ${link}`}>
 						<LogicText>{afficheLink(currentCard.link)}</LogicText>
 					</span>,
-					recursiveRender(currentCard.right, count - 1, selec, originalCount),
+					recursiveRender(currentCard.right, count - 1, selec, originalCount, path + "R"),
 				]}
 			</span>
 		);
@@ -92,10 +92,7 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 	 * 
 	 * @returns {JSX.Element}
 	 */
-	function RenderCard(props) {
-		let currentCard = props.currentCard;
-		let selec = props.selec;
-
+	function renderCard(currentCard, selec) {
 		if (currentCard === undefined)
 			return <span></span>;
 
@@ -103,9 +100,8 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 			currentCard = currentCard.displayGoodCardRecur();
 
 		const profondeurCard = currentCard.getProfondeur();
-		recursiveRender.count = 0;
 
-		return recursiveRender(currentCard, profondeurCard, selec, profondeurCard);
+		return recursiveRender(currentCard, profondeurCard, selec, profondeurCard, "root");
 	}
 
 	/**
@@ -149,10 +145,7 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 							(game[deckIndice][cardIndice].nouveau ? "nouveau " : "")}
 						style={calcSizeCard(game[deckIndice][cardIndice])}
 					>
-						<RenderCard
-							currentCard={game[deckIndice][cardIndice]}
-							selec={game[deckIndice][cardIndice].active}
-						></RenderCard>
+						{renderCard(game[deckIndice][cardIndice], game[deckIndice][cardIndice].active)}
 					</div>
 				);
 			}}

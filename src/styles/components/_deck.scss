@@ -7,12 +7,14 @@
 	margin-left: 2%;
 	margin-right: 2%;
 	min-width: 160px;
+	width: fit-content;
 	height: 100%;
 	color: var(--text-primary);
 	margin-top: 20px;
-	padding-bottom: 12px;
+	padding: 0 16px 12px;
 	transition: border-color .2s ease;
 	box-shadow: var(--shadow-soft);
+	box-sizing: border-box;
 }
 
 .deck b {
@@ -58,8 +60,12 @@
 }
 
 .start, .other1, .other2, .goal {
-	flex: 1 1 0;
+	flex: 0 1 auto;
 	min-width: 200px;
+}
+
+.goal {
+	margin-left: auto;
 }
 
 .start .deck {

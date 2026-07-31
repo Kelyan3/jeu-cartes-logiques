@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { AuthContext } from "./authHooks";
 import { API_BASE_URL as API } from "../config/api";
-
-const AuthContext = createContext(null)
 
 
 export const AuthProvider = ({ children }) => {
@@ -77,5 +76,3 @@ export const AuthProvider = ({ children }) => {
 		</AuthContext.Provider>
 	);
 }
-
-export const useAuth = () => useContext(AuthContext);
