@@ -31,13 +31,5 @@ def reset_table():
 				cur.execute(file.read())
 
 
-def get_database():
-	"""Récupère toutes les lignes de la table data_carte (table de test)."""
-	with psycopg.connect(CONN_PARAMS) as conn:
-		with conn.cursor() as cur:
-			cur.execute("SELECT * FROM data_carte;")
-			return cur.fetchall()
-
-
 if __name__ == "__main__":
     reset_table()

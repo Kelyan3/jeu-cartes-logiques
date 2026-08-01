@@ -118,7 +118,7 @@ const Deck = ({
 				<GameTab.Consumer>
 					{(game) => {
 						return game[indice].map((card, index) => (
-							<div key={index}>
+							<div key={card.toString()}>
 								{mode !== "Create" && indice === nbDeck - 1 && getObjectifNum(index) !== -1 && (
 										<b>
 											Objectif {getObjectifNum(index)} : <br />

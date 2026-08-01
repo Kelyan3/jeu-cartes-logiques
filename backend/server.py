@@ -7,7 +7,6 @@ from flask_cors import CORS
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
 
-from database import get_database
 from auth import *
 from progress import *
 
@@ -48,16 +47,6 @@ login_manager = LoginManager(app)
 @login_manager.user_loader
 def load_user(user_id):
 	return get_user_by_id(user_id)
-
-
-@app.route("/test", methods=["GET"])
-def test():
-	return jsonify({"test": "test"})
-
-
-@app.route("/getDatabase", methods=["GET"])
-def get_database_server():
-	return jsonify(get_database())
 
 
 @app.route("/api/register", methods=["POST"])
