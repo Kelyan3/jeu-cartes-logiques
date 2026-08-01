@@ -12,6 +12,8 @@ const Deck = ({
 	objectif,
 	isWin,
 	affichageSimple,
+	cardHelp,
+	cardHelp2,
 }) => {
 
 	/**
@@ -73,6 +75,13 @@ const Deck = ({
 		return res;
 	};
 
+	const isCardHelp = (index) => {
+		return (
+			(cardHelp !== null && cardHelp[0] === indice && cardHelp[1] === index) ||
+			(cardHelp2 !== null && cardHelp2[0] === indice && cardHelp2[1] === index)
+		);
+	}
+
 	return (
 		<div className={setClassname()}>
 			<div className="deck">
@@ -122,6 +131,7 @@ const Deck = ({
 									update={update}
 									isWin={isWin}
 									affichageSimple={affichageSimple}
+									isHelp={isCardHelp(index)}
 								/>
 							</div>
 						));

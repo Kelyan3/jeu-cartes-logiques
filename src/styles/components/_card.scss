@@ -91,3 +91,21 @@
 	outline: 2px solid rgba(var(--accent-rgb), 0.25);
 	outline-offset: 2px;
 }
+
+.aide {
+	border-radius: 8px;
+	animation-duration: 1.4s;
+	animation-name: aide-pulse;
+	animation-iteration-count: infinite;
+
+	@keyframes aide-pulse {
+		0%, 100% {
+			box-shadow: 0 0 0 2px var(--accent-amber);
+		}
+
+		50% {
+			box-shadow: 0 0 0 5px var(--accent-amber);
+			opacity: 0.85;
+		}
+	}
+}

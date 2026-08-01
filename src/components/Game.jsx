@@ -9,6 +9,8 @@ import { GameTab } from "../context/GameTab";
 import { useAuth } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
+import { containCard, computeNextMove } from "../utils/gameSolver";
+
 
 /**
  * Transforme un objet JSON en instance {@link Card}.
@@ -279,6 +281,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const [selecCard2, setSelecCard2] = useState(-1);
 
+	const [cardHelp, setCardHelp] = useState(null);
+	const [cardHelp2, setCardHelp2] = useState(null);
+
 	/**
 	 * Variable gérant le popup d'ajout de carte en mode création
 	 * - false = on ne voit pas le popup
@@ -431,6 +436,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		{
 			// Met le message d'erreur en "" ce qui ne l'affiche plus
 			setMessageError("");
+
+			setCardHelp(null);
+			setCardHelp2(null);
 
 			/**
 			 * Copie du jeu dans tmp (copie aussi le deck concerné, pas seulement
@@ -1900,29 +1908,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Parcourt le deck passé en paramètre (tmp[deckId]) et regarde s'il existe une carte qui est égale à la
-	 * carte passée en paramètre.
-	 *    Si oui renvoie true.
-	 * @param {Card[][]} tmp - tableau du jeu temporaire
-	 * @param {number}          deckId - indice du deck de la dernière carte trouvée pour aller à l'objectif
-	 * @param {Card}              card - la carte à trouver
-	 * @returns {boolean} true ou false
-	 */
-	const containCard = (tmp, deckId, card) => {
-		// Variable que l'on va retourner (false par défaut)
-		let bool = false;
-
-		// Parcourt le deck passé en paramètre
-		tmp[deckId].forEach((cardElement) => {
-			// Si une carte de ce deck est égale à la carte passée en paramètre alors renvoie true
-			if (cardElement.equals(card))
-				bool = true;
-		});
-
-		return bool;
-	};
-
-	/**
 	 * Fait une copie du jeu actuel en créant un nouveau tableau & en copiant toutes les cartes.
 	 *
 	 * @returns {Card[][]} une copie de la partie actuelle
@@ -2082,6 +2067,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const affichageSimpleHandler = (event) => {
 		setAffichageSimple(event.target.checked);
 	};
+
+	const getNextMove = () => {
+		const nextMove = computeNextMove(game, tabObjectif);
+		setCardHelp(nextMove.cardHelp);
+		setCardHelp2(nextMove.cardHelp2);
+	}
 
 	/**
 	 * Applique la transitivité sur deux cartes sélectionnées ayant chacune une liaison "=>",
@@ -2306,6 +2297,16 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						<span className="tooltiptext">Retour arrière</span>
 					</button>
 				</div>
+
+				{mode !== "Create" && (
+					<div>
+						<button id="aide" className="buttonAction " onClick={getNextMove}>
+							<span className="buttonFormula">?</span>
+							<span className="tooltiptext">Aide</span>
+						</button>
+					</div>
+				)}
+
 				{/* Bouton pour obtenir les 2 parties d'une carte "et" */}
 				{mode !== "Create" && (
 					<div>
@@ -2315,8 +2316,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 					</div>
 				)}
-				{/* Bouton pour obtenir la partie droite d'une carte "=>" si l'on a sélectionné une autre carte qui
-			est égale à la partie gauche */}
+
+				{/* Bouton pour obtenir la partie droite d'une carte "=>" si l'on a sélectionné une autre carte qui est égale à la partie gauche */}
 				{mode !== "Create" && (
 					<div>
 						<button id="addImplique" className={"buttonAction " + (mode === "Tutorial" && numero === 1 ? "boutonSelection" : "")} onClick={addCardFuse}>
@@ -2325,8 +2326,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 					</div>
 				)}
-				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte
-			sélectionnée) & la partie droite (2ème carte sélectionnée). La carte créée aura une liaison "et" */}
+
+				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte sélectionnée) & la partie droite (2ème carte sélectionnée). La carte créée aura une liaison "et" */}
 				{mode !== "Create" && (
 					<div>
 						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
@@ -2335,6 +2336,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 					</div>
 				)}
+
 				{/* Ajout objectif secondaire */}
 				{mode !== "Create" && (
 					<div>
@@ -2344,6 +2346,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 					</div>
 				)}
+
 				{mode !== "Create" && (
 					<div>
 						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExclus}>
@@ -2352,6 +2355,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 					</div>
 				)}
+
 				{mode !== "Create" && (
 					<div>
 						<button id="transitivite" className={"buttonAction " + (mode === "Tutorial" && (numero === 4 || numero === 5) ? "boutonSelection" : "")} onClick={transitivite}>
@@ -2360,6 +2364,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						</button>
 					</div>
 				)}
+
 				{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
 				{mode === "Create" && (
 					<label className="fileButton">
@@ -2367,10 +2372,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						<input type="file" accept="application/json" onChange={openFile}></input>
 					</label>
 				)}
+
 				{/* Copie du jeu actuel en format JSON dans le presse-papier */}
 				{mode === "Create" && (
 					<button className="fileDownload" onClick={saveAsFile}>Télécharger le fichier</button>
 				)}
+
 				{
 					<span id="checkBoxSimple">
 						<input
@@ -2388,6 +2395,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</span>
 				}
 			</div>
+
 			{/* Message d'aide en mode tutoriel */}
 			{mode === "Tutorial" && messageTutorial !== "" && (
 				<div className="toast toastTutorial">
@@ -2396,10 +2404,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					})}
 				</div>
 			)}
+
 			{/* Message d'erreur si on essaye de faire un mouvement illégal (ex: vouloir séparer une carte qui n'a pas une liaison "et") */}
 			{messageErreur !== "" && (
 				<div className="toast toastError">{messageErreur}</div>
 			)}
+
 			<GameTab.Provider value={game}>
 				<div className="deckRow">
 					{/* Ajout des decks */}
@@ -2415,11 +2425,14 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							objectif={tabObjectif}
 							isWin={win}
 							affichageSimple={affichageSimple}
+							cardHelp={cardHelp}
+							cardHelp2={cardHelp2}
 							key={deck.__deckId ?? index}
 						></Deck>
 					))}
 				</div>
 			</GameTab.Provider>
+
 			{/* Affichage de la démonstration de logique mathématique de l'exercice */}
 			<div className="demonstration" onCopy={copyHandler}>
 				{demonstration.map((element, index) => {
@@ -2439,6 +2452,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					);
 				})}
 			</div>
+
 			{popupAddCard && (
 				<Popup
 					size={50}
@@ -2469,6 +2483,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					}
 				/>
 			)}
+
 			{/* Popup disponible en mode création quand on sélectionne 2 cartes pour choisir la liaison de la future carte */}
 			{popupFusion && (
 				<Popup
@@ -2495,6 +2510,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					}
 				/>
 			)}
+
 			{/* Popup disponible en mode création pour supprimer une carte avec un bouton qui lui est dédié */}
 			{popupDeleteCard && !(selecCard1 === -1 || selecDeck1 === -1) && (
 				<Popup
@@ -2519,6 +2535,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					}
 				/>
 			)}
+
 			{/* Popup de victoire quand on réussit l'objectif principal */}
 			{popupWin && (
 				<Popup

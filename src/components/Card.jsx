@@ -1,7 +1,7 @@
 import { GameTab } from "../context/GameTab";
 import LogicText from  "./LogicText";
 
-const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
+const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }) => {
 	/**
 	 * Fonction qui détecte le clique sur une carte & qui appelle la fonction {@link update()} passée par le
 	 * component Deck.
@@ -142,7 +142,8 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple }) => {
 							"card " +
 							(isWin ? "" : "hoverable ") +
 							(game[deckIndice][cardIndice].hover && !isWin ? "activeHover " : "") +
-							(game[deckIndice][cardIndice].nouveau ? "nouveau " : "")}
+							(game[deckIndice][cardIndice].nouveau ? "nouveau " : "") +
+							(isHelp ? "aide" : "")}
 						style={calcSizeCard(game[deckIndice][cardIndice])}
 					>
 						{renderCard(game[deckIndice][cardIndice], game[deckIndice][cardIndice].active)}
