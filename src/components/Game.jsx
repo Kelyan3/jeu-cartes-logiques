@@ -1620,7 +1620,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 								// Met à jour le tableau objectif
 								setTabObjectif(tmpObj);
-								addLineDemonstration([["Supposons ", tmpCard.copy(), ". Montrons ", secondObjectif.copy(), ".",], ], [1]);
+								addLineDemonstration([["Supposons ", tmpCard.copy(), ". Montrons ", secondObjectif.copy(), ".",], ], [0]);
+								setIndentationDemonstration((prev) => prev + 1);
 
 								// Met à jour le jeu & désélectionne toutes les cartes
 								allFalse(tmp);
@@ -1636,6 +1637,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 									// Copie de la partie gauche de la carte sélectionnée
 									secondObjectif = tmp[deckI][cardI].left.copy();
+
 									// Met la carte copiée dans le deck objectif (ce n'est pas un objectif secondaire)
 									if (!addToGame(tmp, tmp.length - 1, secondObjectif))
 										return;
