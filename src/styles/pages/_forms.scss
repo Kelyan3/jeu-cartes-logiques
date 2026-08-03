@@ -233,3 +233,35 @@
 	font-size: 14px;
 	color: var(--text-primary);
 }
+
+.passwordField {
+	display: flex;
+	gap: 8px;
+	align-items: stretch;
+}
+
+.passwordField input {
+	flex: 1;
+	min-width: 0;
+}
+
+.togglePassword {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 44px;
+	padding: 0;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: var(--bg-base);
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.togglePassword:hover {
+	border-color: var(--accent-cyan);
+	color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.1);
+}
