@@ -24,7 +24,7 @@
 	background: var(--bg-surface);
 	border: 1px solid var(--accent-cyan);
 	box-shadow: var(--shadow-soft);
-	font-size: 15px;
+	font-size: clamp(12px, 2.5vw, 15px);
 	display: flex;
 	height: fit-content;
 	width: fit-content;

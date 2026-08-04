@@ -121,15 +121,39 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }
 
 		const prof = card.getProfondeur();
 		if (prof === 1)
-			return { width: "5vw", height: "13vh" };
-		if (prof < 4)
-			return { width: "11vw", height: "13vh" };
-		if (prof < 5)
-			return { width: "11vw", height: "20vh" };
-		if (prof < 6)
-			return { width: "15vw", height: "20vh" };
+		{
+			return {
+				width: "clamp(48px, 8vw, 72px)",
+				height: "clamp(72px, 14vh, 110px)"
+			};
+		}
 
-		return { width: "15vw", height: "28vh" };
+		if (prof < 4)
+		{
+			return {
+				width: "clamp(96px, 14vw, 160px)",
+				height: "clamp(72px, 14vh, 110px)",
+			};
+		}
+
+		if (prof < 5)
+			return {
+				width: "clamp(110px, 16vw, 180px)",
+				height: "clamp(100px, 18vh, 140px)",
+			};
+
+		if (prof < 6)
+		{
+			return {
+				width: "clamp(130px, 18vw, 200px)",
+				height: "clamp(100px, 18vh, 140px)",
+			};
+		}
+
+		return {
+			width: "clamp(140px, 20vw, 220px)",
+			height: "clamp(120px, 22vh, 180px)",
+		};
 	}
 
 	return (

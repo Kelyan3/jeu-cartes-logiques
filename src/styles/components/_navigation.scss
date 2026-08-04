@@ -8,6 +8,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	gap: 16px;
 	padding: 0 32px;
 	background: var(--bg-surface);
 	backdrop-filter: blur(8px);
@@ -21,6 +22,45 @@
 	font-size: 18px;
 	color: var(--text-primary);
 	text-decoration: none;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.burgerButton {
+	display: none;
+	flex-shrink: 0;
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	gap: 5px;
+	background: transparent;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+}
+
+.burgerButton span {
+	display: block;
+	width: 18px;
+	height: 2px;
+	background: var(--text-primary);
+	border-radius: 2px;
+	transition: transform .2s ease, opacity .2s ease;
+}
+
+.burgerButton .isOpen span:nth-child(1) {
+	transform: translateY(7px) rotate(45deg);
+}
+
+.burgerButton .isOpen span:nth-child(2) {
+	opacity: 0;
+}
+
+.burgerButton .isOpen span:nth-child(3) {
+	transform: translateY(-7px) rotate(-45deg);
 }
 
 .navbar {
@@ -144,4 +184,89 @@
 	border-color: var(--accent-cyan);
 	color: var(--accent-cyan);
 	background: rgba(var(--accent-rgb), 0.1);
+}
+
+@media (max-width: 900px) {
+	.navigation {
+		padding: 0 16px;
+	}
+
+	.burgerButton {
+		display: flex;
+	}
+
+	.navbar {
+		position: fixed;
+		top: 64px;
+		left: 0;
+		width: 100%;
+		max-height: calc(100vh - 64px);
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		padding: 8px 16px 24px;
+		background: var(--bg-surface);
+		border-bottom: 1px solid var(--border-subtle);
+		box-shadow: var(--shadow-soft);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		transform: translateY(-8px);
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity .18s ease, transform .18s ease, visibility .18s;
+	}
+
+	.navbar.isOpen {
+		transform: translateY(0);
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+
+	.navbar > li {
+		width: 100%;
+	}
+
+	.navLink {
+		padding: 12px 8px;
+	}
+
+	.navbar > li.choose > div {
+		padding: 12px 8px;
+		cursor: default;
+	}
+
+	.navbar > li.choose:hover > div {
+		background: transparent;
+	}
+
+	.choose > ul {
+		position: static;
+		opacity: 1;
+		pointer-events: auto;
+		transform: none;
+		min-width: 0;
+		width: 100%;
+		border: none;
+		padding: 0 0 4px 12px;
+		background: transparent;
+	}
+
+	.choose ul li a,
+	.choose ul li .logoutLink {
+		padding: 10px 8px;
+	}
+
+	.themeNavItem {
+		margin: 8px 0 0;
+		padding: 12px 0 0;
+		border-left: none;
+		border-top: 1px solid var(--border-subtle);
+		width: 100%;
+	}
+}
+
+body.navOpen {
+	overflow: hidden;
 }

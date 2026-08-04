@@ -2361,7 +2361,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{mode !== "Create" && (
 					<div>
 						<button id="transitivite" className={"buttonAction " + (mode === "Tutorial" && (numero === 4 || numero === 5) ? "boutonSelection" : "")} onClick={transitivite}>
-							<span className="buttonFormula">[1⇒2]+[2⇒3]→[1⇒3]</span>
+							<span className="buttonFormula">[1⇒2] [2⇒3] → [1⇒3]</span>
 							<span className="tooltiptext">Transitivité</span>
 						</button>
 					</div>
@@ -2469,8 +2469,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 									["orange", "Orange"],
 									["green", "Verte"],
 									["purple", "Mauve"],
-									["black", "Noir"],
-									["white", "Blanc"],
+									["black", "Vrai"],
+									["white", "Faux"],
 								].map(([value, label]) => (
 									<label className="colorSwatchLabel" key={value}>
 										<input type="radio" value={value} name="couleur" />
@@ -2543,7 +2543,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				<Popup
 					content={
 						<>
-							<b>Bravo, vous avez gagné !</b>
+							<b>Bravo, vous avez trouvé la solution !</b>
 							<span
 								className="closeButton"
 								onClick={function () {

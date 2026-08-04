@@ -91,6 +91,23 @@
 	cursor: default;
 }
 
+.forms .authSwitch {
+	width: min(360px, 80vw);
+	margin: 16px auto 0;
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+.forms .authSwitch a {
+	color: var(--accent-cyan);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.forms .authSwitch a:hover {
+	text-decoration: underline;
+}
+
 .profileCard {
 	width: min(420px, 90vw);
 	text-align: center;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { useAuth } from "../hooks/authHooks";
 
@@ -95,6 +95,10 @@ const Login = () => {
 					<button type="submit" className="authSubmit" disabled={submitting}>
 						{submitting ? "Connexion..." : "Se connecter"}
 					</button>
+
+					<p className="authSwitch">
+						Pas de compte ? <NavLink to="/Register">S'inscrire</NavLink>
+					</p>
 				</form>
 			</div>
 		</div>

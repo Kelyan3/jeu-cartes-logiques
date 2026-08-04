@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/authHooks";
 import { useTheme } from "../hooks/themeHooks";
 
@@ -6,19 +7,49 @@ import { useTheme } from "../hooks/themeHooks";
 const Navigation = () => {
 	const { user, loading, logout } = useAuth();
 	const { theme, toggleTheme } = useTheme();
+	const [menuOpen, setMenuOpen] = useState(false);
+	const location = useLocation();
+
+	/**
+	 * Ferme le menu mobile à chaque changement de page.
+	 */
+	useEffect(() => {
+		setMenuOpen(false);
+	}, [location]);
+
+	/**
+	 * Empêche le scroll du corps de page quand le menu mobile est ouvert.
+	 */
+	useEffect(() => {
+		document.body.classList.toggle("navOpen", menuOpen);
+		return () => document.body.classList.remove("navOpen");
+	}, [menuOpen]);
 
 	return (
 		<nav className="navigation">
-			<NavLink to="/" end className="brand">Jeu des Cartes Logiques</NavLink>
+			<NavLink to="/" end className="brand" onClick={() => setMenuOpen(false)}>
+				Jeu des Cartes Logiques
+			</NavLink>
 
-			<ul className="navbar">
-				{/* Liens principaux toujours visibles */}
+			<button
+				type="button"
+				className={`burgerButton${menuOpen ? " isOpen" : ""}`}
+				onClick={() => setMenuOpen((open) => !open)}
+				aria-expanded={menuOpen}
+				aria-controls="primary-navbar"
+				aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+			>
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+
+			<ul id="primary-navbar" className={`navbar${menuOpen ? " isOpen" : ""}`}>
 				<li><NavLink to="/Tutorials" className="navLink">Tutoriels</NavLink></li>
 				<li><NavLink to="/Levels" className="navLink">Niveaux</NavLink></li>
 				<li><NavLink to="/Exercise/Create" className="navLink">Créer un niveau</NavLink></li>
 				<li><NavLink to="/Leaderboard" className="navLink">Classement</NavLink></li>
 
-				{/* Menu secondaire */}
 				<li className="choose">
 					<div>Plus</div>
 					<ul>
@@ -27,7 +58,6 @@ const Navigation = () => {
 					</ul>
 				</li>
 
-				{/* Compte */}
 				{!loading && !user && (
 					<li className="choose">
 						<div>Compte</div>
@@ -50,7 +80,6 @@ const Navigation = () => {
 					</li>
 				)}
 
-				{/* Switch mode sombre */}
 				<li className="themeNavItem">
 					<button
 						type="button"
@@ -60,7 +89,6 @@ const Navigation = () => {
 						aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
 					>
 						{theme === "dark" ? (
-							/* Soleil : cliquer pour repasser en clair */
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								width="20"
@@ -77,7 +105,6 @@ const Navigation = () => {
 								<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
 							</svg>
 						) : (
-							/* Lune : cliquer pour passer en sombre */
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								width="20"
