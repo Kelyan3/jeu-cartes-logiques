@@ -1044,61 +1044,82 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 		let bool = false;
 		let modif = false;
+
+		const findIntermediateDeckFor = (cardObj) => {
+			const findObj = findObjectifRelative(cardObj, tmp);
+			if (findObj === -1)
+				returnNonCard -1;
+
+			const hypothesis = tmp[tmp.length - 1][findObj].left;
+			for (let d = 1; d < tmp.length - 1; d++)
+			{
+				if (containCard(tmp, d, hypothesis))
+					return d;
+			}
+
+			return -1;
+		};
+
 		const checkWinForEveryObjectif = (cardArray) => {
 			const cardObj = cardArray[0];
-			const numDeckRef = cardArray[1][0];
-			const checkWin = (card) => {
-				if (card === null || card === undefined ||
-					cardObj === null || cardObj === undefined)
-				{
+			const numObj = cardArray[1][0];
+			const isLinked = cardArray[1][2];
+
+			const intermediaireDeck = numObj === 0 ? 0 : findIntermediateDeckFor(cardObj);
+
+			const checkWin = (card, deckIndex) => {
+				if (card == null || cardObj == null)
 					return;
-				}
 
 				if (modif || bool)
 					return;
 
-				if (!card.equals(cardObj) && card.color !== "white" && !containCard(tmp, numDeckRef, cardObj))
+				if (!card.equals(cardObj) && card.color !== "white")
 					return;
 
-				if (numDeckRef === 0)
+				// Objectif principal.
+				if (numObj === 0)
 				{
 					bool = true;
 					return;
 				}
 
-				modif = true;
+				// La carte doit être dans la bonne LPU ou dans le deck de départ.
+				if (deckIndex !== 0 && deckIndex !== intermediaireDeck)
+					return;
+
+				if (intermediaireDeck === -1)
+					return;
+
 				const findObj = findObjectifRelative(cardObj, tmp);
 				if (findObj === -1)
 					return;
 
-				// Si c'est un objectif secondaire : copie de la carte qui a servi à créer l'objectif secondaire
-				let tmpCard = tmp[tmp.length - 1][findObj].copy();
+				modif = true;
 
-				// Ajoute cette carte dans le deck précédent
-				if (!addToGame(tmp, numDeckRef - 1, tmpCard))
+				const tmpCard = tmp[tmp.length - 1][findObj].copy();
+
+				// Remonte "A ⇒ B" dans le deck juste au-dessus de la LPU
+				if (!addToGame(tmp, intermediaireDeck - 1, tmpCard))
 					return;
 
-				// Supprime l'objectif secondaire
+				// Retire B des objectifs.
 				tmp[tmp.length - 1] = delCardWithEquals(tmp[tmp.length - 1], cardObj);
 
-				// Vérifie si l'objectif a un objectif lié
-				if (findObj !== 0 && tmpTabObjectif[numDeckRef][2])
-				{
-					// Si oui supprime également l'objectif qui lui est lié
+				// Retire "A ⇒ B" du deck objectif s'il était lié.
+				if (findObj !== 0 && isLinked)
 					tmp[tmp.length - 1] = delCard(tmp[tmp.length - 1], findObj);
-				}
 
-				// Supprime le deck qui a servi pour cet objectif secondaire
-				tmp = delDeck(tmp, numDeckRef);
+				// Supprime la LPU intermédiaire trouvée (plus delDeck(tmp, numObj))
+				tmp = delDeck(tmp, intermediaireDeck);
 
-				// Met à jour la table des objectifs
 				arrayMsg.push(["On a ", tmpCard.copy(), "."]);
 				arrayIndent.push(-1);
 			};
 
-			tmp[numDeckRef].forEach(checkWin);
-			if (numDeckRef !== 0)
-				tmp[0].forEach(checkWin);
+			// Parcourt tous les decks utiles : départ + LPU intermédiaires.
+			for (let d = 0; d < tmp.length - 1; d++)
+				tmp[d].forEach((card) => checkWin(card, d));
 
 			return bool;
 		};
@@ -1263,28 +1284,45 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			allFalse(tmpFutureGame);
 			setSavedGame(tmpFutureGame);
 
-			/**
-			 * Ne retire une ligne de démonstration que s'il en existe une pour cette
-			 * action (certaines actions, notamment en mode Création, sauvegardent le
-			 * jeu sans ajouter de ligne de démonstration).
-			 */
-			if (demonstration.length > 0)
-			{
-				let demonstrationTmp = [...demonstration];
-				demonstrationTmp.pop();
-				setDemonstration(demonstrationTmp);
+			// Tag des lignes ajoutées par l'action que l'on annule.
+			const tag = tmpLastGame.length - 1;
 
-				let tabIndentationTmp = [...tabIndentation];
+			let demonstrationTmp = [...demonstration];
+			let tabIndentationTmp = [...tabIndentation];
+			let tabIndiceTmp = [...tabIndiceDemonstration];
+
+			// Retire toutes les lignes de démonstration associées à cette action.
+			while (tabIndiceTmp.length > 0 && tabIndiceTmp[tabIndiceTmp.length - 1] === tag)
+			{
+				demonstrationTmp.pop();
 				tabIndentationTmp.pop();
-				setTabIndentation(tabIndentationTmp);
+				tabIndiceTmp.pop();
 			}
 
-			// Supprime la dernière sauvegarde du jeu
+			setDemonstration(demonstrationTmp);
+			setTabIndentation(tabIndentationTmp);
+			setTabIndiceDemonstration(tabIndiceTmp);
+
 			tmpLastGame.pop();
 			setLastGame(tmpLastGame);
+
+			// Retour au tout début : restaurer la démonstration initiale.
+			if (tmpLastGame.length === 0)
+			{
+				setDemonstration(initialSetup.demonstration);
+				setTabIndentation([0]);
+				setTabIndiceDemonstration([0]);
+				setIndentationDemonstration(0);
+			}
 		}
 		else
+		{
 			allFalseGame();
+			setDemonstration(initialSetup.demonstration); // S'il n'y a plus d'historique, on force la démonstration initiale.
+			setTabIndentation([0]);
+			setTabIndiceDemonstration([0]);
+			setIndentationDemonstration(0);
+		}
 	};
 
 	/**
@@ -1789,34 +1827,36 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		let indentation = 0;
 		let tmpTabIndiceDemonstration = [];
 
-		/**
-		 * Base de départ pour l'indexation : -1 si on réinitialise le niveau
-		 * (la première ligne doit alors pointer vers l'index 0, cohérent avec
-		 * lastGame vide), sinon on repart de la dernière valeur connue.
-		 */
-		let baseIndice = -1;
+		// Indice d'historique partagé par toutes les lignes de cet appel.
+		const historyIndex = lastGame.length;
+
 		if (!reset)
 		{
 			tmpTabIndentation = [...tabIndentation];
 			tmpDemonstration = [...demonstration];
 			indentation = indentationDemonstration;
 			tmpTabIndiceDemonstration = [...tabIndiceDemonstration];
-			baseIndice = tabIndiceDemonstration[tabIndiceDemonstration.length - 1];
+		}
+		else
+		{
+			// Réinitialisation éventuelle du niveau.
+			tmpTabIndiceDemonstration = [];
 		}
 
 		msgArray.forEach((msg, index) => {
+			if (msg == null || msg.length === 0)
+				return;
+
 			if (indentationArray[index] === undefined)
 				indentationArray[index] = 0;
 
 			indentation += indentationArray[index];
 
-			tmpTabIndentation.push(indentationDemonstration);
+			tmpTabIndentation.push(indentation);
+			tmpDemonstration.push([indentation, msg]);
 
-			if (tmpDemonstration.length === 0 || num !== 0)
-				tmpDemonstration.push([indentation, msg,]);
-
-			tmpTabIndiceDemonstration.push(baseIndice + 1);
-			baseIndice += 1;
+			// Même tag pour toutes les lignes de cette action.
+			tmpTabIndiceDemonstration.push(historyIndex);
 		});
 
 		setDemonstration(tmpDemonstration);

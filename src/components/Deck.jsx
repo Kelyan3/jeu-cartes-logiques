@@ -82,6 +82,78 @@ const Deck = ({
 		);
 	}
 
+	if (indice === nbDeck - 1 && mode !== "Create")
+	{
+		return (
+			<GameTab.Consumer>
+				{(game) => {
+					const entries = game[indice].map((card, index) => ({
+						card,
+						index,
+						num: getObjectifNum(index),
+					}));
+					const principalEntries = entries.filter((e) => e.num === "principal");
+					const secondaryEntries = entries
+						.filter((e) => e.num !== "principal")
+						.map((e, i) => ({
+							...e,
+							num: `secondaire ${i + 1}`,
+						}));
+
+					return (
+						<div className="goalGroup">
+							{secondaryEntries.length > 0 && (
+								<div className="subgoal">
+									<div className="deck">
+										<h3>Objectifs secondaires</h3>
+
+										{secondaryEntries.map(({ card, index, num }) => (
+											<div key={card.toString()}>
+												<b>
+													Objectif {num} : <br />
+												</b>
+
+												<Card
+													deckIndice={indice}
+													cardIndice={index}
+													update={update}
+													isWin={isWin}
+													affichageSimple={affichageSimple}
+													isHelp={isCardHelp(index)}
+												/>
+											</div>
+										))}
+									</div>
+								</div>
+							)}
+
+							<div className="goal">
+								<div className="deck">
+									<h3>
+										Objectif principal{" "}
+										<img src={"/img/objectif.png"} alt={"Ajout d'objectif"} />
+									</h3>
+
+									{principalEntries.map(({ card, index }) => (
+										<Card
+											key={card.toString()}
+											deckIndice={indice}
+											cardIndice={index}
+											update={update}
+											isWin={isWin}
+											affichageSimple={affichageSimple}
+											isHelp={isCardHelp(index)}
+										/>
+									))}
+								</div>
+							</div>
+						</div>
+					);
+				}}
+			</GameTab.Consumer>
+		);
+	}
+
 	return (
 		<div className={setClassname()}>
 			<div className="deck">
@@ -119,12 +191,6 @@ const Deck = ({
 					{(game) => {
 						return game[indice].map((card, index) => (
 							<div key={card.toString()}>
-								{mode !== "Create" && indice === nbDeck - 1 && getObjectifNum(index) !== -1 && (
-										<b>
-											Objectif {getObjectifNum(index)} : <br />
-										</b>
-									)}
-									
 								<Card
 									deckIndice={indice}
 									cardIndice={index}

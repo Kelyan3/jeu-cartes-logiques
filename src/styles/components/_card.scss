@@ -19,16 +19,16 @@
 
 .link {
 	position: relative;
-	right: 19px;
-	border-radius: 6px;
+	right: 12px;
+	border-radius: 4px;
 	background: var(--bg-surface);
 	border: 1px solid var(--accent-cyan);
 	box-shadow: var(--shadow-soft);
-	font-size: clamp(12px, 2.5vw, 15px);
+	font-size: clamp(10px, 1.8vw, 12px);
 	display: flex;
 	height: fit-content;
 	width: fit-content;
-	padding: 8px 10px;
+	padding: 2px 5px;
 	text-indent: 0px;
 	text-align: center;
 	align-items: center;

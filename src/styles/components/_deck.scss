@@ -4,8 +4,6 @@
 	border-radius: 12px;
 	grid-area: 1;
 	position: relative;
-	margin-left: 2%;
-	margin-right: 2%;
 	min-width: 160px;
 	width: fit-content;
 	height: 100%;
@@ -59,13 +57,9 @@
 	color: var(--accent-cyan);
 }
 
-.start, .other1, .other2, .goal {
+.start, [class^="other"], .subgoal, .goal {
 	flex: 0 1 auto;
 	min-width: 200px;
-}
-
-.goal {
-	margin-left: auto;
 }
 
 .start .deck {
@@ -76,6 +70,28 @@
 .goal .deck {
 	border-color: var(--accent-amber);
 	border-width: 2px;
+}
+
+[class^="other"] .deck {
+	border-color: var(--accent-cyan);
+	border-style: dashed;
+}
+
+.subgoal .deck {
+	border-color: var(--accent-amber);
+	border-style: dashed;
+}
+
+.goalGroup {
+	display: flex;
+	gap: 20px;
+	margin-left: auto;
+	flex: 0 1 auto;
+	min-width: 200px;
+}
+
+.deckRow > .goal {
+	margin-left: auto;
 }
 
 .deckToolbar {
