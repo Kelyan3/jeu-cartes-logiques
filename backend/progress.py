@@ -11,8 +11,8 @@ def get_progress(user_id):
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
 			cur.execute(
-				"SELECT mode, num, completed, score FROM user_progress "
-				"WHERE user_id = %s",
+				"SELECT mode, num, completed, score FROM progression "
+				"WHERE id_user = %s",
 				(user_id,),
 			)
 			rows = cur.fetchall()
@@ -32,12 +32,12 @@ def save_progress(user_id, mode, num, completed, score=0):
 		with conn.cursor() as cur:
 			cur.execute(
 				"""
-				INSERT INTO user_progress (user_id, mode, num, completed, score)
+				INSERT INTO progression (id_user, mode, num, completed, score)
 				VALUES (%s, %s, %s, %s, %s)
-				ON CONFLICT (user_id, mode, num)
+				ON CONFLICT (id_user, mode, num)
 				DO UPDATE SET
-					completed = user_progress.completed OR EXCLUDED.completed,
-					score = GREATEST(user_progress.score, EXCLUDED.score),
+					completed = progression.completed OR EXCLUDED.completed,
+					score = GREATEST(progression.score, EXCLUDED.score),
 					updated_at = NOW()
 				""",
 				(user_id, mode, num, completed, score),
@@ -48,7 +48,7 @@ def reset_progress(user_id):
 	"""Supprime toute la progression d'un utilisateur."""
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
-			cur.execute("DELETE FROM user_progress WHERE user_id = %s", (user_id,),)
+			cur.execute("DELETE FROM progression WHERE id_user = %s", (user_id,),)
 			conn.commit()
 
 def get_leaderboard():
@@ -60,9 +60,9 @@ def get_leaderboard():
 		with conn.cursor() as cur:
 			cur.execute(
 				"""
-				SELECT u.username, COUNT(p.id) AS completed
+				SELECT u.username, COUNT(p.id_progress) AS completed
 	   			FROM users u
-				LEFT JOIN user_progress p ON p.user_id = u.id
+				LEFT JOIN progression p ON p.id_user = u.id_user
 				AND p.mode = 'Play'
 				AND p.completed = TRUE
 				GROUP BY u.username

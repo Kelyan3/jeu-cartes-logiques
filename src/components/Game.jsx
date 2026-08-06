@@ -14,12 +14,12 @@ import { containCard, computeNextMove } from "../utils/gameSolver";
 
 /**
  * Transforme un objet JSON en instance {@link Card}.
- * 
+ *
  * @param {JSON} obj - information mimimum pour créer une carte :
  *                     Carte simple = juste la couleur ;
  *                     Carte complexe = les 2 cartes qui la compose & la liaison
  * @param {number} i - numéro de l'id
- * 
+ *
  * @returns {Card} une carte
  */
 const toClass = (obj, i) => {
@@ -34,9 +34,9 @@ const toClass = (obj, i) => {
 /**
  * Reçoit un tableau d'un fichier JSON à qui on va appliquer la méthode {@link JSON.parse()} dans {@link openFile()}
  * ({@link JSON} ⇒ tableau d'{@link Object}) et renvoie un tableau qui peut être lu par notre site.
- * 
+ *
  * @param {Object[]} data - tableau d'objets qui va servir pour l'initialisation
- * 
+ *
  * @returns {Card[][]} un tableau de decks qui constitue le jeu
  */
 const gameInput = (data) => {
@@ -67,7 +67,7 @@ const gameInput = (data) => {
 /**
  * Calcule l'état de jeu initial (deck de départ + objectif, et première ligne de
  * démonstration) à partir des données JSON d'un exercice.
- * 
+ *
  * @param {Object|undefined} ex - données JSON de l'exercice (undefined tant que non chargé)
  * @param {"Play"|"Tutorial"|"Create"} mode
  *
@@ -114,7 +114,7 @@ function buildInitialGameSetup(ex, mode)
 /**
  * Renvoie le message tutoriel à afficher au chargement d'un niveau, selon son numéro
  * (indépendant du mode, comme dans le comportement d'origine).
- * 
+ *
  * @param {number} numero
  *
  * @returns {string|string[]} "" si aucun message n'est associé à ce numéro.
@@ -188,9 +188,9 @@ let deckIdCounter = 0;
  * Attribue un id stable (non énumérable, donc invisible dans les boucles
  * `for...in`/`Object.keys`/`JSON.stringify`) à chaque deck du tableau de jeu
  * reçu qui n'en a pas encore un.
- * 
+ *
  * @param {Card[][]} game
- * 
+ *
  * @returns {Card[][]} le même tableau (pour un usage en chaîne avec setGame)
  */
 function tagDecks(game)
@@ -367,6 +367,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 *
 	 * @param {Card[]} deck - deck dans lequel il faut supprimer la carte
 	 * @param {number} indiceCard - indice de la carte à supprimer
+	 *
 	 * @returns {Card[]} le deck sans la carte d'indice {@link indiceCard}
 	 */
 	const delCard = (deck, indiceCard) => {
@@ -876,7 +877,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		let res;
 
 		// Copie JSON du jeu
-		res = gameOutput(game);
+		res = gameOutput();
 		const blob = new Blob([JSON.stringify(res)], { type: "text/json;charset=utf-8;", });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");

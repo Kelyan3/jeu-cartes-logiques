@@ -1,24 +1,24 @@
-DROP TABLE IF EXISTS user_progress CASCADE;
+DROP TABLE IF EXISTS progression CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
 
 
 
 CREATE TABLE users (
-	id SERIAL PRIMARY KEY,
+	id_user SERIAL PRIMARY KEY,
 	username VARCHAR(50) UNIQUE NOT NULL,
 	email VARCHAR(255) UNIQUE NOT NULL,
 	password_hash VARCHAR(255) NOT NULL,
 	created_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE user_progress (
-	id SERIAL PRIMARY KEY,
-	user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+CREATE TABLE progression (
+	id_progress SERIAL PRIMARY KEY,
+	id_user INTEGER NOT NULL REFERENCES users(id_user) ON DELETE CASCADE,
 	mode VARCHAR(20) NOT NULL,
 	num INTEGER NOT NULL,
 	completed BOOLEAN DEFAULT FALSE,
 	score INTEGER DEFAULT 0,
 	updated_at TIMESTAMP DEFAULT NOW(),
-	UNIQUE(user_id, mode, num)
+	UNIQUE(id_user, mode, num)
 );
