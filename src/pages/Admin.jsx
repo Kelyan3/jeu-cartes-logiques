@@ -6,6 +6,13 @@ import { API_BASE_URL as API } from "../config/api";
 
 const MENUS = ["base", "objectif", "transitivite", "tiers_exclus"];
 
+const SECTIONS = [
+	{ id: "chapters", label: "Chapitres" },
+	{ id: "levels", label: "Niveaux" },
+	{ id: "quests", label: "Quêtes" },
+	{ id: "categories", label: "Catégories" },
+];
+
 
 const Admin = () => {
 	const { user, loading } = useAuth();
@@ -15,6 +22,7 @@ const Admin = () => {
 	const [categories, setCategories] = useState([]);
 	const [unassignedLevels, setUnassignedLevels] = useState([]);
 	const [error, setError] = useState("");
+	const [activeSection, setActiveSection] = useState("chapters");
 
 	const isAdmin = !loading && user?.role === "admin";
 
@@ -83,10 +91,31 @@ const Admin = () => {
 				<h1>Administration</h1>
 				{error && <p className="adminError">{error}</p>}
 
-				<ChaptersSection chapters={chapters} call={call} />
-				<LevelsSection chapters={chapters} unassignedLevels={unassignedLevels} call={call} />
-				<QuestsSection quests={quests} chapters={chapters} call={call} />
-				<CategoriesSection categories={categories} call={call} />
+				<div className="adminSectionSelect">
+					<label htmlFor="admin-section">Section</label>
+					<select
+						id="admin-section"
+						value={activeSection}
+						onChange={(e) => setActiveSection(e.target.value)}
+					>
+						{SECTIONS.map((s) => (
+							<option key={s.id} value={s.id}>{s.label}</option>
+						))}
+					</select>
+				</div>
+
+				{activeSection === "chapters" && (
+					<ChaptersSection chapters={chapters} call={call} />
+				)}
+				{activeSection === "levels" && (
+					<LevelsSection chapters={chapters} unassignedLevels={unassignedLevels} call={call} />
+				)}
+				{activeSection === "quests" && (
+					<QuestsSection quests={quests} chapters={chapters} call={call} />
+				)}
+				{activeSection === "categories" && (
+					<CategoriesSection categories={categories} call={call} />
+				)}
 			</div>
 		</div>
 	);

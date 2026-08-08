@@ -16,6 +16,32 @@
 	margin-bottom: 20px;
 }
 
+.adminSectionSelect {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.adminSectionSelect label {
+	font-family: 'Sora', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.adminSectionSelect select {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 10px 14px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	min-width: 200px;
+	cursor: pointer;
+}
+
 .adminSection {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
@@ -63,6 +89,7 @@
 .adminTable td {
 	padding: 6px 8px;
 	border-top: 1px solid var(--border-subtle);
+	vertical-align: middle;
 }
 
 .adminTable input,
@@ -75,6 +102,14 @@
 	font-family: 'Inter', sans-serif;
 	font-size: 14px;
 	width: 100%;
+}
+
+.adminTable .resetButton {
+	margin-top: 0;
+	width: auto;
+	padding: 6px 12px;
+	font-size: 12px;
+	white-space: nowrap;
 }
 
 .adminForm {
@@ -93,4 +128,12 @@
 	color: var(--text-primary);
 	font-family: 'Inter', sans-serif;
 	font-size: 14px;
+}
+
+.adminForm .resetButton {
+	margin-top: 0;
+	width: auto;
+	padding: 8px 14px;
+	font-size: 13px;
+	white-space: nowrap;
 }
