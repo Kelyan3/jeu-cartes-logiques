@@ -1,4 +1,4 @@
-import { useState, useEffect, useEffectEvent } from "react";
+import { useState, useEffect, useRef, useEffectEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import Deck from "./Deck";
 import Popup from "./Popup";
@@ -9,7 +9,7 @@ import { GameTab } from "../context/GameTab";
 import { useAuth } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
-import { containCard, computeNextMove } from "../utils/gameSolver";
+import { containCard, containCardSymmetric, computeNextMove } from "../utils/gameSolver";
 
 
 /**
@@ -211,6 +211,83 @@ function tagDecks(game)
 
 const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
+
+	/**
+	 * Clés de boutons débloquées par quête, regroupées par menu (voir /api/quests).
+	 * null tant que non chargé. Uniquement pertinent en mode "Play" : en
+	 * "Tutorial" et "Create", tous les boutons restent toujours visibles.
+	 */
+	const [unlockedKeys, setUnlockedKeys] = useState(null);
+
+	useEffect(() => {
+		if (mode !== "Play")
+			return;
+
+		fetch(`${API}/api/quests`, { credentials: "include" })
+			.then((response) => response.json())
+			.then(setUnlockedKeys)
+			.catch(() => setUnlockedKeys({}));
+	}, [mode, user]);
+
+	/**
+	 * Indique si le bouton d'action portant cette clé (ex: "addGoal") doit être affiché.
+	 * Toujours vrai hors mode "Play" ; en "Play", vrai seulement si la clé fait partie
+	 * d'un menu de quêtes débloqué pour l'utilisateur courant.
+	 *
+	 * @param {string} key - id du bouton (voir seed de la table "quests").
+	 * @returns {boolean}
+	 */
+	function isActionUnlocked(key)
+	{
+		if (mode !== "Play")
+			return true;
+		if (unlockedKeys === null)
+			return false; // chargement en cours
+
+		return Object.values(unlockedKeys).some((keys) => keys.includes(key));
+	}
+
+	/**
+	 * Ouverture/fermeture du menu déroulant "+ Objectif" (3 sous-fonctionnalités).
+	 * Se ferme au clic en dehors du menu (bouton compris).
+	 */
+	const [objectifMenuOpen, setObjectifMenuOpen] = useState(false);
+	const objectifMenuRef = useRef(null);
+
+	useEffect(() => {
+		if (!objectifMenuOpen)
+			return;
+
+		function onClickOutside(event)
+		{
+			if (objectifMenuRef.current && !objectifMenuRef.current.contains(event.target))
+				setObjectifMenuOpen(false);
+		}
+
+		document.addEventListener("mousedown", onClickOutside);
+		return () => document.removeEventListener("mousedown", onClickOutside);
+	}, [objectifMenuOpen]);
+
+	/**
+	 * Ouverture/fermeture du menu déroulant "Transitivité" (3 sous-fonctionnalités).
+	 * Même logique que pour le menu "+ Objectif" ci-dessus.
+	 */
+	const [transitiviteMenuOpen, setTransitiviteMenuOpen] = useState(false);
+	const transitiviteMenuRef = useRef(null);
+
+	useEffect(() => {
+		if (!transitiviteMenuOpen)
+			return;
+
+		function onClickOutside(event)
+		{
+			if (transitiviteMenuRef.current && !transitiviteMenuRef.current.contains(event.target))
+				setTransitiviteMenuOpen(false);
+		}
+
+		document.addEventListener("mousedown", onClickOutside);
+		return () => document.removeEventListener("mousedown", onClickOutside);
+	}, [transitiviteMenuOpen]);
 
 	/**
 	 * Calcule une fois pour toutes (au montage) l'état de jeu de départ pour cet exercice.
@@ -1577,169 +1654,210 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Fonction appelée après avoir appuyé sur le bouton "Ajouter objectif".
-	 *
-	 * Une seule & unique carte doit être sélectionnée sinon un popup d'erreur apparaît avec ce message :
-	 *    Si 2 cartes sont sélectionnées :  "Vous devez sélectionner une seule carte !"
-	 *    Si 0 carte sont sélectionnées  :  "Vous devez sélectionner une carte !"
-	 *
-	 * La carte sélectionnée doit avoir une liaison principale de type "=>" sinon un popup d'erreur apparaît avec ce message :
-	 *    "L'objectif secondaire doit avoir une liaison "=>" !
-	 *
-	 * Si toutes les conditions énumérées au-dessus sont respectées il y a 2 possibilités :
-	 *    La carte sélectionnée est dans les objectifs : ajoute la partie gauche dans le dernier deck avant l'objectif
-	 *    et la droite dans l'objectif et défini cet objectif comme un objectif secondaire.
-	 *    Le reste : ajoute la partie gauche dans l'objectif et ne le considère pas comme un objectif secondaire.
+	 * Vérifie qu'une seule carte est sélectionnée et renvoie ses coordonnées [deckI, cardI].
+	 * Renvoie null si la sélection n'est pas valide (un message d'erreur a alors déjà
+	 * été affiché). Factorisé pour être partagé par les 3 variantes du bouton "+ Objectif".
 	 */
-	const addObjectif = () => {
-		if (!navigation && !win)
+	function getSingleSelectedCard()
+	{
+		// S'il n'y a qu'une carte de sélectionné
+		if ((selecCard1 !== -1 && selecCard2 === -1 && selecDeck1 !== -1 && selecDeck2 === -1) ||
+			(selecCard1 === -1 && selecCard2 !== -1 && selecDeck1 === -1 && selecDeck2 !== -1))
+			return [Math.max(selecDeck1, selecDeck2), Math.max(selecCard1, selecCard2)];
+
+		if (nbSelec > 1)
+			error("Vous devez sélectionner une seule carte !");
+		else if (nbSelec === 0)
+			error("Vous devez sélectionner une carte !");
+
+		return null;
+	}
+
+	/**
+	 * Variante "=> dans objectif" : la carte sélectionnée (dans le deck objectif, liaison
+	 * "=>") devient un objectif secondaire : sa partie droite reste dans l'objectif, sa
+	 * partie gauche est déposée dans un nouveau deck LPU intermédiaire à compléter.
+	 */
+	function addObjectifDepuisObjectif(deckI, cardI)
+	{
+		// Copie du jeu actuel
+		let tmp = [...game];
+
+		// Sauvegarde du jeu actuel
+		saveGame();
+
+		// Message en mode tutoriel
+		if (mode === "Tutorial" && numero === 3)
 		{
-			// S'il n'y a qu'une carte de sélectionné
-			if ((selecCard1 !== -1 && selecCard2 === -1 && selecDeck1 !== -1 && selecDeck2 === -1) ||
-				(selecCard1 === -1 && selecCard2 !== -1 && selecDeck1 === -1 && selecDeck2 !== -1))
-			{
-				// Prend la carte sélectionnée
-				let deckI = Math.max(selecDeck1, selecDeck2);
-				let cardI = Math.max(selecCard1, selecCard2);
+			setMessageTutorial([
+				"Vous devez maintenant compléter l’objectif secondaire.",
+				"Si vous complétez l’objectif secondaire cela créera la carte d’où il a été créé dans deck avant, dans notre cas dans le deck départ cela complétera l’objectif principal.",
+			]);
+		}
 
-				// Si le 1er sous-objectif choisi n'est pas l'objectif principal
-				if (deckI === game.length - 1 || game.length > 2)
-				{
-					// Si le sous-objectif n'existe pas déjà
-					if (!deckContain(deckI, cardI))
-					{
-						// Si la carte choisie pour créer le sous-objectif a une liaison principal =>
-						if (game[deckI][cardI].link === "=>")
-						{
-							// Initialisation de la variable du sous-objectif
-							let secondObjectif;
+		// Copie de la partie droite de la carte sélectionnée
+		let secondObjectif = game[deckI][cardI].right.copy();
 
-							// Copie du jeu actuel
-							let tmp = [...game];
+		// Rajoute le second objectif dans le deck objectif
+		if (!addToGame(tmp, tmp.length - 1, secondObjectif))
+			return;
 
-							// Initialisation d'une variable temporaire
-							let tmpCard;
+		// Copie de la partie gauche de la carte sélectionnée
+		let tmpCard = tmp[deckI][cardI].left.copy();
 
-							// Si la carte sélectionnée est dans le deck objectif
-							if (deckI === game.length - 1)
-							{
-								// Sauvegarde du jeu actuel
-								saveGame();
+		// Rajoute le deck intermediaire
+		tmp.splice(tmp.length - 1, 0, []);
 
-								// Message en mode tutoriel
-								if (mode === "Tutorial" && numero === 3)
-								{
-									setMessageTutorial([
-										"Vous devez maintenant compléter l’objectif secondaire.",
-										"Si vous complétez l’objectif secondaire cela créera la carte d’où il a été créé dans deck avant, dans notre cas dans le deck départ cela complétera l’objectif principal.",
-									]);
-								}
+		// Ajoute cette partie dans le deck qui vient d'etre créer
+		addToGame(tmp, tmp.length - 2, tmpCard);
 
-								// Copie de la partie droite de la carte sélectionnée
-								secondObjectif = game[deckI][cardI].right.copy();
+		// Copie du tableau objectif
+		let tmpObj = [...tabObjectif];
 
-								// Rajoute le second objectif dans le deck objectif
-								if (!addToGame(tmp, tmp.length - 1, secondObjectif))
-									return;
+		// Ajoute l'objectif secondaire dans le tableau objectif
+		tmpObj.push([tabObjectif.length, tmp[tmp.length - 1].length - 1, true,]);
 
-								// Copie de la partie gauche de la carte sélectionnée
-								tmpCard = tmp[deckI][cardI].left.copy();
+		// Met à jour le tableau objectif
+		setTabObjectif(tmpObj);
+		addLineDemonstration([["Supposons ", tmpCard.copy(), ". Montrons ", secondObjectif.copy(), ".",], ], [0]);
+		setIndentationDemonstration((prev) => prev + 1);
 
-								// Rajoute le deck intermediaire
-								tmp.splice(tmp.length - 1, 0, []);
+		// Met à jour le jeu & désélectionne toutes les cartes
+		allFalse(tmp);
+		setSavedGame(tmp);
+	}
 
-								// Ajoute cette partie dans le deck qui vient d'etre créer
-								addToGame(tmp, tmp.length - 2, tmpCard);
+	/**
+	 * Variante "=> dans LPU" : la carte sélectionnée (dans une LPU, liaison "=>", partie
+	 * gauche elle-même munie d'une liaison "=>") a sa partie gauche déposée directement
+	 * dans le deck objectif. Ce n'est pas considéré comme un objectif secondaire.
+	 */
+	function addObjectifDepuisLPU(deckI, cardI)
+	{
+		// Copie du jeu actuel
+		let tmp = [...game];
 
-								// Copie du tableau objectif
-								let tmpObj = [...tabObjectif];
+		// Sauvegarde du jeu actuel
+		saveGame();
 
-								// Ajoute l'objectif secondaire dans le tableau objectif
-								tmpObj.push([tabObjectif.length, tmp[tmp.length - 1].length - 1, true,]);
+		// Copie de la partie gauche de la carte sélectionnée
+		let secondObjectif = tmp[deckI][cardI].left.copy();
 
-								// Met à jour le tableau objectif
-								setTabObjectif(tmpObj);
-								addLineDemonstration([["Supposons ", tmpCard.copy(), ". Montrons ", secondObjectif.copy(), ".",], ], [0]);
-								setIndentationDemonstration((prev) => prev + 1);
+		// Met la carte copiée dans le deck objectif (ce n'est pas un objectif secondaire)
+		if (!addToGame(tmp, tmp.length - 1, secondObjectif))
+			return;
 
-								// Met à jour le jeu & désélectionne toutes les cartes
-								allFalse(tmp);
-								setSavedGame(tmp);
-							}
-							else
-							{
-								// Si la carte est pas dans le deck objectif 1 si la partie gauche de la carte a une liaison =>
-								if (game[deckI][cardI].left.haveImpliqueLinkRecur())
-								{
-									// Sauvegarde du jeu actuel
-									saveGame();
+		addLineDemonstration([["Montrons ", secondObjectif.copy(), ".", ], ], [0]);
 
-									// Copie de la partie gauche de la carte sélectionnée
-									secondObjectif = tmp[deckI][cardI].left.copy();
+		// Met à jour le jeu & désélectionne toutes les cartes
+		allFalse(tmp);
+		setSavedGame(tmp);
+	}
 
-									// Met la carte copiée dans le deck objectif (ce n'est pas un objectif secondaire)
-									if (!addToGame(tmp, tmp.length - 1, secondObjectif))
-										return;
+	/**
+	 * Variante "et" : la carte sélectionnée (dans le deck objectif, carte "et") a chacune
+	 * de ses deux parties ajoutée comme nouvel objectif à démontrer, pour celles qui ont
+	 * elles-mêmes une liaison "=>".
+	 */
+	function addObjectifEt(deckI, cardI)
+	{
+		let tmp = [...game];
 
-									addLineDemonstration([["Montrons ", secondObjectif.copy(), ".", ], ], [0]);
+		// Sauvegarde du jeu actuel
+		saveGame();
 
-									// Met à jour le jeu & désélectionne toutes les cartes
-									allFalse(tmp);
-									setSavedGame(tmp);
-								}
-								else
-									error('La partie gauche de l\'objectif secondaire doit avoir une liaison "=>" !');
-							}
-						}
-						else if (game[deckI][cardI].isCardEtObjectif())
-						{
-							if (deckI === game.length - 1)
-							{
-								let tmp = [...game];
+		// Copie de les deux parties de la carte sélectionnée
+		let secondObjectif1 = game[deckI][cardI].left.copy();
+		let secondObjectif2 = game[deckI][cardI].right.copy();
+		let firstArrayDemo = [];
+		let secondArrayDemo = [];
+		if (secondObjectif1.haveImpliqueLinkRecur())
+		{
+			if (addToGame(tmp, tmp.length - 1, secondObjectif1, false))
+				firstArrayDemo = ["Montrons ", secondObjectif1.copy(), ". ",];
+		}
 
-								// Sauvegarde du jeu actuel
-								saveGame();
+		if (secondObjectif2.haveImpliqueLinkRecur())
+		{
+			if (addToGame(tmp, tmp.length - 1, secondObjectif2, false))
+				secondArrayDemo = ["Montrons ", secondObjectif2.copy(), ".",];
+		}
 
-								// Copie de les deux parties de la carte sélectionnée
-								let secondObjectif1 = game[deckI][cardI].left.copy();
-								let secondObjectif2 = game[deckI][cardI].right.copy();
-								let firstArrayDemo = [];
-								let secondArrayDemo = [];
-								if (secondObjectif1.haveImpliqueLinkRecur())
-								{
-									if (addToGame(tmp, tmp.length - 1, secondObjectif1, false))
-										firstArrayDemo = ["Montrons ", secondObjectif1.copy(), ". ",];
-								}
+		addLineDemonstration([firstArrayDemo.concat(secondArrayDemo)], [0]);
 
-								if (secondObjectif2.haveImpliqueLinkRecur())
-								{
-									if (addToGame(tmp, tmp.length - 1, secondObjectif2, false))
-										secondArrayDemo = ["Montrons ", secondObjectif2.copy(), ".",];
-								}
+		// Met à jour le jeu & désélectionne toutes les cartes
+		allFalse(tmp);
+		setSavedGame(tmp);
+	}
 
-								addLineDemonstration([firstArrayDemo.concat(secondArrayDemo)], [0]);
+	/**
+	 * Fonction appelée après avoir choisi une des 3 options du menu "+ Objectif".
+	 *
+	 * @param {"objectif"|"lpu"|"et"} variant - la sous-fonctionnalité choisie :
+	 *   "objectif" : la carte sélectionnée doit être dans le deck objectif, liaison "=>".
+	 *   "lpu"      : la carte sélectionnée doit être dans une LPU, liaison "=>" et partie
+	 *                gauche elle-même munie d'une liaison "=>".
+	 *   "et"       : la carte sélectionnée doit être dans le deck objectif, carte "et".
+	 *
+	 * Une seule & unique carte doit être sélectionnée, sinon un popup d'erreur apparaît.
+	 * Si la carte sélectionnée ne correspond pas à la variante choisie, un message
+	 * d'erreur spécifique à cette variante est affiché plutôt qu'un message générique.
+	 */
+	const addObjectif = (variant) => {
+		if (navigation || win)
+			return;
 
-								// Met à jour le jeu & désélectionne toutes les cartes
-								allFalse(tmp);
-								setSavedGame(tmp);
-							}
-						}
-						else
-							error('L\'objectif secondaire doit avoir une liaison "=>" ou une carte "et" avec au moins une liaison "=>" a l\'interieur!');
-					}
-					else
-						error("Cet objectif existe déjà !");
-				}
-				else
-					error("Le premier objectif secondaire doit être créé à l'aide de l'objectif principal !");
-			}
+		const selection = getSingleSelectedCard();
+		if (selection === null)
+			return;
+
+		const [deckI, cardI] = selection;
+		const isObjectifDeck = deckI === game.length - 1;
+
+		// Si le 1er sous-objectif choisi n'est pas créé à partir de l'objectif principal
+		if (!isObjectifDeck && game.length <= 2)
+		{
+			error("Le premier objectif secondaire doit être créé à l'aide de l'objectif principal !");
+			return;
+		}
+
+		// Si le sous-objectif existe déjà
+		if (deckContain(deckI, cardI))
+		{
+			error("Cet objectif existe déjà !");
+			return;
+		}
+
+		const card = game[deckI][cardI];
+
+		if (variant === "objectif")
+		{
+			if (!isObjectifDeck)
+				error("Ce bouton ne fonctionne que sur une carte de l'objectif !");
+			else if (card.link !== "=>")
+				error('L\'objectif secondaire doit avoir une liaison "=>" !');
 			else
-			{
-				if (nbSelec > 1)
-					error("Vous devez sélectionner une seule carte !");
-				else if (nbSelec === 0)
-					error("Vous devez sélectionner une carte !");
-			}
+				addObjectifDepuisObjectif(deckI, cardI);
+		}
+		else if (variant === "lpu")
+		{
+			if (isObjectifDeck)
+				error("Ce bouton ne fonctionne que sur une carte de la LPU !");
+			else if (card.link !== "=>")
+				error('L\'objectif secondaire doit avoir une liaison "=>" !');
+			else if (!card.left.haveImpliqueLinkRecur())
+				error('La partie gauche de l\'objectif secondaire doit avoir une liaison "=>" !');
+			else
+				addObjectifDepuisLPU(deckI, cardI);
+		}
+		else if (variant === "et")
+		{
+			if (!isObjectifDeck)
+				error("Ce bouton ne fonctionne que sur une carte de l'objectif !");
+			else if (!card.isCardEtObjectif())
+				error('La carte sélectionnée doit être une carte "et" contenant au moins une liaison "=>" !');
+			else
+				addObjectifEt(deckI, cardI);
 		}
 	};
 
@@ -2118,19 +2236,18 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	}
 
 	/**
-	 * Applique la transitivité sur deux cartes sélectionnées ayant chacune une liaison "=>",
-	 * ou étant toutes deux des cartes "<=>" (équivalence), pour en déduire une nouvelle carte
-	 * combinant les deux implications/équivalences.
+	 * Vérifie la sélection commune aux 3 variantes du bouton Transitivité : exactement
+	 * 2 cartes sélectionnées, ni l'une ni l'autre dans le deck objectif.
+	 *
+	 * @returns {[number, Card, Card]|null} [finalDeck, card1, card2], ou null si la
+	 * sélection n'est pas valide (un message d'erreur a alors déjà été affiché).
 	 */
-	const transitivite = () => {
-		if (navigation || win)
-			return;
-
-		// S'il n'y a pas 2 cartes sélectionnées
+	function getTransitiviteSelection()
+	{
 		if (nbSelec !== 2)
 		{
 			error("Vous devez sélectionner deux cartes !");
-			return;
+			return null;
 		}
 
 		// Prend le deck le plus grand
@@ -2138,85 +2255,22 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (finalDeck === game.length - 1)
 		{
 			error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
-			return;
+			return null;
 		}
 
-		// Copie du jeu actuel
+		return [finalDeck, game[selecDeck1][selecCard1], game[selecDeck2][selecCard2]];
+	}
+
+	/**
+	 * Ajoute la carte déduite par transitivité au deck (sauf si skipAdd, pour le cas
+	 * où un doublon a déjà été détecté en amont), puis vérifie la victoire. Factorisé
+	 * car identique pour les 3 variantes, seuls le symbole affiché et cardToAdd changent.
+	 */
+	function finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRight, sign, skipAdd)
+	{
 		let tmp = [...game];
-		let card1 = tmp[selecDeck1][selecCard1];
-		let card2 = tmp[selecDeck2][selecCard2];
-		let cardToAdd;
-		let cardRight;
-		let cardLeft;
-		let cardMiddle;
-		let sign;
-		if (card1.link === "=>" || card2.link === "=>")
-		{
-			sign = "=>";
-			if (card1.left.equals(card2.right))
-			{
-				cardRight = card1.right;
-				cardLeft = card2.left;
-				cardMiddle = card1.left;
-				cardToAdd = new Card(tmp[finalDeck].length, null, false, "=>", card2.left.copy(), card1.right.copy());
-			}
-			else if (card1.right.equals(card2.left))
-			{
-				cardRight = card2.right;
-				cardLeft = card1.left;
-				cardMiddle = card2.left;
-				cardToAdd = new Card(tmp[finalDeck].length, null, false, "=>", card1.left.copy(), card2.right.copy());
-			}
-			else
-			{
-				error("Vous ne pouvez pas utiliser ce bouton avec ces cartes !");
-				return;
-			}
-		}
-		else if (card1.isDoubleArrow() && card2.isDoubleArrow())
-		{
-			sign = "<=>";
-			if (card1.left.right.equals(card2.right.right))
-			{
-				cardRight = card2.left.right;
-				cardLeft = card1.left.left;
-				cardMiddle = card2.left.left;
-				cardToAdd = new Card(
-					tmp[finalDeck].length,
-					null,
-					false,
-					"et",
-					new Card(0, null, false, "=>", card1.left.left.copy(), card2.left.right.copy()),
-					new Card(0, null, false, "=>", card2.left.right.copy(), card1.left.left.copy())
-				);
-			}
-			else if (card2.left.right.equals(card1.right.right))
-			{
-				cardRight = card2.left.left;
-				cardLeft = card1.left.right;
-				cardMiddle = card2.left.right;
-				cardToAdd = new Card(
-					tmp[finalDeck].length,
-					null,
-					false,
-					"et",
-					new Card(0, null, false, "=>", card1.left.right.copy(), card2.left.left.copy()),
-					new Card(0, null, false, "=>", card2.left.left.copy(), card1.left.right.copy())
-				);
-			}
-			else
-			{
-				error("Vous ne pouvez pas utiliser ce bouton avec ces cartes !");
-				return;
-			}
-		}
-		else
-		{
-			error('Les cartes sélectionnées doivent avoir des liaisons "=>" ou "<=>".');
-			return;
-		}
-
-		addToGame(tmp, finalDeck, cardToAdd, false);
+		if (!skipAdd)
+			addToGame(tmp, finalDeck, cardToAdd, false);
 
 		// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
 		isWin(
@@ -2234,6 +2288,133 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			[0],
 			tmp
 		);
+	}
+
+	/**
+	 * Variante "=>" : combine 2 cartes "A⇒B" et "B⇒C" (sélectionnées dans n'importe
+	 * quel ordre) pour en déduire "A⇒C".
+	 */
+	function transitiviteArrow()
+	{
+		const selection = getTransitiviteSelection();
+		if (selection === null)
+			return;
+		const [finalDeck, card1, card2] = selection;
+
+		if (card1.link !== "=>" || card2.link !== "=>")
+		{
+			error('Les 2 cartes sélectionnées doivent avoir une liaison "=>" !');
+			return;
+		}
+
+		let cardLeft, cardMiddle, cardRight, cardToAdd;
+		if (card1.left.equals(card2.right))
+		{
+			cardRight = card1.right;
+			cardLeft = card2.left;
+			cardMiddle = card1.left;
+			cardToAdd = new Card(game[finalDeck].length, null, false, "=>", card2.left.copy(), card1.right.copy());
+		}
+		else if (card1.right.equals(card2.left))
+		{
+			cardRight = card2.right;
+			cardLeft = card1.left;
+			cardMiddle = card2.left;
+			cardToAdd = new Card(game[finalDeck].length, null, false, "=>", card1.left.copy(), card2.right.copy());
+		}
+		else
+		{
+			error("Vous ne pouvez pas utiliser ce bouton avec ces cartes !");
+			return;
+		}
+
+		finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRight, "=>", false);
+	}
+
+	/**
+	 * Variantes "<=>" (symétrique ou non) : combine 2 cartes "A<=>B" et "B<=>C" pour
+	 * en déduire "A<=>C".
+	 *
+	 * @param {boolean} symmetric - si true, "B<=>C" et "C<=>B" sont considérées comme
+	 * la même carte (voir Card.equalsSymmetric) : le terme commun entre les 2 cartes
+	 * sélectionnées est cherché parmi les 4 combinaisons possibles (au lieu des 2
+	 * combinaisons historiques en mode non symétrique), et la détection de doublon
+	 * avant ajout reconnaît les deux écritures d'une même équivalence.
+	 */
+	function transitiviteEquiv(symmetric)
+	{
+		const selection = getTransitiviteSelection();
+		if (selection === null)
+			return;
+		const [finalDeck, card1, card2] = selection;
+
+		if (!card1.isDoubleArrow() || !card2.isDoubleArrow())
+		{
+			error('Les 2 cartes sélectionnées doivent avoir une liaison "<=>" !');
+			return;
+		}
+
+		// Les 2 "bouts" de chaque équivalence : card.left.left <=> card.left.right
+		const ends1 = [card1.left.left, card1.left.right];
+		const ends2 = [card2.left.left, card2.left.right];
+
+		// [i, j] = quel bout de card1 est comparé à quel bout de card2. Les 2
+		// premières combinaisons sont celles de la version d'origine à bouton
+		// unique (ordre de priorité conservé) ; les 2 suivantes ne sont essayées
+		// qu'en mode symétrique.
+		const combos = symmetric ? [[1, 0], [0, 1], [0, 0], [1, 1]] : [[1, 0], [0, 1]];
+
+		let cardLeft, cardMiddle, cardRight;
+		for (const [i, j] of combos)
+		{
+			if (ends1[i].equals(ends2[j]))
+			{
+				cardMiddle = ends1[i];
+				cardLeft = ends1[1 - i];
+				cardRight = ends2[1 - j];
+				break;
+			}
+		}
+
+		if (cardLeft === undefined)
+		{
+			error("Vous ne pouvez pas utiliser ce bouton avec ces cartes !");
+			return;
+		}
+
+		const cardToAdd = new Card(
+			game[finalDeck].length,
+			null,
+			false,
+			"et",
+			new Card(0, null, false, "=>", cardLeft.copy(), cardRight.copy()),
+			new Card(0, null, false, "=>", cardRight.copy(), cardLeft.copy())
+		);
+
+		const isDuplicate = symmetric && containCardSymmetric(game, finalDeck, cardToAdd);
+		finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRight, "<=>", isDuplicate);
+	}
+
+	/**
+	 * Fonction appelée après avoir choisi une des 3 options du menu "Transitivité".
+	 *
+	 * @param {"arrow"|"equiv"|"equiv_sym"} variant
+	 *   "arrow"     : combine 2 cartes "=>" en une nouvelle carte "=>".
+	 *   "equiv"     : combine 2 cartes "<=>" en une nouvelle carte "<=>" (recherche
+	 *                 stricte du terme commun, comme la version d'origine à bouton unique).
+	 *   "equiv_sym" : comme "equiv", mais traite "P<=>Q" et "Q<=>P" comme la même carte
+	 *                 (recherche élargie du terme commun + détection de doublon adaptée).
+	 */
+	const transitivite = (variant) => {
+		if (navigation || win)
+			return;
+
+		if (variant === "arrow")
+			transitiviteArrow();
+		else if (variant === "equiv")
+			transitiviteEquiv(false);
+		else if (variant === "equiv_sym")
+			transitiviteEquiv(true);
 	};
 
 	/**
@@ -2297,7 +2478,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				break;
 
 			case "r":
-				addObjectif();
+				setObjectifMenuOpen((open) => !open);
 				break;
 
 			case "t":
@@ -2351,7 +2532,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				)}
 
 				{/* Bouton pour obtenir les 2 parties d'une carte "et" */}
-				{mode !== "Create" && (
+				{mode !== "Create" && isActionUnlocked("addAnd") && (
 					<div>
 						<button id="addAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 0 ? "boutonSelection" : "")} onClick={addCardAnd}>
 							<span className="buttonFormula">[1∧2] → [1] [2]</span>
@@ -2361,7 +2542,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				)}
 
 				{/* Bouton pour obtenir la partie droite d'une carte "=>" si l'on a sélectionné une autre carte qui est égale à la partie gauche */}
-				{mode !== "Create" && (
+				{mode !== "Create" && isActionUnlocked("addImplique") && (
 					<div>
 						<button id="addImplique" className={"buttonAction " + (mode === "Tutorial" && numero === 1 ? "boutonSelection" : "")} onClick={addCardFuse}>
 							<span className="buttonFormula">[1] [1⇒2] → [2]</span>
@@ -2371,7 +2552,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				)}
 
 				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte sélectionnée) & la partie droite (2ème carte sélectionnée). La carte créée aura une liaison "et" */}
-				{mode !== "Create" && (
+				{mode !== "Create" && isActionUnlocked("fuseAnd") && (
 					<div>
 						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
 							<span className="buttonFormula">[1] [2] → [1∧2]</span>
@@ -2380,17 +2561,46 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</div>
 				)}
 
-				{/* Ajout objectif secondaire */}
-				{mode !== "Create" && (
-					<div>
-						<button id="addGoal" className={"buttonAction " + (mode === "Tutorial" && numero === 3 ? "boutonSelection" : "")} onClick={addObjectif}>
+				{/* Menu déroulant "+ Objectif" : 3 sous-fonctionnalités débloquées indépendamment */}
+				{mode !== "Create" &&
+					(isActionUnlocked("addGoal_objectif") || isActionUnlocked("addGoal_lpu") || isActionUnlocked("addGoal_et")) && (
+					<div className="actionDropdown" ref={objectifMenuRef}>
+						<button
+							type="button"
+							id="addGoal"
+							className="buttonAction"
+							onClick={() => setObjectifMenuOpen((open) => !open)}
+						>
 							<span className="buttonFormula">+ 🏁</span>
 							<span className="tooltiptext">+ Objectif</span>
 						</button>
+						{objectifMenuOpen && (
+							<div className="actionDropdownMenu">
+								{isActionUnlocked("addGoal_objectif") && (
+									<button
+										type="button"
+										className={mode === "Tutorial" && numero === 3 ? "boutonSelection" : ""}
+										onClick={() => { setObjectifMenuOpen(false); addObjectif("objectif"); }}
+									>
+										{"=> dans objectif"}
+									</button>
+								)}
+								{isActionUnlocked("addGoal_lpu") && (
+									<button type="button" onClick={() => { setObjectifMenuOpen(false); addObjectif("lpu"); }}>
+										{"=> dans LPU"}
+									</button>
+								)}
+								{isActionUnlocked("addGoal_et") && (
+									<button type="button" onClick={() => { setObjectifMenuOpen(false); addObjectif("et"); }}>
+										et
+									</button>
+								)}
+							</div>
+						)}
 					</div>
 				)}
 
-				{mode !== "Create" && (
+				{mode !== "Create" && isActionUnlocked("tiersExclus") && (
 					<div>
 						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExclus}>
 							<span className="buttonFormula">¬¬[1] → [1]</span>
@@ -2399,12 +2609,46 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</div>
 				)}
 
-				{mode !== "Create" && (
-					<div>
-						<button id="transitivite" className={"buttonAction " + (mode === "Tutorial" && (numero === 4 || numero === 5) ? "boutonSelection" : "")} onClick={transitivite}>
+				{/* Menu déroulant "Transitivité" : 3 sous-fonctionnalités débloquées indépendamment */}
+				{mode !== "Create" &&
+					(isActionUnlocked("transitivite_arrow") || isActionUnlocked("transitivite_equiv") || isActionUnlocked("transitivite_equiv_sym")) && (
+					<div className="actionDropdown" ref={transitiviteMenuRef}>
+						<button
+							type="button"
+							id="transitivite"
+							className="buttonAction"
+							onClick={() => setTransitiviteMenuOpen((open) => !open)}
+						>
 							<span className="buttonFormula">[1⇒2] [2⇒3] → [1⇒3]</span>
 							<span className="tooltiptext">Transitivité</span>
 						</button>
+						{transitiviteMenuOpen && (
+							<div className="actionDropdownMenu">
+								{isActionUnlocked("transitivite_arrow") && (
+									<button
+										type="button"
+										className={mode === "Tutorial" && numero === 4 ? "boutonSelection" : ""}
+										onClick={() => { setTransitiviteMenuOpen(false); transitivite("arrow"); }}
+									>
+										{"=>"}
+									</button>
+								)}
+								{isActionUnlocked("transitivite_equiv") && (
+									<button
+										type="button"
+										className={mode === "Tutorial" && numero === 5 ? "boutonSelection" : ""}
+										onClick={() => { setTransitiviteMenuOpen(false); transitivite("equiv"); }}
+									>
+										{"<=>"}
+									</button>
+								)}
+								{isActionUnlocked("transitivite_equiv_sym") && (
+									<button type="button" onClick={() => { setTransitiviteMenuOpen(false); transitivite("equiv_sym"); }}>
+										{"<=> (symétrique)"}
+									</button>
+								)}
+							</div>
+						)}
 					</div>
 				)}
 

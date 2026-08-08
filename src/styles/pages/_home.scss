@@ -67,6 +67,17 @@
 	text-align: left;
 }
 
+.leaderboardFilter {
+	margin-top: 16px;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 8px 12px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+}
+
 .leaderboardTable th {
 	font-family: 'Sora', sans-serif;
 	font-size: 12px;

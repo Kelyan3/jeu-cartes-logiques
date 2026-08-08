@@ -20,6 +20,29 @@ export function containCard(tmp, deckId, card)
 }
 
 /**
+ * Comme {@link containCard}, mais utilise Card.equalsSymmetric() plutôt que
+ * Card.equals() : reconnaît une carte "<=>" déjà présente dans le deck même si
+ * elle y est écrite dans l'ordre inverse (P<=>Q reconnue comme identique à Q<=>P).
+ * Utilisée uniquement par la variante "symétrique" du bouton Transitivité.
+ *
+ * @param {Card[][]} tmp - tableau du jeu (ou d'une copie temporaire)
+ * @param {number} deckId - indice du deck dans lequel chercher
+ * @param {Card} card - la carte à trouver
+ *
+ * @returns {boolean} true si une carte égale (au sens large) existe dans ce deck
+ */
+export function containCardSymmetric(tmp, deckId, card)
+{
+	let result = false;
+	tmp[deckId].forEach((cardElement) => {
+		if (cardElement.equalsSymmetric(card))
+			result = true;
+	});
+
+	return result;
+}
+
+/**
  * Parcourt le deck passé en paramètre (tmp[deckId]) et regarde s'il existe une carte qui est égale à la
  * carte passée en paramètre.
  *

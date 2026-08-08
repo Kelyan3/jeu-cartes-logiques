@@ -191,10 +191,18 @@ VITE_API_URL=https://votre-backend.onrender.com
 | POST | `/api/register` | Créer un compte | Non |
 | POST | `/api/login` | Se connecter | Non |
 | POST | `/api/logout` | Se déconnecter | Oui |
+| GET | `/api/chapters` | Chapitres "Play" et leurs niveaux, avec statut verrouillé/complété | Non |
+| GET | `/api/quests` | Boutons d'action débloqués par l'utilisateur, regroupés par menu | Non |
+| GET | `/api/categories` | Liste des catégories utilisateur | Non |
+| POST | `/api/profile/category` | Choisit la catégorie de l'utilisateur connecté | Oui |
 | GET | `/api/progress` | Progression de l'utilisateur connecté | Oui |
 | POST | `/api/progress` | Enregistrer la complétion d'un niveau | Oui |
 | DELETE | `/api/progress` | Réinitialiser toute la progression | Oui |
-| GET | `/api/leaderboard` | Classement de tous les utilisateurs | Non |
+| GET | `/api/leaderboard` | Classement de tous les utilisateurs (filtrable par `?category=`) | Non |
+| GET/POST/PUT/DELETE | `/api/admin/chapters[/:id]` | CRUD des chapitres | Admin |
+| GET/POST/PUT/DELETE | `/api/admin/levels[/:id]`, `/api/admin/levels/unassigned` | Rattachement des niveaux existants à un chapitre | Admin |
+| GET/POST/PUT/DELETE | `/api/admin/quests[/:id]` | CRUD des quêtes (déblocage des boutons d'action) | Admin |
+| POST/PUT/DELETE | `/api/admin/categories[/:id]` | CRUD des catégories utilisateur | Admin |
 
 ## Déploiement
 

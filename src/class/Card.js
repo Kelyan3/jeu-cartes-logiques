@@ -1,4 +1,5 @@
-export default class Card {
+export default class Card
+{
 	/**
 	 * @param {number} id
 	 * @param {string|null} color - couleur de la carte, voir {@link getColor} pour la liste complète des valeurs possibles.
@@ -238,6 +239,26 @@ export default class Card {
 
 			return bool;
 		}
+	}
+
+	/**
+	 * Comme {@link equals}, mais pour deux cartes "<=>" (voir {@link isDoubleArrow}),
+	 * considère qu'elles sont égales même si leurs deux implications internes sont
+	 * écrites dans l'ordre inverse : "P<=>Q" (= et(P⇒Q, Q⇒P)) et "Q<=>P"
+	 * (= et(Q⇒P, P⇒Q)) représentent le même fait et sont donc "la même carte".
+	 * Retombe sur {@link equals} pour tout le reste.
+	 *
+	 * @param {Card} card - L'autre carte à comparer.
+	 *
+	 * @returns {boolean} True si identiques (au sens large ci-dessus), sinon False.
+	 */
+	equalsSymmetric(card)
+	{
+		if (this.isDoubleArrow() && card.isDoubleArrow() &&
+			this.left.equals(card.right) && this.right.equals(card.left))
+			return true;
+
+		return this.equals(card);
 	}
 
 	/**

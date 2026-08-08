@@ -55,3 +55,15 @@
 .choice .levelCompleted p {
 	color: var(--accent-amber);
 }
+
+.choice .levelLocked {
+	cursor: not-allowed;
+	opacity: 0.45;
+}
+
+.choice .levelLocked:hover {
+	border-color: var(--border-subtle);
+	box-shadow: none;
+	background: var(--bg-surface);
+	transform: none;
+}

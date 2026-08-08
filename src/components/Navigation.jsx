@@ -73,6 +73,7 @@ const Navigation = () => {
 						<div>{user.username}</div>
 						<ul>
 							<li><NavLink to="/Profile">Mon profil</NavLink></li>
+							{user.role === "admin" && <li><NavLink to="/Admin">Administration</NavLink></li>}
 							<li>
 								<div onClick={logout} className="logoutLink">Déconnexion</div>
 							</li>

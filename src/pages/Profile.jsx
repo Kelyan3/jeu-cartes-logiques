@@ -6,7 +6,7 @@ import { useAuth } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
 const Profile = () => {
-	const { user } = useAuth();
+	const { user, setUser } = useAuth();
 
 	const [playCompleted, setPlayCompleted] = useState(0);
 	const [playTotal, setPlayTotal] = useState(0);
@@ -14,6 +14,45 @@ const Profile = () => {
 	const [tutorialTotal, setTutorialTotal] = useState(0);
 	const [loadingStats, setLoadingStats] = useState(true);
 	const [resetting, setResetting] = useState(false);
+
+	const [categories, setCategories] = useState([]);
+	const [selectedCategory, setSelectedCategory] = useState("");
+	const [savingCategory, setSavingCategory] = useState(false);
+
+	/**
+	 * Charge la liste des catégories disponibles (Professeur, Étudiant L1...),
+	 * pour le menu déroulant de sélection.
+	 */
+	useEffect(() => {
+		fetch(`${API}/api/categories`)
+			.then((response) => response.json())
+			.then(setCategories)
+			.catch(() => setCategories([]));
+	}, []);
+
+	/**
+	 * Enregistre la catégorie choisie par l'utilisateur, puis met à jour
+	 * le contexte d'authentification pour refléter le changement partout.
+	 */
+	const handleCategorySubmit = (event) => {
+		event.preventDefault();
+		if (!selectedCategory)
+			return;
+
+		setSavingCategory(true);
+		fetch(`${API}/api/profile/category`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			credentials: "include",
+			body: JSON.stringify({ id_category: Number(selectedCategory) }),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				if (data.ok)
+					setUser((prevUser) => ({ ...prevUser, id_category: Number(selectedCategory) }));
+			})
+			.finally(() => setSavingCategory(false));
+	};
 
 	/**
 	 * Supprime toute la progression de l'utilisateur en base de données,
@@ -71,6 +110,30 @@ const Profile = () => {
 
 				{!loadingStats && (
 					<>
+						<div className="field categoryField">
+							<label>Catégorie</label>
+							{user?.id_category ? (
+								<p>{categories.find((c) => c.id_category === user.id_category)?.name ?? "—"}</p>
+							) : (
+								<form onSubmit={handleCategorySubmit}>
+									<select
+										value={selectedCategory}
+										onChange={(event) => setSelectedCategory(event.target.value)}
+									>
+										<option value="" disabled>Choisis ta catégorie...</option>
+										{categories.map((category) => (
+											<option key={category.id_category} value={category.id_category}>
+												{category.name}
+											</option>
+										))}
+									</select>
+									<button type="submit" className="resetButton" disabled={!selectedCategory || savingCategory}>
+										{savingCategory ? "Enregistrement..." : "Valider"}
+									</button>
+								</form>
+							)}
+						</div>
+
 						<div className="progressBlock">
 							<div className="progressLabel">
 								<span>Niveaux complétés</span>

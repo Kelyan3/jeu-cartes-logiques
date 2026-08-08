@@ -14,6 +14,7 @@ import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Leaderboard from "./pages/Leaderboard";
+import Admin from "./pages/Admin";
 
 const App = () => {
 	return (
@@ -32,6 +33,7 @@ const App = () => {
 						<Route path="/Register" exact element={<Register />} />
 						<Route path="/Profile" exact element={<Profile />} />
 						<Route path="/Leaderboard" exact element={<Leaderboard />} />
+						<Route path="/Admin" exact element={<Admin />} />
 						<Route path="*" element={<NotFound />} />
 					</Routes>
 				</BrowserRouter>

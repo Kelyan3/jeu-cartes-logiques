@@ -32,6 +32,24 @@ const Choice = ({ mode }) => {
 	const [completedLevels, setCompletedLevels] = useState([]);
 
 	/**
+	 * Chapitres réels (mode "Play" uniquement) : chaque niveau y porte son propre
+	 * statut "unlocked"/"completed", calculé côté backend (voir get_chapters()).
+	 */
+	const [chapters, setChapters] = useState(null);
+
+	useEffect(() => {
+		if (mode !== "Play")
+			return;
+
+		fetch(`${API}/api/chapters`, { credentials: "include" })
+			.then((response) => response.json())
+			.then(setChapters)
+			.catch(() => {
+				// API indisponible : on retombe sur l'ancien affichage par difficulté, sans verrouillage (chapters reste null).
+			});
+	}, [mode, user]);
+
+	/**
 	 * Charge le nombre réel de niveaux depuis le manifeste généré,
 	 * et étend la dernière catégorie affichée si de nouveaux niveaux
 	 * ont été ajoutés au-delà de ce qui était prévu manuellement.
@@ -82,6 +100,9 @@ const Choice = ({ mode }) => {
 	 */
 	function goToExo(event)
 	{
+		if (event.target.getAttribute("locked") === "true")
+			return;
+
 		const url = event.target.getAttribute("url");
 		navigate(url);
 	}
@@ -126,6 +147,71 @@ const Choice = ({ mode }) => {
 	}
 
 	/**
+	 * Crée une ligne de niveaux à afficher pour un chapitre donné (par lots de 5),
+	 * en tenant compte du verrouillage individuel de chaque niveau.
+	 *
+	 * @param {Array} levels - sous-ensemble de niveaux du chapitre (avec num/unlocked/completed).
+	 * @param {number} rowKey - clé React de la ligne.
+	 *
+	 * @returns {JSX.Element} La ligne.
+	 */
+	const createChapterRow = (levels, rowKey) => {
+		const row = levels.map((level) => {
+			const locked = !level.unlocked;
+			const label = locked ? "🔒" : `Niveau ${level.num} ${level.completed ? "✓" : ""}`;
+
+			return (
+				<td
+					key={level.num}
+					onClick={goToExo}
+					url={"/Exercise/" + mode + "/" + level.num}
+					locked={locked ? "true" : "false"}
+					className={
+						(level.completed ? "levelCompleted " : "") +
+						(locked ? "levelLocked" : "")
+					}
+				>
+					<p url={"/Exercise/" + mode + "/" + level.num} locked={locked ? "true" : "false"}>
+						{label}
+					</p>
+				</td>
+			);
+		});
+
+		return <tr key={rowKey}>{row}</tr>;
+	};
+
+	/**
+	 * Renvoie la liste de choix des niveaux, regroupés par chapitre réel
+	 * (avec déblocage séquentiel), pour le mode "Play" une fois /api/chapters chargé.
+	 *
+	 * @returns {JSX.Element[]}
+	 */
+	function afficheChapters()
+	{
+		const res = [];
+		chapters.forEach((chapter, chapterIndex) => {
+			res.push(
+				<h2 key={"h-" + chapter.id_chapter}>
+					{chapter.name} {!chapter.unlocked && "🔒"}
+				</h2>
+			);
+
+			const rows = [];
+			for (let i = 0; i < chapter.levels.length; i += 5)
+				rows.push(createChapterRow(chapter.levels.slice(i, i + 5), chapterIndex + "-" + i));
+
+			res.push(
+				<table key={chapter.id_chapter}>
+					<tbody>{rows}</tbody>
+				</table>
+			);
+		});
+
+		return res;
+	}
+
+	/**
 	 * Renvoie la liste de choix des niveaux, regroupés par catégorie de difficulté.
 	 * 
 	 * @returns {JSX.Element[]}
@@ -166,7 +252,7 @@ const Choice = ({ mode }) => {
 
 	return (
 		<div className="choice">
-			{afficheChoice()}
+			{mode === "Play" && chapters ? afficheChapters() : afficheChoice()}
 		</div>
 	);
 };

@@ -1,0 +1,96 @@
+.adminPage {
+	width: min(960px, 92vw);
+	margin: 40px auto 80px;
+}
+
+.adminPage h1 {
+	font-family: 'Sora', sans-serif;
+	margin-bottom: 24px;
+}
+
+.adminError {
+	background: color-mix(in srgb, red 12%, transparent);
+	border: 1px solid red;
+	border-radius: 8px;
+	padding: 10px 14px;
+	margin-bottom: 20px;
+}
+
+.adminSection {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 24px 28px;
+	margin-bottom: 28px;
+}
+
+.adminSection h2 {
+	font-family: 'Sora', sans-serif;
+	margin-bottom: 12px;
+}
+
+.adminHint {
+	color: var(--text-muted);
+	font-size: 14px;
+	margin-bottom: 16px;
+}
+
+.adminSubgroup {
+	margin-bottom: 20px;
+}
+
+.adminSubgroup h3 {
+	font-size: 15px;
+	color: var(--text-muted);
+	margin-bottom: 6px;
+}
+
+.adminTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 16px;
+}
+
+.adminTable th {
+	text-align: left;
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+	padding: 6px 8px;
+}
+
+.adminTable td {
+	padding: 6px 8px;
+	border-top: 1px solid var(--border-subtle);
+}
+
+.adminTable input,
+.adminTable select {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+	padding: 6px 8px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	width: 100%;
+}
+
+.adminForm {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+}
+
+.adminForm input,
+.adminForm select {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+	padding: 8px 10px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+}

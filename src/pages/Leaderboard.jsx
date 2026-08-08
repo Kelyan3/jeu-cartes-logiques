@@ -7,18 +7,30 @@ const Leaderboard = () => {
 	const [entries, setEntries] = useState([]);
 	const [total, setTotal] = useState(0);
 	const [loading, setLoading] = useState(true);
+	const [categories, setCategories] = useState([]);
+	const [selectedCategory, setSelectedCategory] = useState("");
 
 	useEffect(() => {
+		fetch(`${API}/api/categories`)
+			.then((response) => response.json())
+			.then(setCategories)
+			.catch(() => setCategories([]));
+	}, []);
+
+	useEffect(() => {
+		setLoading(true);
+		const query = selectedCategory ? `?category=${selectedCategory}` : "";
+
 		Promise.all([
 			fetch("/json/manifest.json").then((response) => response.json()),
-			fetch(`${API}/api/leaderboard`).then((response) => response.json()),
+			fetch(`${API}/api/leaderboard${query}`).then((response) => response.json()),
 		])
 			.then(([manifest, leaderboard]) => {
 				setTotal(manifest.Play ?? 0);
 				setEntries(leaderboard);
 			})
 			.finally(() => setLoading(false));
-	}, []);
+	}, [selectedCategory]);
 
 	return (
 		<div className="home">
@@ -27,6 +39,19 @@ const Leaderboard = () => {
 				<span className="eyebrow">Classement</span>
 				<br /><br />
 				<h2>Progression des joueurs</h2>
+
+				<select
+					className="leaderboardFilter"
+					value={selectedCategory}
+					onChange={(event) => setSelectedCategory(event.target.value)}
+				>
+					<option value="">Toutes les catégories</option>
+					{categories.map((category) => (
+						<option key={category.id_category} value={category.id_category}>
+							{category.name}
+						</option>
+					))}
+				</select>
 
 				{loading && <p className="profileLoading">Chargement...</p>}
 

@@ -178,6 +178,44 @@
 	box-shadow: rgba(var(--accent-rgb), 0.08);
 }
 
+.game .bouton .actionDropdown {
+	position: relative;
+}
+
+.game .bouton .actionDropdownMenu {
+	position: absolute;
+	top: calc(100% + 6px);
+	left: 0;
+	z-index: 20;
+	display: flex;
+	flex-direction: column;
+	min-width: 160px;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+	overflow: hidden;
+}
+
+.game .bouton .actionDropdownMenu button {
+	background: none;
+	border: none;
+	text-align: left;
+	padding: 10px 14px;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	color: var(--text-primary);
+	cursor: pointer;
+}
+
+.game .bouton .actionDropdownMenu button:hover {
+	background: var(--bg-base);
+}
+
+.game .bouton .actionDropdownMenu button.boutonSelection {
+	border-left: 3px solid var(--accent-cyan);
+}
+
 .game .bouton .buttonAction:hover .tooltiptext {
 	visibility: visible;
 }

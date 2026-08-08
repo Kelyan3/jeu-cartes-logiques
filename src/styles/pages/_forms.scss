@@ -118,6 +118,23 @@
 	margin-top: 20px;
 }
 
+.categoryField {
+	margin-top: 24px;
+	text-align: left;
+}
+
+.categoryField select {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 10px 12px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 15px;
+	width: 100%;
+	margin-bottom: 10px;
+}
+
 .progressBlock {
 	margin-top: 28px;
 	text-align: left;
