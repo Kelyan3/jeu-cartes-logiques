@@ -2439,7 +2439,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			else if (event.code.toLowerCase().includes("down"))
 			{
 				const futurHover = Math.min(currentCardArrow[1] + 1, game[currentCardArrow[0]].length - 1);
-				changeHover(currentCardArrow[9], futurHover);
+				changeHover(currentCardArrow[0], futurHover);
 			}
 			else if (event.code.toLowerCase().includes("up"))
 			{

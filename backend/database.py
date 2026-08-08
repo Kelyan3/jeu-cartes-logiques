@@ -79,5 +79,5 @@ def seed_levels_from_manifest():
 
 
 if __name__ == "__main__":
-    reset_table()
-    seed_levels_from_manifest()
+	reset_table()
+	seed_levels_from_manifest()

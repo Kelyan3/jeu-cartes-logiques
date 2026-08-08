@@ -35,7 +35,7 @@ app.config["SESSION_COOKIE_SECURE"] = IS_PRODUCTION
 cors_origins = ["http://localhost:5173"]
 frontend_url = os.environ.get("FRONTEND_URL", "").rstrip("/")
 if frontend_url:
-    cors_origins.append(frontend_url)
+	cors_origins.append(frontend_url)
 
 CORS(app, origins=cors_origins, supports_credentials=True)
 
