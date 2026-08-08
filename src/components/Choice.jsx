@@ -100,11 +100,13 @@ const Choice = ({ mode }) => {
 	 */
 	function goToExo(event)
 	{
-		if (event.target.getAttribute("locked") === "true")
+		const cell = event.currentTarget;
+		if (cell.dataset.locked === "true")
 			return;
 
-		const url = event.target.getAttribute("url");
-		navigate(url);
+		const url = cell.dataset.url;
+		if (url)
+			navigate(url);
 	}
 
 	/**
@@ -126,10 +128,10 @@ const Choice = ({ mode }) => {
 					<td
 						key={index}
 						onClick={goToExo}
-						url={"/exercise/" + mode + "/" + (index + 1)}
+						data-url={"/exercise/" + mode + "/" + (index + 1)}
 						className={isCompleted ? "levelCompleted" : ""}
 					>
-						<p url={"/exercise/" + mode + "/" + (index + 1)}>Niveau {index + 1} {isCompleted && "✓"}</p>
+						<p>Niveau {index + 1} {isCompleted && "✓"}</p>
 					</td>
 				);
 			}
@@ -164,16 +166,14 @@ const Choice = ({ mode }) => {
 				<td
 					key={level.num}
 					onClick={goToExo}
-					url={"/exercise/" + mode + "/" + level.num}
-					locked={locked ? "true" : "false"}
+					data-url={"/exercise/" + mode + "/" + level.num}
+					data-locked={locked ? "true" : "false"}
 					className={
 						(level.completed ? "levelCompleted " : "") +
 						(locked ? "levelLocked" : "")
 					}
 				>
-					<p url={"/exercise/" + mode + "/" + level.num} locked={locked ? "true" : "false"}>
-						{label}
-					</p>
+					<p>{label}</p>
 				</td>
 			);
 		});

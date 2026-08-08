@@ -27,7 +27,11 @@ const Exercise = () => {
 
 	useEffect(() => {
 		fetch("/json/manifest.json")
-			.then((response) => response.json())
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Manifeste indisponible.");
+				return response.json();
+			})
 			.then((data) => setManifest(data))
 			.catch(() => setManifest(defaultCounts));
 	}, []);
@@ -36,34 +40,38 @@ const Exercise = () => {
 	 * Valeurs entièrement dérivées de tmpNum/mode/manifest : calculées au rendu,
 	 * sans passer par un setState synchrone dans un effet.
 	 */
+	const num = tmpNum !== undefined ? Number(tmpNum) : NaN;
+	const isValidNum = Number.isInteger(num) && num >= 1;
 	const nbExo = manifest?.Play ?? defaultCounts.Play;
 	const nbTuto = manifest?.Tutorial ?? defaultCounts.Tutorial;
-	const isValidPlay = mode === "Play" && tmpNum <= nbExo;
-	const isValidTutorial = mode === "Tutorial" && tmpNum <= nbTuto;
+	const isValidPlay = mode === "Play" && isValidNum && num <= nbExo;
+	const isValidTutorial = mode === "Tutorial" && isValidNum && num <= nbTuto;
 	const isValidCreate = mode === "Create" && tmpNum === undefined;
 	const nbExoConfondu = mode === "Play" ? nbExo : nbTuto;
-	const num = Number(tmpNum);
 
 	useEffect(() => {
 		// On attend d'avoir le manifeste (ou son repli) avant de valider le niveau demandé.
 		if (manifest === null)
 			return;
 
-		if (isValidPlay)
+		if (isValidPlay || isValidTutorial)
 		{
-			fetch("/json/exos_feuilles/ex" + tmpNum + ".json")
-				.then((response) => response.text())
-				.then((data) => setFetchedEx({ key: exerciseKey, data: JSON.parse(data) }));
-		}
-		else if (isValidTutorial)
-		{
-			fetch("/json/tutoriel/tuto" + tmpNum + ".json")
-				.then((response) => response.text())
-				.then((data) => setFetchedEx({ key: exerciseKey, data: JSON.parse(data) }));
+			const path = isValidPlay
+				? `/json/exos_feuilles/ex${num}.json`
+				: `/json/tutoriel/tuto${num}.json`;
+
+			fetch(path)
+				.then((response) => {
+					if (!response.ok)
+						throw new Error(`Exercice introuvable (${response.status})`);
+					return response.json();
+				})
+				.then((data) => setFetchedEx({ key: exerciseKey, data }))
+				.catch(() => navigate("/not-found"));
 		}
 		else if (!isValidCreate)
 			navigate("/not-found");
-	}, [tmpNum, mode, manifest, isValidPlay, isValidTutorial, isValidCreate, navigate]);
+	}, [tmpNum, mode, manifest, isValidPlay, isValidTutorial, isValidCreate, num, exerciseKey, navigate]);
 
 	// Le mode "Create" n'a pas besoin de fetch : sa valeur de départ est constante.
 	const ex = isValidCreate ? [[], []] : fetchedEx.key === exerciseKey ? fetchedEx.data : undefined;

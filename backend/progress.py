@@ -92,7 +92,8 @@ def reset_progress(user_id):
 	"""Supprime toute la progression d'un utilisateur."""
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
-			cur.execute("DELETE FROM progression WHERE id_user = %s", (user_id,),)
+			cur.execute("DELETE FROM progression WHERE id_user = %s", (user_id,))
+			cur.execute("DELETE FROM user_quests WHERE id_user = %s", (user_id,))
 			conn.commit()
 
 def get_chapters(user_id):
@@ -104,8 +105,7 @@ def get_chapters(user_id):
 	débloqué ; un niveau est débloqué seulement si le niveau qui le précède
 	(dans l'ordre chapitre -> position) a été complété.
 
-	Renvoie : [{"id_chapter", "name", "position", "unlocked",
-	            "levels": [{"num", "position", "unlocked", "completed"}, ...]}, ...]
+	Renvoie : [{"id_chapter", "name", "position", "unlocked", "levels": [{"num", "position", "unlocked", "completed"}, ...]}, ...]
 	"""
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
