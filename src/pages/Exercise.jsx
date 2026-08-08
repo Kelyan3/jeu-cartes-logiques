@@ -62,7 +62,7 @@ const Exercise = () => {
 				.then((data) => setFetchedEx({ key: exerciseKey, data: JSON.parse(data) }));
 		}
 		else if (!isValidCreate)
-			navigate("/NotFound");
+			navigate("/not-found");
 	}, [tmpNum, mode, manifest, isValidPlay, isValidTutorial, isValidCreate, navigate]);
 
 	// Le mode "Create" n'a pas besoin de fetch : sa valeur de départ est constante.

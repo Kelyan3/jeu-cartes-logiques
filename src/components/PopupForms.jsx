@@ -5,7 +5,7 @@ const PopupForms = () => {
 		<div className="popupForms-box">
 			<div className="bigbox">
 				<div className="box">
-					<NavLink to="/Forms">Votre avis nous intéresse</NavLink>
+					<NavLink to="/forms">Votre avis nous intéresse</NavLink>
 				</div>
 			</div>
 		</div>

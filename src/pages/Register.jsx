@@ -104,7 +104,7 @@ const Register = () => {
 					</button>
 
 					<p className="authSwitch">
-						Déjà un compte ? <NavLink to="/Login">Se connecter</NavLink>
+						Déjà un compte ? <NavLink to="/login">Se connecter</NavLink>
 					</p>
 				</form>
 			</div>

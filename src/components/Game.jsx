@@ -1126,7 +1126,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		const findIntermediateDeckFor = (cardObj) => {
 			const findObj = findObjectifRelative(cardObj, tmp);
 			if (findObj === -1)
-				returnNonCard -1;
+				return -1;
 
 			const hypothesis = tmp[tmp.length - 1][findObj].left;
 			for (let d = 1; d < tmp.length - 1; d++)
@@ -2040,7 +2040,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (numero + 2 <= nbExo)
 		{
 			// url du prochain exercice
-			let url = "/Exercise/" + mode + "/" + (numero + 2);
+			let url = "/exercise/" + mode + "/" + (numero + 2);
 
 			// Redirige vers cet url
 			navigate(url);

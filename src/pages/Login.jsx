@@ -97,7 +97,7 @@ const Login = () => {
 					</button>
 
 					<p className="authSwitch">
-						Pas de compte ? <NavLink to="/Register">S'inscrire</NavLink>
+						Pas de compte ? <NavLink to="/register">S'inscrire</NavLink>
 					</p>
 				</form>
 			</div>

@@ -45,16 +45,16 @@ const Navigation = () => {
 			</button>
 
 			<ul id="primary-navbar" className={`navbar${menuOpen ? " isOpen" : ""}`}>
-				<li><NavLink to="/Tutorials" className="navLink">Tutoriels</NavLink></li>
-				<li><NavLink to="/Levels" className="navLink">Niveaux</NavLink></li>
-				<li><NavLink to="/Exercise/Create" className="navLink">Créer un niveau</NavLink></li>
-				<li><NavLink to="/Leaderboard" className="navLink">Classement</NavLink></li>
+				<li><NavLink to="/tutorials" className="navLink">Tutoriels</NavLink></li>
+				<li><NavLink to="/levels" className="navLink">Niveaux</NavLink></li>
+				<li><NavLink to="/exercise/Create" className="navLink">Créer un niveau</NavLink></li>
+				<li><NavLink to="/leaderboard" className="navLink">Classement</NavLink></li>
 
 				<li className="choose">
 					<div>Plus</div>
 					<ul>
-						<li><NavLink to="/Forms">Votre avis</NavLink></li>
-						<li><NavLink to="/About">À propos</NavLink></li>
+						<li><NavLink to="/forms">Votre avis</NavLink></li>
+						<li><NavLink to="/about">À propos</NavLink></li>
 					</ul>
 				</li>
 
@@ -62,8 +62,8 @@ const Navigation = () => {
 					<li className="choose">
 						<div>Compte</div>
 						<ul>
-							<li><NavLink to="/Login">Connexion</NavLink></li>
-							<li><NavLink to="/Register">Inscription</NavLink></li>
+							<li><NavLink to="/login">Connexion</NavLink></li>
+							<li><NavLink to="/register">Inscription</NavLink></li>
 						</ul>
 					</li>
 				)}
@@ -72,8 +72,8 @@ const Navigation = () => {
 					<li className="choose">
 						<div>{user.username}</div>
 						<ul>
-							<li><NavLink to="/Profile">Mon profil</NavLink></li>
-							{user.role === "admin" && <li><NavLink to="/Admin">Administration</NavLink></li>}
+							<li><NavLink to="/profile">Mon profil</NavLink></li>
+							{user.role === "admin" && <li><NavLink to="/admin">Administration</NavLink></li>}
 							<li>
 								<div onClick={logout} className="logoutLink">Déconnexion</div>
 							</li>

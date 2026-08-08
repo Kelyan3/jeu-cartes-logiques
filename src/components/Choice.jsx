@@ -126,10 +126,10 @@ const Choice = ({ mode }) => {
 					<td
 						key={index}
 						onClick={goToExo}
-						url={"/Exercise/" + mode + "/" + (index + 1)}
+						url={"/exercise/" + mode + "/" + (index + 1)}
 						className={isCompleted ? "levelCompleted" : ""}
 					>
-						<p url={"/Exercise/" + mode + "/" + (index + 1)}>Niveau {index + 1} {isCompleted && "✓"}</p>
+						<p url={"/exercise/" + mode + "/" + (index + 1)}>Niveau {index + 1} {isCompleted && "✓"}</p>
 					</td>
 				);
 			}
@@ -164,14 +164,14 @@ const Choice = ({ mode }) => {
 				<td
 					key={level.num}
 					onClick={goToExo}
-					url={"/Exercise/" + mode + "/" + level.num}
+					url={"/exercise/" + mode + "/" + level.num}
 					locked={locked ? "true" : "false"}
 					className={
 						(level.completed ? "levelCompleted " : "") +
 						(locked ? "levelLocked" : "")
 					}
 				>
-					<p url={"/Exercise/" + mode + "/" + level.num} locked={locked ? "true" : "false"}>
+					<p url={"/exercise/" + mode + "/" + level.num} locked={locked ? "true" : "false"}>
 						{label}
 					</p>
 				</td>
