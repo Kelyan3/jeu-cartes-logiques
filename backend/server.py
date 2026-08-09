@@ -1,4 +1,5 @@
 import os
+import re
 import secrets
 import logging
 
@@ -6,10 +7,18 @@ from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from dotenv import load_dotenv
+from werkzeug.exceptions import HTTPException
 
 from auth import *
 from progress import *
 from admin import *
+
+
+# Logging pour les actions administratives.
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+
+# RegEx pour les emails.
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 # Charge les variables définies dans le fichier .env
 load_dotenv()
@@ -46,16 +55,32 @@ login_manager = LoginManager(app)
 def load_user(user_id):
 	return get_user_by_id(user_id)
 
+def get_json_body():
+	data = request.get_json(silent=True)
+	return data if isinstance(data, dict) else {}
+
+
+@app.errorhandler(HTTPException)
+def handle_http_exception(error):
+	return jsonify({"error": error.description}), error.code
+
+@app.errorhandler(Exception)
+def handle_unexpected_exception(error):
+    logging.exception("Erreur interne non gérée")
+    return jsonify({"error": "Erreur interne du serveur"}), 500
+
 
 @app.route("/api/register", methods=["POST"])
 def register():
-	data = request.get_json()
+	data = get_json_body()
 	username = data.get("username", "").strip()
 	email = data.get("email", "").strip().lower()
 	password = data.get("password", "")
 
 	if not username or not email or not password:
 		return jsonify({"error": "Tous les champs sont requis"}), 400
+	if not EMAIL_RE.match(email):
+		return jsonify({"error": "Format d'email invalide"}), 400
 	if len(password) < 8:
 		return jsonify({"error": "Le mot de passe doit faire au moins 8 caractères"}), 400
 	if email_or_username_exists(email, username):
@@ -70,7 +95,7 @@ def register():
 
 @app.route("/api/login", methods=["POST"])
 def login():
-	data = request.get_json()
+	data = get_json_body()
 	email = data.get("email", "").strip().lower()
 	password = data.get("password", "")
 
@@ -119,7 +144,7 @@ def progress_get():
 @app.route("/api/progress", methods=["POST"])
 @login_required
 def progress_post():
-	data = request.get_json()
+	data = get_json_body()
 	mode = data.get("mode")
 	num = data.get("num")
 	completed = data.get("completed", True)
@@ -159,7 +184,7 @@ def categories():
 @app.route("/api/profile/category", methods=["POST"])
 @login_required
 def profile_category():
-	data = request.get_json()
+	data = get_json_body()
 	id_category = data.get("id_category")
 
 	if not isinstance(id_category, int):
@@ -182,7 +207,7 @@ def leaderboard():
 @app.route("/api/admin/chapters", methods=["POST"])
 @admin_required
 def admin_create_chapter():
-	data = request.get_json()
+	data = get_json_body()
 	name = (data.get("name") or "").strip()
 	position = data.get("position")
 
@@ -209,7 +234,7 @@ def admin_reorder_chapters():
 @app.route("/api/admin/chapters/<int:id_chapter>", methods=["PUT"])
 @admin_required
 def admin_update_chapter(id_chapter):
-	data = request.get_json()
+	data = get_json_body()
 	update_chapter(id_chapter, name=data.get("name"), position=data.get("position"))
 	return jsonify({"ok": True})
 
@@ -230,7 +255,7 @@ def admin_unassigned_levels():
 @app.route("/api/admin/levels", methods=["POST"])
 @admin_required
 def admin_assign_level():
-	data = request.get_json()
+	data = get_json_body()
 	num = data.get("num")
 	id_chapter = data.get("id_chapter")
 	position = data.get("position")
@@ -251,7 +276,7 @@ def admin_assign_level():
 @app.route("/api/admin/levels/<int:id_level>", methods=["PUT"])
 @admin_required
 def admin_update_level(id_level):
-	data = request.get_json()
+	data = get_json_body()
 	update_level(id_level, id_chapter=data.get("id_chapter"), position=data.get("position"))
 	return jsonify({"ok": True})
 
@@ -284,7 +309,7 @@ def admin_list_quests():
 @app.route("/api/admin/quests", methods=["POST"])
 @admin_required
 def admin_create_quest():
-	data = request.get_json()
+	data = get_json_body()
 	menu = (data.get("menu") or "").strip()
 	label = (data.get("label") or "").strip()
 	unlocks_key = (data.get("unlocks_key") or "").strip()
@@ -301,7 +326,7 @@ def admin_create_quest():
 @app.route("/api/admin/quests/<int:id_quest>", methods=["PUT"])
 @admin_required
 def admin_update_quest(id_quest):
-	data = request.get_json()
+	data = get_json_body()
 	update_quest(
 		id_quest,
 		menu=data.get("menu"),
@@ -323,7 +348,7 @@ def admin_delete_quest(id_quest):
 @app.route("/api/admin/categories", methods=["POST"])
 @admin_required
 def admin_create_category():
-	data = request.get_json()
+	data = get_json_body()
 	name = (data.get("name") or "").strip()
 	if not name:
 		return jsonify({"error": "name est requis"}), 400
@@ -335,7 +360,7 @@ def admin_create_category():
 @app.route("/api/admin/categories/<int:id_category>", methods=["PUT"])
 @admin_required
 def admin_update_category(id_category):
-	data = request.get_json()
+	data = get_json_body()
 	name = (data.get("name") or "").strip()
 	if not name:
 		return jsonify({"error": "name est requis"}), 400

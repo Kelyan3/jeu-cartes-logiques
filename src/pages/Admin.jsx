@@ -215,7 +215,6 @@ const ChaptersSection = ({ chapters, call }) => {
 					<tr>
 						<th></th>
 						<th>Nom</th>
-						<th>Position</th>
 						<th>Niveaux</th>
 						<th></th>
 					</tr>
@@ -245,7 +244,6 @@ const ChaptersSection = ({ chapters, call }) => {
 									}}
 								/>
 							</td>
-							<td>{chapter.position}</td>
 							<td>{chapter.levels.length}</td>
 							<td>
 								<button
