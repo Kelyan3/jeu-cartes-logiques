@@ -5,27 +5,20 @@ import { API_BASE_URL as API } from "../config/api";
 
 const Choice = ({ mode }) => {
 	/**
-	 * Configuration par défaut, utilisée en attendant que le manifeste
-	 * (nombre réel de niveaux) soit chargé, et comme repli si le manifeste
-	 * est absent ou illisible.
+	 * Configuration par défaut du mode Tutorial (basée sur le manifeste de
+	 * fichiers exN.json), seul mode qui n'utilise pas encore le système de
+	 * chapitres en base de données. Le mode "Play" est entièrement piloté
+	 * par /api/chapters (voir plus bas).
 	 */
 	const defaultConfig = {
-		Play: {
-			jsonCount: 36,
-			difficulty: [
-				[1, 20, "Démonstrations"],
-				[21, 35, "Raisonnements"],
-				[36, 40, "Autres"],
-			],
-		},
 		Tutorial: {
 			jsonCount: 7,
 			difficulty: [[1, 7, "Tutoriels"]],
 		},
 	};
 
-	const [jsonCount, setJsonCount] = useState(defaultConfig[mode].jsonCount);
-	const [difficulty, setDifficulty] = useState(defaultConfig[mode].difficulty);
+	const [jsonCount, setJsonCount] = useState(defaultConfig.Tutorial?.jsonCount ?? 0);
+	const [difficulty, setDifficulty] = useState(defaultConfig.Tutorial?.difficulty ?? []);
 
 	const navigate = useNavigate();
 	const { user } = useAuth();
@@ -34,27 +27,36 @@ const Choice = ({ mode }) => {
 	/**
 	 * Chapitres réels (mode "Play" uniquement) : chaque niveau y porte son propre
 	 * statut "unlocked"/"completed", calculé côté backend (voir get_chapters()).
+	 * null = pas encore chargé, [] = chargé mais aucun chapitre en base,
+	 * "error" = l'appel a échoué.
 	 */
 	const [chapters, setChapters] = useState(null);
+	const [chaptersError, setChaptersError] = useState(false);
 
 	useEffect(() => {
 		if (mode !== "Play")
 			return;
 
+		setChapters(null);
+		setChaptersError(false);
+
 		fetch(`${API}/api/chapters`, { credentials: "include" })
 			.then((response) => response.json())
 			.then(setChapters)
 			.catch(() => {
-				// API indisponible : on retombe sur l'ancien affichage par difficulté, sans verrouillage (chapters reste null).
+				setChaptersError(true);
 			});
 	}, [mode, user]);
 
 	/**
-	 * Charge le nombre réel de niveaux depuis le manifeste généré,
-	 * et étend la dernière catégorie affichée si de nouveaux niveaux
-	 * ont été ajoutés au-delà de ce qui était prévu manuellement.
+	 * Charge le nombre réel de niveaux depuis le manifeste généré (mode
+	 * Tutorial uniquement), et étend la dernière catégorie affichée si de
+	 * nouveaux niveaux ont été ajoutés au-delà de ce qui était prévu.
 	 */
 	useEffect(() => {
+		if (mode !== "Tutorial")
+			return;
+
 		fetch("/json/manifest.json")
 			.then((response) => response.json())
 			.then((manifest) => {
@@ -110,7 +112,7 @@ const Choice = ({ mode }) => {
 	}
 
 	/**
-	 * Crée une ligne de niveaux à afficher.
+	 * Crée une ligne de niveaux à afficher (mode Tutorial).
 	 * 
 	 * @param {number} start - Le premier niveau de la ligne.
 	 * @param {number} end - Le dernier niveau de la ligne.
@@ -183,7 +185,7 @@ const Choice = ({ mode }) => {
 
 	/**
 	 * Renvoie la liste de choix des niveaux, regroupés par chapitre réel
-	 * (avec déblocage séquentiel), pour le mode "Play" une fois /api/chapters chargé.
+	 * (avec déblocage séquentiel), pour le mode "Play".
 	 *
 	 * @returns {JSX.Element[]}
 	 */
@@ -212,7 +214,8 @@ const Choice = ({ mode }) => {
 	}
 
 	/**
-	 * Renvoie la liste de choix des niveaux, regroupés par catégorie de difficulté.
+	 * Renvoie la liste de choix des niveaux, regroupés par catégorie de difficulté
+	 * (mode "Tutorial" uniquement).
 	 * 
 	 * @returns {JSX.Element[]}
 	 */
@@ -250,9 +253,27 @@ const Choice = ({ mode }) => {
 		return res;
 	}
 
+	/**
+	 * Contenu du mode "Play" : chargement, erreur, aucun chapitre, ou la liste.
+	 * Ne rend jamais l'ancien système de difficulté codé en dur.
+	 */
+	function affichePlay()
+	{
+		if (chaptersError)
+			return <p className="choiceMessage">Impossible de charger les niveaux pour le moment. Réessaie plus tard.</p>;
+
+		if (chapters === null)
+			return <p className="choiceMessage">Chargement des niveaux...</p>;
+
+		if (chapters.length === 0)
+			return <p className="choiceMessage">Aucun niveau n'est disponible pour le moment.</p>;
+
+		return afficheChapters();
+	}
+
 	return (
 		<div className="choice">
-			{mode === "Play" && chapters ? afficheChapters() : afficheChoice()}
+			{mode === "Play" ? affichePlay() : afficheChoice()}
 		</div>
 	);
 };
