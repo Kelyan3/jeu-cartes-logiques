@@ -126,25 +126,116 @@ const Admin = () => {
  */
 const ChaptersSection = ({ chapters, call }) => {
 	const [name, setName] = useState("");
-	const [position, setPosition] = useState("");
+
+	/**
+	 * Chapitre actuellement glissé : { id_chapter }
+	 */
+	const [draggedChapter, setDraggedChapter] = useState(null);
+
+	/**
+	 * id_chapter du chapitre actuellement survolé (indication visuelle).
+	 */
+	const [dragOverId, setDragOverId] = useState(null);
+
+	/**
+	 * Réordonnancement local optimiste : appliqué immédiatement au dépôt, avant même la réponse du serveur.
+	 */
+	const [localOrder, setLocalOrder] = useState(null);
+
+	useEffect(() => {
+		setLocalOrder(null);
+	}, [chapters]);
+
+	const orderedChapters = localOrder ?? chapters;
 
 	const submit = (event) => {
 		event.preventDefault();
-		call("/api/admin/chapters", "POST", { name, position: Number(position) });
+		call("/api/admin/chapters", "POST", { name });
 		setName("");
-		setPosition("");
+	};
+
+	const handleDragStart = (chapter) => (event) => {
+		setDraggedChapter({ id_chapter: chapter.id_chapter });
+		event.dataTransfer.effectAllowed = "move";
+	};
+
+	const handleDragOver = (chapter) => (event) => {
+		if (!draggedChapter)
+			return;
+
+		event.preventDefault();
+		setDragOverId(chapter.id_chapter);
+	};
+
+	const handleDragLeave = () => {
+		setDragOverId(null);
+	};
+
+	const handleDrop = (targetChapter) => (event) => {
+		event.preventDefault();
+		setDragOverId(null);
+
+		if (!draggedChapter || draggedChapter.id_chapter === targetChapter.id_chapter)
+		{
+			setDraggedChapter(null);
+			return;
+		}
+
+		const draggedFull = orderedChapters.find((c) => c.id_chapter === draggedChapter.id_chapter);
+		const reordered = orderedChapters.filter((c) => c.id_chapter !== draggedChapter.id_chapter);
+		const targetIndex = reordered.findIndex((c) => c.id_chapter === targetChapter.id_chapter);
+		reordered.splice(targetIndex, 0, draggedFull);
+
+		setLocalOrder(reordered);
+
+		const hasChanged = reordered.some((chapter, index) => chapter.position !== index + 1);
+		if (hasChanged)
+		{
+			call("/api/admin/chapters/reorder", "PUT", {
+				ordered_ids: reordered.map((chapter) => chapter.id_chapter),
+			});
+		}
+
+		setDraggedChapter(null);
+	};
+
+	const handleDragEnd = () => {
+		setDraggedChapter(null);
+		setDragOverId(null);
 	};
 
 	return (
 		<section className="adminSection">
 			<h2>Chapitres</h2>
+			<p className="adminHint">
+				Glissez une ligne pour changer l'ordre des chapitres. Les nouveaux chapitres sont ajoutés à la fin de la liste.
+			</p>
 			<table className="adminTable">
 				<thead>
-					<tr><th>Nom</th><th>Position</th><th>Niveaux</th><th></th></tr>
+					<tr>
+						<th></th>
+						<th>Nom</th>
+						<th>Position</th>
+						<th>Niveaux</th>
+						<th></th>
+					</tr>
 				</thead>
 				<tbody>
-					{chapters.map((chapter) => (
-						<tr key={chapter.id_chapter}>
+					{orderedChapters.map((chapter) => (
+						<tr
+							key={chapter.id_chapter}
+							draggable
+							onDragStart={handleDragStart(chapter)}
+							onDragOver={handleDragOver(chapter)}
+							onDragLeave={handleDragLeave}
+							onDrop={handleDrop(chapter)}
+							onDragEnd={handleDragEnd}
+							className={
+								(draggedChapter?.id_chapter === chapter.id_chapter ? "dragging " : "") +
+								(dragOverId === chapter.id_chapter ? "dragOver" : "")
+							}
+						>
+							<td className="dragHandle" title="Glisser pour réordonner">⠿</td>
 							<td>
 								<input
 									defaultValue={chapter.name}
@@ -154,17 +245,7 @@ const ChaptersSection = ({ chapters, call }) => {
 									}}
 								/>
 							</td>
-							<td>
-								<input
-									type="number"
-									defaultValue={chapter.position}
-									onBlur={(event) => {
-										const value = Number(event.target.value);
-										if (value !== chapter.position)
-											call(`/api/admin/chapters/${chapter.id_chapter}`, "PUT", { position: value });
-									}}
-								/>
-							</td>
+							<td>{chapter.position}</td>
 							<td>{chapter.levels.length}</td>
 							<td>
 								<button
@@ -184,7 +265,6 @@ const ChaptersSection = ({ chapters, call }) => {
 
 			<form className="adminForm" onSubmit={submit}>
 				<input placeholder="Nom du chapitre" value={name} onChange={(e) => setName(e.target.value)} required />
-				<input type="number" placeholder="Position" value={position} onChange={(e) => setPosition(e.target.value)} required />
 				<button type="submit" className="resetButton">+ Chapitre</button>
 			</form>
 		</section>
@@ -199,17 +279,90 @@ const ChaptersSection = ({ chapters, call }) => {
 const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 	const [num, setNum] = useState("");
 	const [idChapter, setIdChapter] = useState("");
-	const [position, setPosition] = useState("");
+
+	/**
+	 * Niveau actuellement glissé : { id_level, id_chapter }.
+	 */
+	const [draggedLevel, setDraggedLevel] = useState(null);
+
+	/**
+	 * id_level du niveau actuellement survolé, pour l'indication visuelle.
+	 */
+	const [dragOverId, setDragOverId] = useState(null);
+
+	/**
+	 * Réordonnancement local optimiste : appliqué immédiatement au dépôt,
+	 * avant même la réponse du serveur, pour un affichage instantané.
+	 */
+	const [localOrder, setLocalOrder] = useState({});
+
+	useEffect(() => {
+		setLocalOrder({});
+	}, [chapters]);
 
 	const submit = (event) => {
 		event.preventDefault();
+		const chapter = chapters.find((c) => c.id_chapter === Number(idChapter));
+		const newPosition = (chapter?.levels.length ?? 0) + 1;
+
 		call("/api/admin/levels", "POST", {
 			num: Number(num),
 			id_chapter: Number(idChapter),
-			position: Number(position),
+			position: newPosition,
 		});
 		setNum("");
-		setPosition("");
+		setIdChapter("");
+	};
+
+	const handleDragStart = (level, id_chapter) => (event) => {
+		setDraggedLevel({ id_level: level.id_level, id_chapter });
+		event.dataTransfer.effectAllowed = "move";
+	};
+
+	const handleDragOver = (level, id_chapter) => (event) => {
+		if (!draggedLevel || draggedLevel.id_chapter !== id_chapter)
+			return;
+
+		event.preventDefault();
+		setDragOverId(level.id_level);
+	};
+
+	const handleDragLeave = () => {
+		setDragOverId(null);
+	};
+
+	const handleDrop = (targetLevel, id_chapter, levelsInChapter) => (event) => {
+		event.preventDefault();
+		setDragOverId(null);
+
+		if (!draggedLevel || draggedLevel.id_chapter !== id_chapter || draggedLevel.id_level === targetLevel.id_level)
+		{
+			setDraggedLevel(null);
+			return;
+		}
+
+		const draggedFull = levelsInChapter.find((l) => l.id_level === draggedLevel.id_level);
+		const reordered = levelsInChapter.filter((l) => l.id_level !== draggedLevel.id_level);
+		const targetIndex = reordered.findIndex((l) => l.id_level === targetLevel.id_level);
+		reordered.splice(targetIndex, 0, draggedFull);
+
+		setLocalOrder((prev) => ({ ...prev, [id_chapter]: reordered }));
+
+		const hasChanged = reordered.some((level, index) => level.position !== index + 1);
+		if (hasChanged)
+		{
+			call("/api/admin/levels/reorder", "PUT", {
+				id_chapter,
+				ordered_ids: reordered.map((level) => level.id_level),
+			});
+		}
+
+		setDraggedLevel(null);
+	};
+
+	const handleDragEnd = () => {
+		setDraggedLevel(null);
+		setDragOverId(null);
 	};
 
 	return (
@@ -218,41 +371,48 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 			<p className="adminHint">
 				Un niveau doit déjà exister comme fichier <code>exN.json</code> (créé via "Créer un niveau",
 				déposé dans <code>public/json/exos_feuilles/</code>) avant de pouvoir être rattaché ici à un chapitre.
+				Glissez une ligne pour changer sa position dans le chapitre.
 			</p>
 
-			{chapters.map((chapter) => (
-				<div key={chapter.id_chapter} className="adminSubgroup">
-					<h3>{chapter.name}</h3>
-					<table className="adminTable">
-						<thead>
-							<tr><th>Niveau</th><th>Position</th><th></th></tr>
-						</thead>
-						<tbody>
-							{chapter.levels.map((level) => (
-								<tr key={level.id_level}>
-									<td>Niveau {level.num}</td>
-									<td>
-										<input
-											type="number"
-											defaultValue={level.position}
-											onBlur={(event) => {
-												const value = Number(event.target.value);
-												if (value !== level.position)
-													call(`/api/admin/levels/${level.id_level}`, "PUT", { position: value });
-											}}
-										/>
-									</td>
-									<td>
-										<button className="resetButton" onClick={() => call(`/api/admin/levels/${level.id_level}`, "DELETE")}>
-											Retirer
-										</button>
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
-			))}
+			{chapters.map((chapter) => {
+				const levels = localOrder[chapter.id_chapter] ?? chapter.levels;
+
+				return (
+					<div key={chapter.id_chapter} className="adminSubgroup">
+						<h3>{chapter.name}</h3>
+						<table className="adminTable">
+							<thead>
+								<tr><th></th><th>Niveau</th><th></th></tr>
+							</thead>
+							<tbody>
+								{levels.map((level) => (
+									<tr
+										key={level.id_level}
+										draggable
+										onDragStart={handleDragStart(level, chapter.id_chapter)}
+										onDragOver={handleDragOver(level, chapter.id_chapter)}
+										onDragLeave={handleDragLeave}
+										onDrop={handleDrop(level, chapter.id_chapter, levels)}
+										onDragEnd={handleDragEnd}
+										className={
+											(draggedLevel?.id_level === level.id_level ? "dragging " : "") +
+											(dragOverId === level.id_level ? "dragOver" : "")
+										}
+									>
+										<td className="dragHandle" title="Glisser pour réordonner">⠿</td>
+										<td>Niveau {level.num}</td>
+										<td>
+											<button className="resetButton" onClick={() => call(`/api/admin/levels/${level.id_level}`, "DELETE")}>
+												Retirer
+											</button>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+				);
+			})}
 
 			<form className="adminForm" onSubmit={submit}>
 				<select value={num} onChange={(e) => setNum(e.target.value)} required>
@@ -267,9 +427,8 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 						<option key={chapter.id_chapter} value={chapter.id_chapter}>{chapter.name}</option>
 					))}
 				</select>
-				<input type="number" placeholder="Position" value={position} onChange={(e) => setPosition(e.target.value)} required />
 				<button type="submit" className="resetButton" disabled={unassignedLevels.length === 0}>
-					+ Rattacher
+					+ Rattacher (en fin de chapitre)
 				</button>
 			</form>
 		</section>

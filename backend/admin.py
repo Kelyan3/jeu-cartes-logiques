@@ -9,9 +9,12 @@ from database import CONN_PARAMS, FILENAME_MANIFEST
 # Chapitres
 #============================================================================
 
-def create_chapter(name, position):
+def create_chapter(name, position=None):
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
+			if position is None:
+				cur.execute("SELECT COALESCE(MAX(position), 0) + 1 FROM chapters")
+				position = cur.fetchone()[0]
 			cur.execute(
 				"INSERT INTO chapters (name, position) VALUES (%s, %s) RETURNING id_chapter",
 				(name, position),
@@ -44,6 +47,20 @@ def delete_chapter(id_chapter):
 			cur.execute("DELETE FROM chapters WHERE id_chapter = %s", (id_chapter,))
 			conn.commit()
 
+def reorder_chapters(ordered_ids):
+	"""
+	Réassigne en une seule transaction les positions (1, 2, 3...) des chapitres
+	dans l'ordre donné par ordered_ids (liste d'id_chapter).
+	"""
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			for position, id_chapter in enumerate(ordered_ids, start=1):
+				cur.execute(
+					"UPDATE chapters SET position = %s WHERE id_chapter = %s",
+					(position, id_chapter),
+				)
+			conn.commit()
+
 #============================================================================
 # Niveaux
 #============================================================================
@@ -64,9 +81,13 @@ def list_unassigned_levels():
 
 	return [num for num in range(1, play_count + 1) if num not in assigned]
 
-def assign_level(num, id_chapter, position):
+def assign_level(num, id_chapter, position=None):
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
+			if position is None:
+				cur.execute("SELECT COALESCE(MAX(position), 0) + 1 FROM levels WHERE id_chapter = %s", (id_chapter,))
+				position = cur.fetchone()[0]
+
 			cur.execute(
 				"INSERT INTO levels (id_chapter, num, position) VALUES (%s, %s, %s) RETURNING id_level",
 				(id_chapter, num, position),
@@ -90,6 +111,20 @@ def update_level(id_level, id_chapter=None, position=None):
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
 			cur.execute(f"UPDATE levels SET {', '.join(fields)} WHERE id_level = %s", params)
+			conn.commit()
+
+def reorder_levels(id_chapter, ordered_ids):
+	"""
+	Réassigne en une seule transaction les positions (1, 2, 3...) des niveaux
+	du chapitre id_chapter, dans l'ordre donné par ordered_ids (liste d'id_level).
+	"""
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			for position, id_level in enumerate(ordered_ids, start=1):
+				cur.execute(
+					"UPDATE levels SET position = %s WHERE id_level = %s AND id_chapter = %s",
+					(position, id_level, id_chapter),
+				)
 			conn.commit()
 
 def delete_level(id_level):

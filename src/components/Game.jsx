@@ -2513,6 +2513,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					Niveau suivant
 				</button>
 			)}
+
 			<div className="bouton">
 				{/* Revient à la partie avant l'ajout d'une carte */}
 				<div>
@@ -2522,7 +2523,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</button>
 				</div>
 
-				{mode !== "Create" && (
+				{false && mode !== "Create" && (
 					<div>
 						<button id="aide" className="buttonAction " onClick={getNextMove}>
 							<span className="buttonFormula">?</span>
@@ -2535,7 +2536,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{mode !== "Create" && isActionUnlocked("addAnd") && (
 					<div>
 						<button id="addAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 0 ? "boutonSelection" : "")} onClick={addCardAnd}>
-							<span className="buttonFormula">[1∧2] → [1] [2]</span>
+							<span className="buttonFormula">[P ∧ Q] → [P] [Q]</span>
 							<span className="tooltiptext">Séparation</span>
 						</button>
 					</div>
@@ -2545,7 +2546,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{mode !== "Create" && isActionUnlocked("addImplique") && (
 					<div>
 						<button id="addImplique" className={"buttonAction " + (mode === "Tutorial" && numero === 1 ? "boutonSelection" : "")} onClick={addCardFuse}>
-							<span className="buttonFormula">[1] [1⇒2] → [2]</span>
+							<span className="buttonFormula">[P] [P ⇒ Q] → [Q]</span>
 							<span className="tooltiptext">Implique</span>
 						</button>
 					</div>
@@ -2555,7 +2556,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{mode !== "Create" && isActionUnlocked("fuseAnd") && (
 					<div>
 						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
-							<span className="buttonFormula">[1] [2] → [1∧2]</span>
+							<span className="buttonFormula">[P] [Q] → [P ∧ Q]</span>
 							<span className="tooltiptext">Fusion</span>
 						</button>
 					</div>
@@ -2571,7 +2572,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							className="buttonAction"
 							onClick={() => setObjectifMenuOpen((open) => !open)}
 						>
-							<span className="buttonFormula">+ 🏁</span>
+							<span className="buttonFormula">+ ⚑</span>
 							<span className="tooltiptext">+ Objectif</span>
 						</button>
 						{objectifMenuOpen && (
@@ -2603,7 +2604,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				{mode !== "Create" && isActionUnlocked("tiersExclus") && (
 					<div>
 						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExclus}>
-							<span className="buttonFormula">¬¬[1] → [1]</span>
+							<span className="buttonFormula">¬[¬[P]] → [P]</span>
 							<span className="tooltiptext">Tiers Exclus</span>
 						</button>
 					</div>
@@ -2619,7 +2620,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							className="buttonAction"
 							onClick={() => setTransitiviteMenuOpen((open) => !open)}
 						>
-							<span className="buttonFormula">[1⇒2] [2⇒3] → [1⇒3]</span>
+							<span className="buttonFormula">[P ⇒ Q] [Q ⇒ R] → [P ⇒ R]</span>
 							<span className="tooltiptext">Transitivité</span>
 						</button>
 						{transitiviteMenuOpen && (

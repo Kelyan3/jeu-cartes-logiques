@@ -186,12 +186,25 @@ def admin_create_chapter():
 	name = (data.get("name") or "").strip()
 	position = data.get("position")
 
-	if not name or not isinstance(position, int):
-		return jsonify({"error": "name et position (entier) sont requis"}), 400
+	if not name:
+		return jsonify({"error": "name est requis"}), 400
+	if position is not None and not isinstance(position, int):
+		return jsonify({"error": "position doit être un entier si fournie"}), 400
 
 	id_chapter = create_chapter(name, position)
 	return jsonify({"id_chapter": id_chapter}), 201
 
+@app.route("/api/admin/chapters/reorder", methods=["PUT"])
+@admin_required
+def admin_reorder_chapters():
+	data = request.get_json()
+	ordered_ids = data.get("ordered_ids")
+
+	if not isinstance(ordered_ids, list) or not all(isinstance(i, int) for i in ordered_ids):
+		return jsonify({"error": "ordered_ids (liste d'entiers) est requis"}), 400
+
+	reorder_chapters(ordered_ids)
+	return jsonify({"ok": True})
 
 @app.route("/api/admin/chapters/<int:id_chapter>", methods=["PUT"])
 @admin_required
@@ -222,8 +235,10 @@ def admin_assign_level():
 	id_chapter = data.get("id_chapter")
 	position = data.get("position")
 
-	if not isinstance(num, int) or not isinstance(id_chapter, int) or not isinstance(position, int):
-		return jsonify({"error": "num, id_chapter et position (entiers) sont requis"}), 400
+	if not isinstance(num, int) or not isinstance(id_chapter, int):
+		return jsonify({"error": "num et id_chapter (entiers) sont requis"}), 400
+	if position is not None and not isinstance(position, int):
+		return jsonify({"error": "position doit être un entier si fournie"}), 400
 
 	try:
 		id_level = assign_level(num, id_chapter, position)
@@ -240,6 +255,18 @@ def admin_update_level(id_level):
 	update_level(id_level, id_chapter=data.get("id_chapter"), position=data.get("position"))
 	return jsonify({"ok": True})
 
+@app.route("/api/admin/levels/reorder", methods=["PUT"])
+@admin_required
+def admin_reorder_levels():
+	data = request.get_json()
+	id_chapter = data.get("id_chapter")
+	ordered_ids = data.get("ordered_ids")
+
+	if not isinstance(id_chapter, int) or not isinstance(ordered_ids, list) or not all(isinstance(i, int) for i in ordered_ids):
+		return jsonify({"error": "id_chapter et ordered_ids (liste d'entiers) sont requis"}), 400
+
+	reorder_levels(id_chapter, ordered_ids)
+	return jsonify({"ok": True})
 
 @app.route("/api/admin/levels/<int:id_level>", methods=["DELETE"])
 @admin_required

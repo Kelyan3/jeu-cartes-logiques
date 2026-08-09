@@ -137,3 +137,22 @@
 	font-size: 13px;
 	white-space: nowrap;
 }
+
+.adminTable tr[draggable="true"] {
+	cursor: grab;
+	transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.adminTable tr.dragging {
+	opacity: 0.4;
+}
+
+.adminTable tr.dragOver {
+	background-color: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
+}
+
+.adminTable .dragHandle {
+	width: 24px;
+	color: var(--text-muted);
+	text-align: center;
+}
