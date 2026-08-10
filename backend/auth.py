@@ -1,6 +1,7 @@
 from functools import wraps
+import logging
 
-from flask import jsonify
+from flask import jsonify, request
 from flask_login import UserMixin, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg
@@ -109,3 +110,20 @@ def admin_required(view):
 		return view(*args, **kwargs)
 
 	return wrapped
+
+
+def audit_log(action):
+	def decorator(view):
+		@wraps(view)
+		def wrapped(*args, **kwargs):
+			response = view(*args, **kwargs)
+			status = response[1] if isinstance(response, tuple) else response.status_code
+			if status < 400:
+				logging.info(
+					"AUDIT user=%s(%s) action=%s params=%s body=%s",
+					current_user.username, current_user.id, action, kwargs,
+					request.get_json(silent=True),
+				)
+			return response
+		return wrapped
+	return decorator

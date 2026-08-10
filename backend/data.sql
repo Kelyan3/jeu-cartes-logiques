@@ -41,6 +41,21 @@ CREATE TABLE chapters (
 	position INTEGER NOT NULL UNIQUE
 );
 
+CREATE TABLE scoring_settings (
+	id_settings INTEGER PRIMARY KEY DEFAULT 1,
+	score_max INTEGER NOT NULL DEFAULT 100,
+	score_min INTEGER NOT NULL DEFAULT 10,
+	time_grace_s INTEGER NOT NULL DEFAULT 60,
+	time_interval_s INTEGER NOT NULL DEFAULT 10,
+	time_penalty INTEGER NOT NULL DEFAULT 1,
+	moves_threshold INTEGER NOT NULL DEFAULT 10,
+	moves_rate INTEGER NOT NULL DEFAULT 3,
+
+	CONSTRAINT score_bounds_valid CHECK (score_min >= 0 AND score_min <= score_max),
+	CONSTRAINT time_params_valid CHECK (time_grace_s >= 0 AND time_interval_s > 0 AND time_penalty >= 0),
+	CONSTRAINT moves_params_valid CHECK (moves_threshold >= 0 AND moves_rate >= 0)
+);
+
 CREATE TABLE levels (
 	id_level SERIAL PRIMARY KEY,
 	id_chapter INTEGER NOT NULL REFERENCES chapters(id_chapter) ON DELETE CASCADE,
@@ -86,3 +101,5 @@ INSERT INTO quests (menu, label, unlocks_key, required_chapter, position) VALUES
 	('transitivite', 'Transitivité "=>"', 'transitivite_arrow', (SELECT id_chapter FROM chapters WHERE position = 1), 1),
 	('transitivite', 'Transitivité "<=>"', 'transitivite_equiv', (SELECT id_chapter FROM chapters WHERE position = 1), 2),
 	('transitivite', 'Transitivité "<=>" symétrique', 'transitivite_equiv_sym', (SELECT id_chapter FROM chapters WHERE position = 1), 3);
+
+INSERT INTO scoring_settings (id_settings) VALUES (1);

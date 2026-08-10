@@ -148,12 +148,17 @@ def progress_post():
 	mode = data.get("mode")
 	num = data.get("num")
 	completed = data.get("completed", True)
-	score = data.get("score", 0)
+	elapsed_seconds = data.get("elapsed_seconds")
+	moves = data.get("moves")
 
 	if mode not in ("Play", "Tutorial") or not isinstance(num, int):
 		return jsonify({"error": "Paramètres invalides"}), 400
+	if elapsed_seconds is not None and not isinstance(elapsed_seconds, int):
+		return jsonify({"error": "elapsed_seconds doit être un entier"}), 400
+	if moves is not None and not isinstance(moves, int):
+		return jsonify({"error": "moves doit être un entier"}), 400
 
-	save_progress(current_user.id, mode, num, completed, score)
+	save_progress(current_user.id, mode, num, completed, elapsed_seconds, moves)
 	return jsonify({"ok": True})
 
 
@@ -206,6 +211,7 @@ def leaderboard():
 
 @app.route("/api/admin/chapters", methods=["POST"])
 @admin_required
+@audit_log("create_chapter")
 def admin_create_chapter():
 	data = get_json_body()
 	name = (data.get("name") or "").strip()
@@ -221,6 +227,7 @@ def admin_create_chapter():
 
 @app.route("/api/admin/chapters/reorder", methods=["PUT"])
 @admin_required
+@audit_log("reorder_chapters")
 def admin_reorder_chapters():
 	data = request.get_json()
 	ordered_ids = data.get("ordered_ids")
@@ -233,6 +240,7 @@ def admin_reorder_chapters():
 
 @app.route("/api/admin/chapters/<int:id_chapter>", methods=["PUT"])
 @admin_required
+@audit_log("update_chapter")
 def admin_update_chapter(id_chapter):
 	data = get_json_body()
 	update_chapter(id_chapter, name=data.get("name"), position=data.get("position"))
@@ -241,6 +249,7 @@ def admin_update_chapter(id_chapter):
 
 @app.route("/api/admin/chapters/<int:id_chapter>", methods=["DELETE"])
 @admin_required
+@audit_log("delete_chapter")
 def admin_delete_chapter(id_chapter):
 	delete_chapter(id_chapter)
 	return jsonify({"ok": True})
@@ -254,6 +263,7 @@ def admin_unassigned_levels():
 
 @app.route("/api/admin/levels", methods=["POST"])
 @admin_required
+@audit_log("assign_level")
 def admin_assign_level():
 	data = get_json_body()
 	num = data.get("num")
@@ -275,13 +285,38 @@ def admin_assign_level():
 
 @app.route("/api/admin/levels/<int:id_level>", methods=["PUT"])
 @admin_required
+@audit_log("update_level")
 def admin_update_level(id_level):
 	data = get_json_body()
 	update_level(id_level, id_chapter=data.get("id_chapter"), position=data.get("position"))
 	return jsonify({"ok": True})
 
+@app.route("/api/admin/scoring", methods=["GET"])
+@admin_required
+def admin_get_global_scoring():
+	return jsonify(get_global_scoring_params())
+
+
+@app.route("/api/admin/scoring", methods=["PUT"])
+@admin_required
+@audit_log("update_global_scoring")
+def admin_update_global_scoring():
+	data = get_json_body()
+	fields = {key: data.get(key) for key in (
+		"score_max", "score_min", "time_grace_s", "time_interval_s", "time_penalty", "moves_threshold", "moves_rate"
+	)}
+
+	for key, value in fields.items():
+		if value is None or not isinstance(value, int):
+			return jsonify({"error": f"{key} doit être un entier"}), 400
+
+	update_global_scoring(**fields)
+	return jsonify({"ok": True})
+
+
 @app.route("/api/admin/levels/reorder", methods=["PUT"])
 @admin_required
+@audit_log("reorder_levels")
 def admin_reorder_levels():
 	data = request.get_json()
 	id_chapter = data.get("id_chapter")
@@ -295,6 +330,7 @@ def admin_reorder_levels():
 
 @app.route("/api/admin/levels/<int:id_level>", methods=["DELETE"])
 @admin_required
+@audit_log("delete_level")
 def admin_delete_level(id_level):
 	delete_level(id_level)
 	return jsonify({"ok": True})
@@ -308,6 +344,7 @@ def admin_list_quests():
 
 @app.route("/api/admin/quests", methods=["POST"])
 @admin_required
+@audit_log("create_quest")
 def admin_create_quest():
 	data = get_json_body()
 	menu = (data.get("menu") or "").strip()
@@ -325,6 +362,7 @@ def admin_create_quest():
 
 @app.route("/api/admin/quests/<int:id_quest>", methods=["PUT"])
 @admin_required
+@audit_log("update_quest")
 def admin_update_quest(id_quest):
 	data = get_json_body()
 	update_quest(
@@ -340,6 +378,7 @@ def admin_update_quest(id_quest):
 
 @app.route("/api/admin/quests/<int:id_quest>", methods=["DELETE"])
 @admin_required
+@audit_log("delete_quest")
 def admin_delete_quest(id_quest):
 	delete_quest(id_quest)
 	return jsonify({"ok": True})
@@ -347,6 +386,7 @@ def admin_delete_quest(id_quest):
 
 @app.route("/api/admin/categories", methods=["POST"])
 @admin_required
+@audit_log("create_category")
 def admin_create_category():
 	data = get_json_body()
 	name = (data.get("name") or "").strip()
@@ -359,6 +399,7 @@ def admin_create_category():
 
 @app.route("/api/admin/categories/<int:id_category>", methods=["PUT"])
 @admin_required
+@audit_log("update_category")
 def admin_update_category(id_category):
 	data = get_json_body()
 	name = (data.get("name") or "").strip()
@@ -371,6 +412,7 @@ def admin_update_category(id_category):
 
 @app.route("/api/admin/categories/<int:id_category>", methods=["DELETE"])
 @admin_required
+@audit_log("delete_category")
 def admin_delete_category(id_category):
 	delete_category(id_category)
 	return jsonify({"ok": True})

@@ -10,8 +10,7 @@ const Profile = () => {
 
 	const [playCompleted, setPlayCompleted] = useState(0);
 	const [playTotal, setPlayTotal] = useState(0);
-	const [tutorialCompleted, setTutorialCompleted] = useState(0);
-	const [tutorialTotal, setTutorialTotal] = useState(0);
+	const [playScore, setPlayScore] = useState(0);
 	const [loadingStats, setLoadingStats] = useState(true);
 	const [resetting, setResetting] = useState(false);
 
@@ -67,15 +66,15 @@ const Profile = () => {
 		fetch(`${API}/api/progress`, { method: "DELETE", credentials: "include", })
 			.then(() => {
 				setPlayCompleted(0);
-				setTutorialCompleted(0);
+				setPlayScore(0);
 			})
 			.finally(() => setResetting(false));
 	};
 
 	/**
 	 * Charge en parallèle le nombre total de niveaux (manifeste) et la progression
-	 * de l'utilisateur connecté, pour calculer le pourcentage de niveaux Play complétés
-	 * et le compteur de tutoriels complétés.
+	 * de l'utilisateur connecté, pour calculer le pourcentage de niveaux Play
+	 * complétés et le score total.
 	 */
 	useEffect(() => {
 		if (!user)
@@ -89,9 +88,12 @@ const Profile = () => {
 		])
 			.then(([manifest, progress]) => {
 				setPlayTotal(manifest.Play ?? 0);
-				setTutorialTotal(manifest.Tutorial ?? 0);
 				setPlayCompleted(progress.filter((p) => p.mode === "Play" && p.completed).length);
-				setTutorialCompleted(progress.filter((p) => p.mode === "Tutorial" && p.completed).length);
+				setPlayScore(
+					progress
+						.filter((p) => p.mode === "Play" && p.completed)
+						.reduce((total, p) => total + p.score, 0)
+				);
 			})
 			.finally(() => setLoadingStats(false));
 	}, [user]);
@@ -146,7 +148,9 @@ const Profile = () => {
 
 							<div className="progressCount">{playCompleted} / {playTotal}</div>
 
-							<div className="tutorialCount">Tutoriels complétés : {tutorialCompleted} / {tutorialTotal}</div>
+							<div className="progressScore">
+								<span className="scoreValue">{playScore} pt{playScore > 1 ? "s" : ""}</span>
+							</div>
 
 							<button className="resetButton" onClick={handleReset}>
 								{resetting ? "Réinitialisation..." : "Réinitialiser ma progression"}

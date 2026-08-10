@@ -315,6 +315,16 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const [game, setGame] = useState(initialSetup.game);
 
 	/**
+	 * Horodatage de début de partie, utilisé pour calculer elapsed_seconds envoyé à /api/progress.
+	 */
+	const startTimeRef = useRef(Date.now());
+
+	/**
+	 * Nombre de coups joués (un coup = un appel à saveGame()), utilisé pour le calcul du score.
+	 */
+	const movesRef = useRef(0);
+
+	/**
 	 * Déplace le curseur de navigation clavier vers la carte indiquée, en désélectionnant
 	 * visuellement la carte précédemment survolée.
 	 *
@@ -1419,6 +1429,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 		// Met à jour le tableau des sauvegardes
 		setLastGame(tmpLastGame);
+
+		// Comptabilise ce coup pour le calcul du score
+		movesRef.current += 1;
 	};
 
 	/**
@@ -2056,6 +2069,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (!user || mode === "Create")
 			return;
 
+		const elapsedSeconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+
 		fetch(`${API}/api/progress`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -2064,6 +2079,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				mode: mode,
 				num: numero + 1,
 				completed: true,
+				elapsed_seconds: elapsedSeconds,
+				moves: movesRef.current,
 			}),
 		});
 	};

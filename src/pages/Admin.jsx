@@ -9,8 +9,19 @@ const MENUS = ["base", "objectif", "transitivite", "tiers_exclus"];
 const SECTIONS = [
 	{ id: "chapters", label: "Chapitres" },
 	{ id: "levels", label: "Niveaux" },
+	{ id: "scoring", label: "Gestion du score" },
 	{ id: "quests", label: "Quêtes" },
 	{ id: "categories", label: "Catégories" },
+];
+
+const SCORING_FIELDS = [
+	{ key: "score_max", label: "Score max" },
+	{ key: "score_min", label: "Score min" },
+	{ key: "time_grace_s", label: "Délai de grâce (s)" },
+	{ key: "time_interval_s", label: "Palier temps (s)" },
+	{ key: "time_penalty", label: "Pénalité / palier temps" },
+	{ key: "moves_threshold", label: "Seuil de coups" },
+	{ key: "moves_rate", label: "Pénalité / coup" },
 ];
 
 
@@ -21,6 +32,7 @@ const Admin = () => {
 	const [quests, setQuests] = useState([]);
 	const [categories, setCategories] = useState([]);
 	const [unassignedLevels, setUnassignedLevels] = useState([]);
+	const [globalScoring, setGlobalScoring] = useState(null);
 	const [error, setError] = useState("");
 	const [activeSection, setActiveSection] = useState("chapters");
 
@@ -36,6 +48,7 @@ const Admin = () => {
 		fetch(`${API}/api/admin/quests`, { credentials: "include" }).then((r) => r.json()).then(setQuests);
 		fetch(`${API}/api/categories`).then((r) => r.json()).then(setCategories);
 		fetch(`${API}/api/admin/levels/unassigned`, { credentials: "include" }).then((r) => r.json()).then(setUnassignedLevels);
+		fetch(`${API}/api/admin/scoring`, { credentials: "include" }).then((r) => r.json()).then(setGlobalScoring);
 	};
 
 	useEffect(() => {
@@ -109,6 +122,9 @@ const Admin = () => {
 				)}
 				{activeSection === "levels" && (
 					<LevelsSection chapters={chapters} unassignedLevels={unassignedLevels} call={call} />
+				)}
+				{activeSection === "scoring" && (
+					<ScoringSection globalScoring={globalScoring} call={call} />
 				)}
 				{activeSection === "quests" && (
 					<QuestsSection quests={quests} chapters={chapters} call={call} />
@@ -429,6 +445,110 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 					+ Rattacher (en fin de chapitre)
 				</button>
 			</form>
+		</section>
+	);
+};
+
+/**
+ * Retrouve un niveau par son id_level dans la liste des chapitres.
+ */
+const findLevel = (chapters, id_level) => {
+	for (const chapter of chapters)
+	{
+		const found = chapter.levels.find((l) => l.id_level === id_level);
+		if (found)
+			return found;
+	}
+	return null;
+};
+
+const ScoringSection = ({ globalScoring, call }) => {
+	const [edited, setEdited] = useState(null);
+
+	useEffect(() => {
+		setEdited(globalScoring ? { ...globalScoring } : null);
+	}, [globalScoring]);
+
+	const values = edited ?? globalScoring;
+
+	const setField = (key, rawValue) => {
+		const value = rawValue === "" ? "" : Number(rawValue);
+		setEdited((prev) => ({ ...(prev ?? globalScoring), [key]: value }));
+	};
+
+	const hasChanges = () => {
+		if (!globalScoring || !edited)
+			return false;
+		return SCORING_FIELDS.some((field) => Number(edited[field.key]) !== globalScoring[field.key]);
+	};
+
+	/**
+	 * Validation légère côté client, avant même d'envoyer la requête :
+	 * reflète les contraintes CHECK posées en base (data.sql), pour donner
+	 * un message immédiat plutôt qu'un aller-retour serveur pour rien.
+	 */
+	const validationError = (values) => {
+		if (SCORING_FIELDS.some((field) => values[field.key] === "" || Number.isNaN(Number(values[field.key]))))
+			return "Tous les champs doivent être des nombres.";
+		if (Number(values.score_min) > Number(values.score_max))
+			return "Score min ne peut pas dépasser Score max.";
+		if (Number(values.time_interval_s) <= 0)
+			return "Palier temps doit être strictement positif.";
+		if (SCORING_FIELDS.some((field) => Number(values[field.key]) < 0))
+			return "Aucune valeur ne peut être négative.";
+		return null;
+	};
+
+	const save = () => {
+		if (!values)
+			return;
+
+		const error = validationError(values);
+		if (error)
+		{
+			window.alert(error);
+			return;
+		}
+
+		const body = Object.fromEntries(SCORING_FIELDS.map((field) => [field.key, Number(values[field.key])]));
+		call(`/api/admin/scoring`, "PUT", body);
+	};
+
+	return (
+		<section className="adminSection">
+			<h2>Gestion du score</h2>
+			<p className="adminHint">
+				score = max(score min, score max − pénalité temps − pénalité coups).
+				La pénalité temps retire "Pénalité / palier temps" points par tranche de
+				"Palier temps (s)" secondes dépassée au-delà du "Délai de grâce". La
+				pénalité coups retire "Pénalité / coup" points par coup au-delà du "Seuil
+				de coups". Ne concerne que les niveaux du mode Play. Ces paramètres sont
+				maintenant globaux et s'appliquent à tous les niveaux.
+			</p>
+
+			{!values ? (
+				<p className="choiceMessage">Chargement des paramètres de score...</p>
+			) : (
+				<div className="scoringCard">
+					<h3>Paramètres globaux</h3>
+					<div className="scoringFields">
+						{SCORING_FIELDS.map((field) => (
+							<label key={field.key}>
+								{field.label}
+								<input
+									type="number"
+									min="0"
+									value={values[field.key]}
+									onChange={(e) => setField(field.key, e.target.value)}
+								/>
+							</label>
+						))}
+					</div>
+					<button className="resetButton" disabled={!hasChanges()} onClick={save}>
+						Enregistrer
+					</button>
+				</div>
+			)}
 		</section>
 	);
 };

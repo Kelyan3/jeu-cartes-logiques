@@ -178,12 +178,26 @@
 	text-align: right;
 }
 
-.tutorialCount {
+.progressScore {
 	margin-top: 24px;
 	padding-top: 20px;
 	border-top: 1px solid var(--border-subtle);
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
 	font-size: 14px;
 	color: var(--text-muted);
+}
+
+.progressScore::before {
+	content: "Score total";
+}
+
+.progressScore .scoreValue {
+	color: var(--accent-amber);
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 600;
+	font-size: 16px;
 }
 
 .resetButton {

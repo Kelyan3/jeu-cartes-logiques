@@ -22,15 +22,26 @@ def get_progress(user_id):
 				for mode, num, completed, score in rows
 			]
 
-def save_progress(user_id, mode, num, completed, score=0):
+def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=None):
 	"""
 	Enregistre ou met à jour la progression d'un utilisateur sur un niveau.
 	Si une ligne existe déjà pour (user_id, mode, num), elle est mise à jour
 	uniquement si le nouveau score est meilleur (ou si le niveau vient d'être complété).
 
+	Le score n'est calculé que pour le mode "Play" complété, à partir du temps
+	écoulé et du nombre de coups fournis par le client, combinés aux paramètres
+	du niveau en base (voir compute_score()). Le mode "Tutorial" n'a pas de
+	notion de score : il reste toujours à 0, comme avant.
+
 	Si ce niveau complète entièrement son chapitre (mode "Play"), les quêtes
 	rattachées à ce chapitre sont automatiquement débloquées pour l'utilisateur.
 	"""
+	score = 0
+	if mode == "Play" and completed and elapsed_seconds is not None and moves is not None:
+		params = get_level_scoring_params(num)
+		if params is not None:
+			score = compute_score(elapsed_seconds, moves, params)
+
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
 			cur.execute(
@@ -96,6 +107,47 @@ def reset_progress(user_id):
 			cur.execute("DELETE FROM user_quests WHERE id_user = %s", (user_id,))
 			conn.commit()
 
+def compute_score(elapsed_seconds, moves, params):
+	temps_excedent = max(0, elapsed_seconds - params["time_grace_s"])
+	penalite_temps = (temps_excedent // params["time_interval_s"]) * params["time_penalty"]
+
+	coups_excedent = max(0, moves - params["moves_threshold"])
+	penalite_coups = coups_excedent * params["moves_rate"]
+
+	score = params["score_max"] - penalite_temps - penalite_coups
+	return max(params["score_min"], score)
+
+def get_level_scoring_params(num):
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			cur.execute(
+				"SELECT score_max, score_min, time_grace_s, time_interval_s, time_penalty, "
+				"moves_threshold, moves_rate FROM scoring_settings WHERE id_settings = 1"
+			)
+			row = cur.fetchone()
+
+	if row is None:
+		return {
+			"score_max": 100,
+			"score_min": 10,
+			"time_grace_s": 60,
+			"time_interval_s": 10,
+			"time_penalty": 1,
+			"moves_threshold": 10,
+			"moves_rate": 3,
+		}
+
+	score_max, score_min, time_grace_s, time_interval_s, time_penalty, moves_threshold, moves_rate = row
+	return {
+		"score_max": score_max,
+		"score_min": score_min,
+		"time_grace_s": time_grace_s,
+		"time_interval_s": time_interval_s,
+		"time_penalty": time_penalty,
+		"moves_threshold": moves_threshold,
+		"moves_rate": moves_rate,
+	}
+
 def get_chapters(user_id):
 	"""
 	Récupère les chapitres "Play" et leurs niveaux, avec le statut de chacun pour
@@ -112,7 +164,12 @@ def get_chapters(user_id):
 			cur.execute("SELECT id_chapter, name, position FROM chapters ORDER BY position")
 			chapters_rows = cur.fetchall()
 
-			cur.execute("SELECT id_level, id_chapter, num, position FROM levels ORDER BY id_chapter, position")
+			cur.execute(
+				"""
+				SELECT id_level, id_chapter, num, position
+				FROM levels ORDER BY id_chapter, position
+				"""
+			)
 			levels_rows = cur.fetchall()
 
 			completed_nums = set()
@@ -126,7 +183,11 @@ def get_chapters(user_id):
 	levels_by_chapter = {}
 	for id_level, id_chapter, num, position in levels_rows:
 		levels_by_chapter.setdefault(id_chapter, []).append(
-			{"id_level": id_level, "num": num, "position": position}
+			{
+				"id_level": id_level,
+				"num": num,
+				"position": position,
+			}
 		)
 
 	chapters = []
@@ -189,13 +250,18 @@ def get_unlocked_keys(user_id):
 
 def get_leaderboard(id_category=None):
 	"""
-	Récupère, pour chaque utilisateur, son nombre de niveaux "Play" complétés.
-	Les tutoriels ne sont pas comptabilisés (cohérent avec la page Profil).
+	Récupère, pour chaque utilisateur, son nombre de niveaux "Play" complétés
+	et la somme de ses scores sur ces niveaux. Les tutoriels ne sont pas
+	comptabilisés (cohérent avec la page Profil).
+
+	Le classement reste trié par nombre de niveaux complétés (inchangé) ;
+	le score cumulé est une colonne d'information supplémentaire, pas un
+	second critère de tri.
 
 	id_category=None -> tous les utilisateurs, sans filtre.
 	"""
 	query = """
-		SELECT u.username, COUNT(p.id_progress) AS completed
+		SELECT u.username, COUNT(p.id_progress) AS completed, COALESCE(SUM(p.score), 0) AS total_score
 		FROM users u
 		LEFT JOIN progression p ON p.id_user = u.id_user
 		AND p.mode = 'Play'
@@ -212,6 +278,6 @@ def get_leaderboard(id_category=None):
 			cur.execute(query, params)
 			rows = cur.fetchall()
 			return [
-				{"username": username, "completed": completed}
-				for username, completed in rows
+				{"username": username, "completed": completed, "score": total_score}
+				for username, completed, total_score in rows
 			]

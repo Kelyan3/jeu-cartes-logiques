@@ -5,6 +5,10 @@ import psycopg
 
 from database import CONN_PARAMS, FILENAME_MANIFEST
 
+
+SCORING_FIELDS = ("score_max", "score_min", "time_grace_s", "time_interval_s", "time_penalty", "moves_threshold", "moves_rate")
+
+
 #============================================================================
 # Chapitres
 #============================================================================
@@ -112,6 +116,87 @@ def update_level(id_level, id_chapter=None, position=None):
 		with conn.cursor() as cur:
 			cur.execute(f"UPDATE levels SET {', '.join(fields)} WHERE id_level = %s", params)
 			conn.commit()
+
+def update_level_scoring(id_level, **fields):
+	"""
+	Met à jour un sous-ensemble des paramètres de score d'un niveau.
+	"""
+	updates = {key: value for key, value in fields.items() if key in SCORING_FIELDS and value is not None}
+	if not updates:
+		return
+
+	set_clause = ", ".join(f"{key} = %s" for key in updates)
+	params = list(updates.values()) + [id_level]
+
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			cur.execute(f"UPDATE levels SET {set_clause} WHERE id_level = %s", params)
+			conn.commit()
+
+
+def get_global_scoring_params():
+	"""
+	Récupère les paramètres de score globaux applicables à tous les niveaux.
+	"""
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			cur.execute(
+				"SELECT score_max, score_min, time_grace_s, time_interval_s, time_penalty, moves_threshold, moves_rate "
+				"FROM scoring_settings WHERE id_settings = 1"
+			)
+			row = cur.fetchone()
+
+	if row is None:
+		return {
+			"score_max": 100,
+			"score_min": 10,
+			"time_grace_s": 60,
+			"time_interval_s": 10,
+			"time_penalty": 1,
+			"moves_threshold": 10,
+			"moves_rate": 3,
+		}
+
+	score_max, score_min, time_grace_s, time_interval_s, time_penalty, moves_threshold, moves_rate = row
+	return {
+		"score_max": score_max,
+		"score_min": score_min,
+		"time_grace_s": time_grace_s,
+		"time_interval_s": time_interval_s,
+		"time_penalty": time_penalty,
+		"moves_threshold": moves_threshold,
+		"moves_rate": moves_rate,
+	}
+
+
+def update_global_scoring(**fields):
+	"""
+	Met à jour les paramètres de score globaux.
+	"""
+	updates = {key: value for key, value in fields.items() if key in SCORING_FIELDS and value is not None}
+	if not updates:
+		return
+
+	set_clause = ", ".join(f"{key} = %s" for key in updates)
+	params = list(updates.values())
+
+	with psycopg.connect(CONN_PARAMS) as conn:
+		with conn.cursor() as cur:
+			cur.execute("SELECT id_settings FROM scoring_settings WHERE id_settings = 1")
+			if cur.fetchone() is None:
+				columns = ", ".join(updates.keys())
+				placeholders = ", ".join(["%s"] * len(updates))
+				cur.execute(
+					f"INSERT INTO scoring_settings ({columns}) VALUES ({placeholders})",
+					params,
+				)
+			else:
+				cur.execute(
+					f"UPDATE scoring_settings SET {set_clause} WHERE id_settings = 1",
+					params,
+				)
+			conn.commit()
+
 
 def reorder_levels(id_chapter, ordered_ids):
 	"""

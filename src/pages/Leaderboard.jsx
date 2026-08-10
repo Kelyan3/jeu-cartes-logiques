@@ -61,6 +61,7 @@ const Leaderboard = () => {
 							<tr>
 								<th>Utilisateur</th>
 								<th>Niveaux complétés</th>
+								<th>Score</th>
 								<th>Progression</th>
 							</tr>
 						</thead>
@@ -71,6 +72,7 @@ const Leaderboard = () => {
 									<tr key={entry.username}>
 										<td>{entry.username}</td>
 										<td>{entry.completed} / {total}</td>
+										<td>{entry.score}</td>
 										<td>
 											<div className="progressTrack leaderboardProgress">
 												<div className="progressFill" style={{ width: percent + "%", }}></div>
