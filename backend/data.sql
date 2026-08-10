@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS quests CASCADE;
 DROP TABLE IF EXISTS progression CASCADE;
 DROP TABLE IF EXISTS levels CASCADE;
 DROP TABLE IF EXISTS chapters CASCADE;
+DROP TABLE IF EXISTS scoring_settings CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 
@@ -77,6 +78,26 @@ CREATE TABLE user_quests (
 	id_quest INTEGER NOT NULL REFERENCES quests(id_quest) ON DELETE CASCADE,
 	unlocked_at TIMESTAMP DEFAULT NOW(),
 	PRIMARY KEY (id_user, id_quest)
+);
+
+CREATE TABLE feedback (
+	id_feedback SERIAL PRIMARY KEY,
+	id_user INTEGER REFERENCES users(id_user) ON DELETE SET NULL,
+	device VARCHAR(20) NOT NULL,
+	device_other VARCHAR(255),
+	rules_rating SMALLINT NOT NULL,
+	rules_comment TEXT,
+	features_rating SMALLINT NOT NULL,
+	features_comment TEXT,
+	design_rating SMALLINT NOT NULL,
+	design_comment TEXT,
+	remarks TEXT,
+	created_at TIMESTAMP DEFAULT NOW(),
+
+	CONSTRAINT feedback_device_valid CHECK (device IN ('ordinateur', 'mobile', 'autre')),
+	CONSTRAINT feedback_rules_rating_valid CHECK (rules_rating BETWEEN 1 AND 5),
+	CONSTRAINT feedback_features_rating_valid CHECK (features_rating BETWEEN 1 AND 5),
+	CONSTRAINT feedback_design_rating_valid CHECK (design_rating BETWEEN 1 AND 5)
 );
 
 

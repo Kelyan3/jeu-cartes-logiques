@@ -12,6 +12,7 @@ from werkzeug.exceptions import HTTPException
 from auth import *
 from progress import *
 from admin import *
+from feedback import *
 
 
 # Logging pour les actions administratives.
@@ -52,8 +53,8 @@ login_manager = LoginManager(app)
 
 
 @login_manager.user_loader
-def load_user(user_id):
-	return get_user_by_id(user_id)
+def load_user(id_user):
+	return get_user_by_id(id_user)
 
 def get_json_body():
 	data = request.get_json(silent=True)
@@ -86,8 +87,8 @@ def register():
 	if email_or_username_exists(email, username):
 		return jsonify({"error": "Cet email ou ce nom d'utilisateur est déjà utilisé"}), 409
 
-	user_id = create_user(username, email, password)
-	user = User(user_id, username, email)
+	id_user = create_user(username, email, password)
+	user = User(id_user, username, email)
 	login_user(user)
 
 	return jsonify({"username": user.username, "email": user.email, "role": user.role, "id_category": user.id_category}), 201
@@ -171,14 +172,14 @@ def progress_delete():
 
 @app.route("/api/chapters", methods=["GET"])
 def chapters():
-	user_id = current_user.id if current_user.is_authenticated else None
-	return jsonify(get_chapters(user_id))
+	id_user = current_user.id if current_user.is_authenticated else None
+	return jsonify(get_chapters(id_user))
 
 
 @app.route("/api/quests", methods=["GET"])
 def quests():
-	user_id = current_user.id if current_user.is_authenticated else None
-	return jsonify(get_unlocked_keys(user_id))
+	id_user = current_user.id if current_user.is_authenticated else None
+	return jsonify(get_unlocked_keys(id_user))
 
 
 @app.route("/api/categories", methods=["GET"])
@@ -207,6 +208,73 @@ def profile_category():
 def leaderboard():
 	id_category = request.args.get("category", type=int)
 	return jsonify(get_leaderboard(id_category))
+
+
+def _valid_rating(value):
+	return isinstance(value, int) and 1 <= value <= 5
+
+@app.route("/api/feedback", methods=["POST"])
+def feedback_submit():
+	data = get_json_body()
+
+	device = data.get("device")
+	device_other = (data.get("device_other") or "").strip()
+	rules_rating = data.get("rules_rating")
+	rules_comment = (data.get("rules_comment") or "").strip()
+	features_rating = data.get("features_rating")
+	features_comment = (data.get("features_comment") or "").strip()
+	design_rating = data.get("design_rating")
+	design_comment = (data.get("design_comment") or "").strip()
+	remarks = (data.get("remarks") or "").strip()
+	anonymous = data.get("anonymous", False)
+
+	if device not in VALID_DEVICES:
+		return jsonify({"error": "Support invalide"}), 400
+	if device == "autre" and not device_other:
+		return jsonify({"error": "Merci de préciser le support utilisé"}), 400
+
+	for name, rating in (
+		("rules_rating", rules_rating),
+		("features_rating", features_rating),
+		("design_rating", design_rating),
+	):
+		if not _valid_rating(rating):
+			return jsonify({"error": f"{name} doit être une note entre 1 et 5"}), 400
+
+	for name, text in (
+		("device_other", device_other), ("rules_comment", rules_comment),
+		("features_comment", features_comment), ("design_comment", design_comment),
+		("remarks", remarks),
+	):
+		if len(text) > 1000:
+			return jsonify({"error": f"{name} trop long (1000 caractères maximum)"}), 400
+
+	# Anonyme si non connecté, ou si connecté mais coché "envoyer anonymement".
+	id_user = current_user.id if current_user.is_authenticated and not anonymous else None
+
+	create_feedback(
+		id_user,
+		device, device_other or None,
+		rules_rating, rules_comment or None,
+		features_rating, features_comment or None,
+		design_rating, design_comment or None,
+		remarks or None,
+	)
+	return jsonify({"ok": True})
+
+
+@app.route("/api/admin/feedback", methods=["GET"])
+@admin_required
+def admin_feedback_list():
+	return jsonify(get_feedback_list())
+
+
+@app.route("/api/admin/feedback/<int:id_feedback>", methods=["DELETE"])
+@admin_required
+@audit_log("delete_feedback")
+def admin_feedback_delete(id_feedback):
+	delete_feedback(id_feedback)
+	return jsonify({"ok": True})
 
 
 @app.route("/api/admin/chapters", methods=["POST"])

@@ -12,6 +12,7 @@ const SECTIONS = [
 	{ id: "scoring", label: "Gestion du score" },
 	{ id: "quests", label: "Quêtes" },
 	{ id: "categories", label: "Catégories" },
+	{ id: "feedback", label: "Avis reçus" },
 ];
 
 const SCORING_FIELDS = [
@@ -24,6 +25,28 @@ const SCORING_FIELDS = [
 	{ key: "moves_rate", label: "Pénalité / coup" },
 ];
 
+const DEVICE_LABELS = {
+	ordinateur: "Ordinateur",
+	mobile: "Smartphone / Tablette",
+	autre: "Autre",
+};
+
+const RATING_LABELS = [
+	"Pas du tout d'accord",
+	"Pas d'accord",
+	"Moyen",
+	"D'accord",
+	"Totalement d'accord",
+];
+
+const FeedbackRating = ({ label, rating, comment }) => (
+	<div className="feedbackRating">
+		<span className="feedbackRatingLabel">{label}</span>
+		<span className="feedbackRatingValue">{RATING_LABELS[rating - 1]} ({rating}/5)</span>
+		{comment && <p className="feedbackRatingComment">{comment}</p>}
+	</div>
+);
+
 
 const Admin = () => {
 	const { user, loading } = useAuth();
@@ -31,6 +54,7 @@ const Admin = () => {
 	const [chapters, setChapters] = useState([]);
 	const [quests, setQuests] = useState([]);
 	const [categories, setCategories] = useState([]);
+	const [feedback, setFeedback] = useState([]);
 	const [unassignedLevels, setUnassignedLevels] = useState([]);
 	const [globalScoring, setGlobalScoring] = useState(null);
 	const [error, setError] = useState("");
@@ -47,6 +71,7 @@ const Admin = () => {
 		fetch(`${API}/api/chapters`, { credentials: "include" }).then((r) => r.json()).then(setChapters);
 		fetch(`${API}/api/admin/quests`, { credentials: "include" }).then((r) => r.json()).then(setQuests);
 		fetch(`${API}/api/categories`).then((r) => r.json()).then(setCategories);
+		fetch(`${API}/api/admin/feedback`, { credentials: "include" }).then((r) => r.json()).then(setFeedback);
 		fetch(`${API}/api/admin/levels/unassigned`, { credentials: "include" }).then((r) => r.json()).then(setUnassignedLevels);
 		fetch(`${API}/api/admin/scoring`, { credentials: "include" }).then((r) => r.json()).then(setGlobalScoring);
 	};
@@ -131,6 +156,9 @@ const Admin = () => {
 				)}
 				{activeSection === "categories" && (
 					<CategoriesSection categories={categories} call={call} />
+				)}
+				{activeSection === "feedback" && (
+					<FeedbackSection feedback={feedback} call={call} />
 				)}
 			</div>
 		</div>
@@ -700,6 +728,50 @@ const CategoriesSection = ({ categories, call }) => {
 				<input placeholder="Nom de la catégorie" value={name} onChange={(e) => setName(e.target.value)} required />
 				<button type="submit" className="resetButton">+ Catégorie</button>
 			</form>
+		</section>
+	);
+};
+
+const FeedbackSection = ({ feedback, call }) => {
+	return (
+		<section className="adminSection">
+			<h2>Avis reçus</h2>
+
+			{feedback.length === 0 && <p className="adminHint">Aucun avis pour le moment.</p>}
+
+			{feedback.map((entry) => (
+				<article key={entry.id_feedback} className="scoringCard feedbackCard">
+					<header className="feedbackCardHeader">
+						<div>
+							<strong>{entry.username ?? "Anonyme"}</strong>
+							<span className="feedbackDevice">
+								{DEVICE_LABELS[entry.device] ?? entry.device}
+								{entry.device === "autre" && entry.device_other ? ` — ${entry.device_other}` : ""}
+							</span>
+						</div>
+						<div className="feedbackCardActions">
+							<span className="feedbackDate">{new Date(entry.created_at).toLocaleDateString("fr-FR")}</span>
+							<button
+								className="resetButton"
+								onClick={() => {
+									if (window.confirm("Supprimer cet avis ?"))
+										call(`/api/admin/feedback/${entry.id_feedback}`, "DELETE");
+								}}
+							>
+								Supprimer
+							</button>
+						</div>
+					</header>
+
+					<FeedbackRating label="Règles simples à comprendre" rating={entry.rules_rating} comment={entry.rules_comment} />
+					<FeedbackRating label="Fonctionnalités intuitives" rating={entry.features_rating} comment={entry.features_comment} />
+					<FeedbackRating label="Site agréable visuellement" rating={entry.design_rating} comment={entry.design_comment} />
+
+					{entry.remarks && (
+						<p className="feedbackRemarks"><strong>Autres remarques :</strong> {entry.remarks}</p>
+					)}
+				</article>
+			))}
 		</section>
 	);
 };

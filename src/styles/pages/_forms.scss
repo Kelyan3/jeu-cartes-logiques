@@ -9,7 +9,7 @@
 }
 
 .forms #forms {
-	width: fit-content;
+	width: min(540px, 92vw);
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
@@ -22,15 +22,14 @@
 	margin-bottom: 10px;
 }
 
-.forms #forms iframe {
-	border-radius: 8px;
-	display: block;
-}
-
 .forms .authForm {
 	width: min(360px, 80vw);
 	text-align: left;
 	margin-top: 24px;
+}
+
+.forms .feedbackForm {
+	width: min(480px, 90vw);
 }
 
 .forms .field {
@@ -46,7 +45,9 @@
 	font-weight: 500;
 }
 
-.forms .field input {
+.forms .field input,
+.forms .field select,
+.forms .field textarea {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 8px;
@@ -58,15 +59,66 @@
 	transition: border-color .15s ease;
 }
 
-.forms .field input:focus {
+.forms .field textarea {
+	resize: vertical;
+	min-height: 60px;
+	width: 100%;
+	margin-top: 8px;
+}
+
+.forms .field input:focus,
+.forms .field select:focus,
+.forms .field textarea:focus {
 	border-color: var(--accent-cyan);
 	box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2);
+}
+
+.forms .likertOptions {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-top: 4px;
+}
+
+.forms .likertOption {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 400;
+	color: var(--text-primary);
+	cursor: pointer;
+}
+
+.forms .likertOption input {
+	accent-color: var(--accent-cyan);
+}
+
+.forms .fieldCheckbox label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-size: 13px;
+	color: var(--text-muted);
+	font-weight: 400;
+	cursor: pointer;
+}
+
+.forms .fieldCheckbox input {
+	margin-top: 3px;
+	accent-color: var(--accent-cyan);
 }
 
 .forms .formError {
 	color: var(--danger);
 	font-size: 14px;
 	margin-bottom: 14px;
+}
+
+.forms .formSuccess {
+	color: var(--accent-cyan);
+	font-size: 15px;
+	margin-top: 24px;
 }
 
 .forms .authSubmit {

@@ -206,3 +206,60 @@
 	opacity: 0.4;
 	cursor: not-allowed;
 }
+
+.feedbackCardHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 12px;
+}
+
+.feedbackDevice {
+	display: block;
+	font-size: 12px;
+	color: var(--text-muted);
+	margin-top: 2px;
+}
+
+.feedbackCardActions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.feedbackDate {
+	font-size: 12px;
+	color: var(--text-muted);
+	white-space: nowrap;
+}
+
+.feedbackRating {
+	margin-bottom: 10px;
+}
+
+.feedbackRatingLabel {
+	font-size: 13px;
+	color: var(--text-muted);
+	margin-right: 6px;
+}
+
+.feedbackRatingValue {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--accent-cyan);
+}
+
+.feedbackRatingComment {
+	font-size: 13px;
+	color: var(--text-primary);
+	margin-top: 4px;
+	padding-left: 2px;
+}
+
+.feedbackRemarks {
+	font-size: 13px;
+	color: var(--text-primary);
+	margin-top: 12px;
+	padding-top: 12px;
+	border-top: 1px solid var(--border-subtle);
+}
