@@ -1,0 +1,233 @@
+//=============================
+// Conteneur de page générique
+//=============================
+.home {
+	min-height: 100vh;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 90px;
+	padding-bottom: 60px;
+}
+
+//====================================
+// Carte centrée de type "formulaire"
+//====================================
+.forms {
+	min-height: 100vh;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: 90px;
+	padding-bottom: 60px;
+}
+
+.forms #forms {
+	width: min(540px, 92vw);
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 20px;
+	text-align: center;
+}
+
+.forms #forms .eyebrow {
+	display: block;
+	margin-bottom: 10px;
+}
+
+//===================================
+// Carte "message centrée" générique
+//===================================
+.profileCard {
+	width: min(420px, 90vw);
+	text-align: center;
+}
+
+.profileLoading {
+	color: var(--text-muted);
+	margin-top: 20px;
+}
+
+//================================
+// Champs de formulaire générique
+//================================
+.forms .authForm {
+	width: min(360px, 80vw);
+	text-align: left;
+	margin-top: 24px;
+}
+
+.forms .field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-bottom: 18px;
+}
+
+.forms .field label {
+	font-size: 13px;
+	color: var(--text-muted);
+	font-weight: 500;
+}
+
+.forms .field input,
+.forms .field select,
+.forms .field textarea {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 10px 12px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 15px;
+	outline: none;
+	transition: border-color .15s ease;
+}
+
+.forms .field textarea {
+	resize: vertical;
+	min-height: 60px;
+	width: 100%;
+	margin-top: 8px;
+}
+
+.forms .field input:focus,
+.forms .field select:focus,
+.forms .field textarea:focus {
+	border-color: var(--accent-cyan);
+	box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2);
+}
+
+.forms .formError {
+	color: var(--danger);
+	font-size: 14px;
+	margin-bottom: 14px;
+}
+
+.forms .formSuccess {
+	color: var(--accent-cyan);
+	font-size: 15px;
+	margin-top: 24px;
+}
+
+//====================
+// Boutons génériques
+//====================
+.forms .authSubmit {
+	width: 100%;
+	padding: 11px;
+	border: 1px solid var(--accent-cyan);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--accent-cyan);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 15px;
+	transition: background .15s ease;
+}
+
+.forms .authSubmit:hover:not(:disabled) {
+	background: rgba(var(--accent-rgb), 0.1);
+}
+
+.forms .authSubmit:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.forms .authSwitch {
+	width: min(360px, 80vw);
+	margin: 16px auto 0;
+	font-size: 13px;
+	color: var(--text-muted);
+}
+
+.forms .authSwitch a {
+	color: var(--accent-cyan);
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.forms .authSwitch a:hover {
+	text-decoration: underline;
+}
+
+.passwordField {
+	display: flex;
+	gap: 8px;
+	align-items: stretch;
+}
+
+.passwordField input {
+	flex: 1;
+	min-width: 0;
+}
+
+.togglePassword {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 44px;
+	padding: 0;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: var(--bg-base);
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.togglePassword:hover {
+	border-color: var(--accent-cyan);
+	color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.1);
+}
+
+//===========================
+// Bouton "danger" générique
+//===========================
+.resetButton {
+	margin-top: 24px;
+	width: 100%;
+	padding: 10px;
+	border: 1px solid var(--danger);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--danger);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	font-size: 13px;
+	transition: background .15s ease;
+}
+
+.resetButton:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.resetButton:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
+//======================
+// Barre de progression
+//======================
+.progressTrack {
+	width: 100%;
+	height: 10px;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 999px;
+	overflow: hidden;
+}
+
+.progressFill {
+	height: 100%;
+	background: var(--accent-amber);
+	border-radius: 999px;
+	transition: width .4s ease;
+}

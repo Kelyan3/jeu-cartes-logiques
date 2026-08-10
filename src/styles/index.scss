@@ -1,9 +1,14 @@
 @use "./settings";
+@use "./shared";
+
 @use "./pages/about";
 @use "./pages/admin";
-@use "./pages/forms";
+@use "./pages/feedback";
 @use "./pages/home";
+@use "./pages/leaderboard";
 @use "./pages/notFound";
+@use "./pages/profile";
+
 @use "./components/card";
 @use "./components/choice";
 @use "./components/deck";

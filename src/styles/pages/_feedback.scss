@@ -1,0 +1,39 @@
+.forms .feedbackForm {
+	width: min(480px, 90vw);
+}
+
+.forms .likertOptions {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin-top: 4px;
+}
+
+.forms .likertOption {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 400;
+	color: var(--text-primary);
+	cursor: pointer;
+}
+
+.forms .likertOption input {
+	accent-color: var(--accent-cyan);
+}
+
+.forms .fieldCheckbox label {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	font-size: 13px;
+	color: var(--text-muted);
+	font-weight: 400;
+	cursor: pointer;
+}
+
+.forms .fieldCheckbox input {
+	margin-top: 3px;
+	accent-color: var(--accent-cyan);
+}
