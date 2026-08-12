@@ -224,7 +224,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			return;
 
 		fetch(`${API}/api/quests`, { credentials: "include" })
-			.then((response) => response.json())
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Impossible de charger les quêtes débloquées.");
+				return response.json();
+			})
 			.then(setUnlockedKeys)
 			.catch(() => setUnlockedKeys({}));
 	}, [mode, user]);
@@ -393,6 +397,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * - true  = on voit le popup
 	 */
 	const [popupWin, setPopupWin] = useState(false);
+
+	const [saveProgressFailed, setSaveProgressFailed] = useState(false);
 
 	// Tableau de sauvegarde de copie de l'ancien tableau "game"
 	const [lastGame, setLastGame] = useState([]);
@@ -2055,6 +2061,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Enregistre la progression du niveau actuel auprès du backend, si l'utilisateur est connecté.
 	 */
 	const saveProgress = () => {
+		setSaveProgressFailed(false);
+
 		if (!user || mode === "Create")
 			return;
 
@@ -2071,7 +2079,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				elapsed_seconds: elapsedSeconds,
 				moves: movesRef.current,
 			}),
-		});
+		})
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Échec de l'enregistrement de la progression.");
+			})
+			.catch(() => setSaveProgressFailed(true));
 	};
 
 	/**
@@ -2747,6 +2760,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					content={
 						<>
 							<b>Bravo, vous avez trouvé la solution !</b>
+							{saveProgressFailed && (
+								<p className="saveProgressWarning">
+									⚠ Votre progression n'a pas pu être enregistrée. Vérifiez votre connexion.
+								</p>
+							)}
 							<span
 								className="closeButton"
 								onClick={function () {

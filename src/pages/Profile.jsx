@@ -14,6 +14,7 @@ const Profile = () => {
 	const [playTotal, setPlayTotal] = useState(0);
 	const [playScore, setPlayScore] = useState(0);
 	const [loadingStats, setLoadingStats] = useState(true);
+	const [statsError, setStatsError] = useState(false);
 	const [resetting, setResetting] = useState(false);
 
 	const [categories, setCategories] = useState([]);
@@ -79,6 +80,7 @@ const Profile = () => {
 	{
 		setStatsUser(user);
 		setLoadingStats(!!user);
+		setStatsError(false);
 	}
 
 	useEffect(() => {
@@ -91,9 +93,17 @@ const Profile = () => {
 
 		Promise.all([
 			fetch("/json/manifest.json")
-				.then((response) => response.json()),
+				.then((response) => {
+					if (!response.ok)
+						throw new Error("Impossible de charger le manifeste des niveaux.");
+					return response.json();
+				}),
 			fetch(`${API}/api/progress`, { credentials: "include" })
-				.then((response) => response.json()),
+				.then((response) => {
+					if (!response.ok)
+						throw new Error("Impossible de charger la progression.");
+					return response.json();
+				}),
 		])
 			.then(([manifest, progress]) => {
 				if (ignore)
@@ -106,6 +116,10 @@ const Profile = () => {
 						.filter((p) => p.mode === "Play" && p.completed)
 						.reduce((total, p) => total + p.score, 0)
 				);
+			})
+			.catch(() => {
+				if (!ignore)
+					setStatsError(true);
 			})
 			.finally(() => {
 				if (!ignore)
@@ -152,7 +166,11 @@ const Profile = () => {
 
 				{loadingStats && <p className="profileLoading">Chargement des statistiques...</p>}
 
-				{!loadingStats && (
+				{!loadingStats && statsError && (
+					<p className="profileLoading">Impossible de charger vos statistiques pour le moment. Réessayez plus tard.</p>
+				)}
+
+				{!loadingStats && !statsError && (
 					<>
 						<div className="field categoryField">
 							<label>Catégorie</label>

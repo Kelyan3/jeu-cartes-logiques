@@ -7,6 +7,7 @@ const Leaderboard = () => {
 	const [entries, setEntries] = useState([]);
 	const [total, setTotal] = useState(0);
 	const [loading, setLoading] = useState(true);
+	const [loadError, setLoadError] = useState(false);
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState("");
 
@@ -23,6 +24,7 @@ const Leaderboard = () => {
 	{
 		setLoadingCategory(selectedCategory);
 		setLoading(true);
+		setLoadError(false);
 	}
 
 	useEffect(() => {
@@ -33,8 +35,18 @@ const Leaderboard = () => {
 		let ignore = false;
 
 		Promise.all([
-			fetch("/json/manifest.json").then((response) => response.json()),
-			fetch(`${API}/api/leaderboard${query}`).then((response) => response.json()),
+			fetch("/json/manifest.json")
+				.then((response) => {
+					if (!response.ok)
+						throw new Error("Impossible de charger le manifeste des niveaux.");
+					return response.json();
+				}),
+			fetch(`${API}/api/leaderboard${query}`)
+				.then((response) => {
+					if (!response.ok)
+						throw new Error("Impossible de charger le classement.");
+					return response.json();
+				}),
 		])
 			.then(([manifest, leaderboard]) => {
 				if (ignore)
@@ -42,6 +54,10 @@ const Leaderboard = () => {
 
 				setTotal(manifest.Play ?? 0);
 				setEntries(leaderboard);
+			})
+			.catch(() => {
+				if (!ignore)
+					setLoadError(true);
 			})
 			.finally(() => {
 				if (!ignore)
@@ -76,7 +92,11 @@ const Leaderboard = () => {
 
 				{loading && <p className="profileLoading">Chargement...</p>}
 
-				{!loading && (
+				{!loading && loadError && (
+					<p className="profileLoading">Impossible de charger le classement pour le moment. Réessayez plus tard.</p>
+				)}
+
+				{!loading && !loadError && (
 					<table className="leaderboardTable">
 						<thead>
 							<tr>

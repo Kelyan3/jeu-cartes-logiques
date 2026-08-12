@@ -51,7 +51,11 @@ const Choice = ({ mode }) => {
 		let ignore = false;
 
 		fetch(`${API}/api/chapters`, { credentials: "include" })
-			.then((response) => response.json())
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Impossible de charger les chapitres.");
+				return response.json();
+			})
 			.then((data) => {
 				if (!ignore)
 					setChapters(data);
@@ -76,7 +80,11 @@ const Choice = ({ mode }) => {
 			return;
 
 		fetch("/json/manifest.json")
-			.then((response) => response.json())
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Manifeste indisponible.");
+				return response.json();
+			})
 			.then((manifest) => {
 				const count = manifest[mode];
 				if (!count)
@@ -102,12 +110,21 @@ const Choice = ({ mode }) => {
 			return;
 
 		fetch(`${API}/api/progress`, { credentials: "include" })
-			.then((response) => response.json())
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Impossible de charger la progression.");
+				return response.json();
+			})
 			.then((data) => {
 				const completedNums = data
 					.filter((p) => p.mode === mode && p.completed)
 					.map((p) => p.num);
 				setCompletedLevels(completedNums);
+			})
+			.catch(() => {
+				// Les niveaux complétés ne sont qu'un indicateur visuel (✓) ;
+				// en cas d'échec, on garde silencieusement la dernière liste
+				// connue plutôt que de bloquer l'affichage des niveaux.
 			});
 	}, [user, mode]);
 

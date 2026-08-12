@@ -9,7 +9,11 @@ export const AuthProvider = ({ children }) => {
 
 	useEffect(() => {
 		fetch(`${API}/api/me`, { credentials: "include" })
-			.then((response) => response.json())
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Impossible de vérifier la session.");
+				return response.json();
+			})
 			.then((data) => setUser(data))
 			.catch(() => setUser(null))
 			.finally(() => setLoading(false));
