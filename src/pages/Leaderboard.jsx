@@ -17,19 +17,40 @@ const Leaderboard = () => {
 			.catch(() => setCategories([]));
 	}, []);
 
-	useEffect(() => {
+	// Repasse en "Chargement..." dès que la catégorie sélectionnée change.
+	const [loadingCategory, setLoadingCategory] = useState(selectedCategory);
+	if (loadingCategory !== selectedCategory)
+	{
+		setLoadingCategory(selectedCategory);
 		setLoading(true);
+	}
+
+	useEffect(() => {
 		const query = selectedCategory ? `?category=${selectedCategory}` : "";
+
+		// Ignore la réponse si selectedCategory a de nouveau changé avant qu'elle
+		// n'arrive (évite d'écraser des données plus récentes avec une réponse obsolète).
+		let ignore = false;
 
 		Promise.all([
 			fetch("/json/manifest.json").then((response) => response.json()),
 			fetch(`${API}/api/leaderboard${query}`).then((response) => response.json()),
 		])
 			.then(([manifest, leaderboard]) => {
+				if (ignore)
+					return;
+
 				setTotal(manifest.Play ?? 0);
 				setEntries(leaderboard);
 			})
-			.finally(() => setLoading(false));
+			.finally(() => {
+				if (!ignore)
+					setLoading(false);
+			});
+
+		return () => {
+			ignore = true;
+		};
 	}, [selectedCategory]);
 
 	return (

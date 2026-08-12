@@ -33,19 +33,37 @@ const Choice = ({ mode }) => {
 	const [chapters, setChapters] = useState(null);
 	const [chaptersError, setChaptersError] = useState(false);
 
+	// Réinitialise l'état des chapitres dès que mode/user change.
+	const [chaptersKey, setChaptersKey] = useState({ mode, user });
+	if (chaptersKey.mode !== mode || chaptersKey.user !== user)
+	{
+		setChaptersKey({ mode, user });
+		setChapters(null);
+		setChaptersError(false);
+	}
+
 	useEffect(() => {
 		if (mode !== "Play")
 			return;
 
-		setChapters(null);
-		setChaptersError(false);
+		// Ignore la réponse si mode/user a de nouveau changé avant qu'elle n'arrive
+		// (évite d'écraser des données plus récentes avec une réponse obsolète).
+		let ignore = false;
 
 		fetch(`${API}/api/chapters`, { credentials: "include" })
 			.then((response) => response.json())
-			.then(setChapters)
+			.then((data) => {
+				if (!ignore)
+					setChapters(data);
+			})
 			.catch(() => {
-				setChaptersError(true);
+				if (!ignore)
+					setChaptersError(true);
 			});
+
+		return () => {
+			ignore = true;
+		};
 	}, [mode, user]);
 
 	/**

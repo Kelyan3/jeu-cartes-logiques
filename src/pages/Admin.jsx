@@ -186,9 +186,13 @@ const ChaptersSection = ({ chapters, call }) => {
 	 */
 	const [localOrder, setLocalOrder] = useState(null);
 
-	useEffect(() => {
+	// Efface l'override local dès que les chapitres serveur changent.
+	const [prevChapters, setPrevChapters] = useState(chapters);
+	if (prevChapters !== chapters)
+	{
+		setPrevChapters(chapters);
 		setLocalOrder(null);
-	}, [chapters]);
+	}
 
 	const orderedChapters = localOrder ?? chapters;
 
@@ -338,9 +342,13 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 	 */
 	const [localOrder, setLocalOrder] = useState({});
 
-	useEffect(() => {
+	// Efface l'override local dès que les chapitres serveur changent.
+	const [prevChapters, setPrevChapters] = useState(chapters);
+	if (prevChapters !== chapters)
+	{
+		setPrevChapters(chapters);
 		setLocalOrder({});
-	}, [chapters]);
+	}
 
 	const submit = (event) => {
 		event.preventDefault();
@@ -477,25 +485,18 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 	);
 };
 
-/**
- * Retrouve un niveau par son id_level dans la liste des chapitres.
- */
-const findLevel = (chapters, id_level) => {
-	for (const chapter of chapters)
-	{
-		const found = chapter.levels.find((l) => l.id_level === id_level);
-		if (found)
-			return found;
-	}
-	return null;
-};
-
 const ScoringSection = ({ globalScoring, call }) => {
 	const [edited, setEdited] = useState(null);
 
-	useEffect(() => {
+	/**
+	 * Resynchronise la copie éditable dès que globalScoring change (nouvelle
+	 * réponse serveur), pendant le rendu et non dans un useEffect.
+	 */
+	const [prevGlobalScoring, setPrevGlobalScoring] = useState(globalScoring);
+	if (prevGlobalScoring !== globalScoring) {
+		setPrevGlobalScoring(globalScoring);
 		setEdited(globalScoring ? { ...globalScoring } : null);
-	}, [globalScoring]);
+	}
 
 	const values = edited ?? globalScoring;
 

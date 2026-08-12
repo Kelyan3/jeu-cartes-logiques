@@ -10,12 +10,13 @@ const Navigation = () => {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const location = useLocation();
 
-	/**
-	 * Ferme le menu mobile à chaque changement de page.
-	 */
-	useEffect(() => {
+	// Ferme le menu mobile à chaque changement de page.
+	const [prevLocation, setPrevLocation] = useState(location);
+	if (location !== prevLocation)
+	{
+		setPrevLocation(location);
 		setMenuOpen(false);
-	}, [location]);
+	}
 
 	/**
 	 * Empêche le scroll du corps de page quand le menu mobile est ouvert.

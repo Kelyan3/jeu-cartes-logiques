@@ -317,7 +317,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	/**
 	 * Horodatage de début de partie, utilisé pour calculer elapsed_seconds envoyé à /api/progress.
 	 */
-	const startTimeRef = useRef(Date.now());
+	const startTimeRef = useRef(null);
+	useEffect(() => {
+		startTimeRef.current = Date.now();
+	}, []);
 
 	/**
 	 * Nombre de coups joués (un coup = un appel à saveGame()), utilisé pour le calcul du score.
@@ -353,6 +356,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	const [cardHelp, setCardHelp] = useState(null);
 	const [cardHelp2, setCardHelp2] = useState(null);
+
+	// Bouton "Aide" désactivé temporairement.
+	const HELP_BUTTON_ENABLED = false;
 
 	/**
 	 * Variable gérant le popup d'ajout de carte en mode création
@@ -2052,7 +2058,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (!user || mode === "Create")
 			return;
 
-		const elapsedSeconds = Math.floor((Date.now() - startTimeRef.current) / 1000);
+		const elapsedSeconds = Math.floor((Date.now() - (startTimeRef.current ?? Date.now())) / 1000);
 
 		fetch(`${API}/api/progress`, {
 			method: "POST",
@@ -2434,7 +2440,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</button>
 				</div>
 
-				{false && mode !== "Create" && (
+				{HELP_BUTTON_ENABLED && mode !== "Create" && (
 					<div>
 						<button id="aide" className="buttonAction " onClick={getNextMove}>
 							<span className="buttonFormula">?</span>

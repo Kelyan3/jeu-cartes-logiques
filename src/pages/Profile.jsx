@@ -73,17 +73,21 @@ const Profile = () => {
 			.finally(() => setResetting(false));
 	};
 
-	/**
-	 * Charge en parallèle le nombre total de niveaux (manifeste) et la progression
-	 * de l'utilisateur connecté, pour calculer le pourcentage de niveaux Play
-	 * complétés et le score total.
-	 */
+	// Ajuste loadingStats dès que user change, pendant le rendu.
+	const [statsUser, setStatsUser] = useState(user);
+	if (statsUser !== user)
+	{
+		setStatsUser(user);
+		setLoadingStats(!!user);
+	}
+
 	useEffect(() => {
 		if (!user)
-		{
-			setLoadingStats(false);
 			return;
-		}
+
+		// Ignore la réponse si user a de nouveau changé avant qu'elle arrive
+		// (évite d'écraser des données plus récentes avec une réponse obsolète)
+		let ignore = false;
 
 		Promise.all([
 			fetch("/json/manifest.json")
@@ -92,6 +96,9 @@ const Profile = () => {
 				.then((response) => response.json()),
 		])
 			.then(([manifest, progress]) => {
+				if (ignore)
+					return;
+
 				setPlayTotal(manifest.Play ?? 0);
 				setPlayCompleted(progress.filter((p) => p.mode === "Play" && p.completed).length);
 				setPlayScore(
@@ -100,7 +107,14 @@ const Profile = () => {
 						.reduce((total, p) => total + p.score, 0)
 				);
 			})
-			.finally(() => setLoadingStats(false));
+			.finally(() => {
+				if (!ignore)
+					setLoadingStats(false);
+			});
+
+		return () => {
+			ignore = true;
+		};
 	}, [user]);
 
 	// Évite une division par zéro si le manifeste n'a pas encore chargé playTotal.
