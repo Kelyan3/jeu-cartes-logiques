@@ -79,7 +79,7 @@
 	cursor: pointer;
 }
 
-.hoverable:hover, .activeHover {
+.hoverable:hover {
 	transition: all .15s ease-in-out;
 	transform: scale(1.06);
 }

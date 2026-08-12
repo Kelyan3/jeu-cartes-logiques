@@ -165,7 +165,6 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }
 						className={
 							"card " +
 							(isWin ? "" : "hoverable ") +
-							(game[deckIndice][cardIndice].hover && !isWin ? "activeHover " : "") +
 							(game[deckIndice][cardIndice].nouveau ? "nouveau " : "") +
 							(isHelp ? "aide" : "")}
 						style={calcSizeCard(game[deckIndice][cardIndice])}

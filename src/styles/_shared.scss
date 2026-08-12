@@ -46,6 +46,11 @@
 	text-align: center;
 }
 
+.profileCard p {
+	margin: 12px 0 20px;
+	color: var(--text-muted);
+}
+
 .profileLoading {
 	color: var(--text-muted);
 	margin-top: 20px;
@@ -57,7 +62,7 @@
 .forms .authForm {
 	width: min(360px, 80vw);
 	text-align: left;
-	margin-top: 24px;
+	margin: 24px auto 0;
 }
 
 .forms .field {
@@ -117,6 +122,7 @@
 // Boutons génériques
 //====================
 .forms .authSubmit {
+	display: inline-block;
 	width: 100%;
 	padding: 11px;
 	border: 1px solid var(--accent-cyan);
@@ -126,6 +132,9 @@
 	font-family: 'Sora', sans-serif;
 	font-weight: 600;
 	font-size: 15px;
+	text-align: center;
+	text-decoration: none;
+	box-sizing: border-box;
 	transition: background .15s ease;
 }
 

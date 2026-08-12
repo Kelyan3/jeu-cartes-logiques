@@ -117,23 +117,6 @@ def update_level(id_level, id_chapter=None, position=None):
 			cur.execute(f"UPDATE levels SET {', '.join(fields)} WHERE id_level = %s", params)
 			conn.commit()
 
-def update_level_scoring(id_level, **fields):
-	"""
-	Met à jour un sous-ensemble des paramètres de score d'un niveau.
-	"""
-	updates = {key: value for key, value in fields.items() if key in SCORING_FIELDS and value is not None}
-	if not updates:
-		return
-
-	set_clause = ", ".join(f"{key} = %s" for key in updates)
-	params = list(updates.values()) + [id_level]
-
-	with psycopg.connect(CONN_PARAMS) as conn:
-		with conn.cursor() as cur:
-			cur.execute(f"UPDATE levels SET {set_clause} WHERE id_level = %s", params)
-			conn.commit()
-
-
 def get_global_scoring_params():
 	"""
 	Récupère les paramètres de score globaux applicables à tous les niveaux.

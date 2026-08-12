@@ -7,12 +7,12 @@ import { API_BASE_URL as API } from "../config/api";
 const MENUS = ["base", "objectif", "transitivite", "tiers_exclus"];
 
 const SECTIONS = [
-	{ id: "chapters", label: "Chapitres" },
-	{ id: "levels", label: "Niveaux" },
-	{ id: "scoring", label: "Gestion du score" },
-	{ id: "quests", label: "Quêtes" },
-	{ id: "categories", label: "Catégories" },
 	{ id: "feedback", label: "Avis reçus" },
+	{ id: "categories", label: "Catégories" },
+	{ id: "chapters", label: "Chapitres" },
+	{ id: "scoring", label: "Gestion du score" },
+	{ id: "levels", label: "Niveaux" },
+	{ id: "quests", label: "Quêtes" },
 ];
 
 const SCORING_FIELDS = [
@@ -546,12 +546,11 @@ const ScoringSection = ({ globalScoring, call }) => {
 		<section className="adminSection">
 			<h2>Gestion du score</h2>
 			<p className="adminHint">
-				score = max(score min, score max − pénalité temps − pénalité coups).
-				La pénalité temps retire "Pénalité / palier temps" points par tranche de
-				"Palier temps (s)" secondes dépassée au-delà du "Délai de grâce". La
-				pénalité coups retire "Pénalité / coup" points par coup au-delà du "Seuil
-				de coups". Ne concerne que les niveaux du mode Play. Ces paramètres sont
-				maintenant globaux et s'appliquent à tous les niveaux.
+				score = max(score_min, score_max - pénalité_temps - pénalité_coups).<br />
+				La pénalité temps retire "Pénalité / palier temps" pts par tranche de "Palier temps (s)" secondes dépassée au-delà du "Délai de grâce".<br />
+				La pénalité coups retire "Pénalité / coup" pts par coup au-delà du "Seuil de coups".<br />
+				Ne concerne que les niveaux du mode Play.<br />
+				Ces paramètres s'appliquent à tous les niveaux.
 			</p>
 
 			{!values ? (

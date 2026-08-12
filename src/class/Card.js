@@ -20,16 +20,15 @@ export default class Card
 		this.link = link;
 		this.left = left;
 		this.right = right;
-		this.hover = false;
 		this.nouveau = nouveau;
 		this.suppr = suppr;
 	}
 
 	/**
 	 * Traduit la couleur de la carte, de base en anglais, en français afin de l'afficher dans le texte.
-	 * 
+	 *
 	 * @param {string} color - La couleur de la carte.
-	 * 
+	 *
 	 * @returns {string} La traduction de la couleur.
 	 */
 	getColor = (color) => {
@@ -52,9 +51,9 @@ export default class Card
 	 * Carte double : "(couleur liaison couleur)"
 	 * Carte triple : "(couleur liaison (couleur liaison (couleur))"
 	 * Carte quadruple : ((couleur liaison couleur) liaison (couleur liaison couleur))
-	 * 
+	 *
 	 * @example "(Rouge^Jaune)=>Bleue"
-	 * 
+	 *
 	 * @returns {string} Un string plus lisible.
 	 */
 	toString()
@@ -93,7 +92,7 @@ export default class Card
 
 	/**
 	 * Transforme un objet Card en objet JSON.
-	 * 
+	 *
 	 * @example
 	 * { "color" : "couleur"}
 	 * {
@@ -123,7 +122,7 @@ export default class Card
 	 *              "right": { "color": "couleur" }
 	 *            }
 	 * }
-	 * 
+	 *
 	 * @returns {JSON} à stocker dans un fichier .json
 	 */
 	toFile()
@@ -143,7 +142,7 @@ export default class Card
 	/**
 	 * Renvoie une nouvelle instance d'une carte.
 	 * Si la carte est composée de 2 autres cartes ces dernières sont également de nouvelles instances.
-	 * 
+	 *
 	 * @returns {Card} une nouvelle instance d'une même carte.
 	 */
 	copy() {
@@ -162,7 +161,7 @@ export default class Card
 	 * Fonction récursive qui :
 	 * - Change l'attribut "active"
 	 * - Regarde si "left" & "right" sont null. S'ils ne le sont pas, on appelle la même fonction sur eux.
-	 * 
+	 *
 	 * @param {boolean} state Booléen qui définit si une carte est sélectionnée ou pas.
 	 */
 	select(state)
@@ -204,9 +203,9 @@ export default class Card
 
 	/**
 	 * Compare les attributs de 2 cartes.
-	 * 
+	 *
 	 * @param {Card} card - L'autre carte à comparer.
-	 * 
+	 *
 	 * @returns {boolean} True si identiques, sinon False.
 	 */
 	equals(card)
@@ -263,7 +262,7 @@ export default class Card
 
 	/**
 	 * Renvoie la démonstration correspondante à l'action effectuée.
-	 * 
+	 *
 	 * @returns {string} Le texte de la démonstration.
 	 */
 	toDemonstration()
@@ -280,7 +279,7 @@ export default class Card
 
 	/**
 	 * Renvoie la profondeur à laquelle est située la carte dans la carte complexe.
-	 * 
+	 *
 	 * @returns {number} La profondeur de la carte
 	 */
 	getProfondeur()
@@ -299,15 +298,15 @@ export default class Card
 
 	/**
 	 * Vérifie si la carte complexe a une de ses cartes qui possède le connecteur "=>".
-	 * 
+	 *
 	 * @returns {boolean} true si la carte possède le connecteur "=>", sinon false
 	 */
 	haveImpliqueLinkRecur()
 	{
-		let res = false;
 		if (this.color !== null)
 			return false;
 
+		let res = false;
 		if (this.link === "=>")
 			res = true;
 
@@ -316,7 +315,7 @@ export default class Card
 
 	/**
 	 * Vérifie si la carte de l'objectif possède le connecteur "et".
-	 * 
+	 *
 	 * @returns {boolean} true si la carte possède le connecteur "et", sinon false
 	 */
 	isCardEtObjectif()
@@ -335,7 +334,7 @@ export default class Card
 
 	/**
 	 * Vérifie si la carte possède le connecteur "<=>".
-	 * 
+	 *
 	 * @returns {boolean} true si la carte possède le connecteur "<=>", sinon false
 	 */
 	isDoubleArrow()
@@ -360,7 +359,7 @@ export default class Card
 
 	/**
 	 * Renvoie la bonne carte "<=>";
-	 * 
+	 *
 	 * @returns {Card} La bonne carte "<=>";
 	 */
 	ifDoubleArrowReturnGoodCard()
@@ -373,7 +372,7 @@ export default class Card
 
 	/**
 	 * Vérifie si la carte est une carte "non".
-	 * 
+	 *
 	 * @returns {boolean} true si la carte est une carte "non", sinon false
 	 */
 	isNonCard()
@@ -392,7 +391,7 @@ export default class Card
 
 	/**
 	 * Vérifie si l'on peut utiliser le bouton "Tiers-Exclus" sur la carte.
-	 * 
+	 *
 	 * @returns {boolean} true si l'on peut l'utiliser, sinon false
 	 */
 	canUseTiersExclus()
@@ -408,7 +407,7 @@ export default class Card
 
 	/**
 	 * Si la carte est censé être une carte "non", renvoie la carte au format "non" pour l'affichage.
-	 * 
+	 *
 	 * @returns {Card} - La carte au format "non" si c'est une carte "non", sinon la carte de base
 	 */
 	ifNonReturnNonCard()
@@ -430,7 +429,7 @@ export default class Card
 
 	/**
 	 * Vérifie si la carte possède le connecteur "ou".
-	 * 
+	 *
 	 * @returns {boolean} true si la carte correspond à une carte avec un connecteur "ou", sinon false
 	 */
 	isOuCard() {
@@ -448,7 +447,7 @@ export default class Card
 
 	/**
 	 * Si la carte est censé être une carte "ou", renvoie la carte au format "ou" pour l'affichage.
-	 * 
+	 *
 	 * @returns {Card} - La carte au format "ou" si c'est une carte "ou", sinon la carte de base
 	 */
 	ifOuReturnOuCard()
@@ -462,7 +461,7 @@ export default class Card
 	/**
 	 * Renvoie la carte sous un format d'affichage où sont affichés les connecteurs "<=>", "ou" et "non" plutôt que leurs
 	 * équivalents logiques.
-	 * 
+	 *
 	 * @returns {Card} - La carte sous son autre format d'affichage.
 	 */
 	displayGoodCard()
@@ -477,7 +476,7 @@ export default class Card
 	/**
 	 * Renvoie la carte complexe sous un format d'affichage où sont affichés les connecteurs "<=>", "ou" et "non" plutôt que leurs
 	 * équivalents logiques, à l'aide d'une récursion sur {@link displayGoodCard()}.
-	 * 
+	 *
 	 * @returns {Card} - La carte complexe sous son autre format d'affichage.
 	 */
 	displayGoodCardRecur() {

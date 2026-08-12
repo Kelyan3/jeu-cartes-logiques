@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
 
 import { useAuth } from "../hooks/authHooks";
 
 import { API_BASE_URL as API } from "../config/api";
 
+
 const Profile = () => {
-	const { user, setUser } = useAuth();
+	const { user, setUser, loading: authLoading } = useAuth();
 
 	const [playCompleted, setPlayCompleted] = useState(0);
 	const [playTotal, setPlayTotal] = useState(0);
@@ -78,7 +80,10 @@ const Profile = () => {
 	 */
 	useEffect(() => {
 		if (!user)
+		{
+			setLoadingStats(false);
 			return;
+		}
 
 		Promise.all([
 			fetch("/json/manifest.json")
@@ -100,6 +105,29 @@ const Profile = () => {
 
 	// Évite une division par zéro si le manifeste n'a pas encore chargé playTotal.
 	const playPercent = playTotal > 0 ? Math.round((playCompleted / playTotal) * 100) : 0;
+
+	if (authLoading)
+	{
+		return (
+			<div className="forms">
+				<Navigation />
+			</div>
+		);
+	}
+
+	if (!user)
+	{
+		return (
+			<div className="forms">
+				<Navigation />
+				<div id="forms" className="profileCard">
+					<span className="eyebrow">Mon compte</span>
+					<p>Vous devez être connecté pour voir votre profil.</p>
+					<NavLink to="/login" className="authSubmit">Se connecter</NavLink>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="forms">

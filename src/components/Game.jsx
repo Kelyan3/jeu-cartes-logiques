@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useEffectEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Deck from "./Deck";
 import Popup from "./Popup";
@@ -323,23 +323,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Nombre de coups joués (un coup = un appel à saveGame()), utilisé pour le calcul du score.
 	 */
 	const movesRef = useRef(0);
-
-	/**
-	 * Déplace le curseur de navigation clavier vers la carte indiquée, en désélectionnant
-	 * visuellement la carte précédemment survolée.
-	 *
-	 * @param {number} indexDeck
-	 * @param {number} indexCard
-	 */
-	const changeHover = (indexDeck, indexCard) => {
-		const tmp = [...game];
-		tmp[currentCardArrow[0]][currentCardArrow[1]].hover = false;
-		tmp[indexDeck][indexCard].hover = true;
-		setGame(tagDecks(tmp));
-		setcurrentCardArrow([indexDeck, indexCard]);
-	};
-
-	const [currentCardArrow, setcurrentCardArrow] = useState(undefined);
 
 	const [openFileJson, setOpenFileJson] = useState("");
 
@@ -2433,95 +2416,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		else if (variant === "equiv_sym")
 			transitiviteEquiv(true);
 	};
-
-	/**
-	 * Gestionnaire de raccourcis clavier, sous forme d'Effect Event (useEffectEvent)
-	 */
-	const onKeyDown = useEffectEvent((event) => {
-		if (event.code.toLowerCase().includes("arrow"))
-		{
-			event.preventDefault();
-			const isCurrentPositionInvalid =
-				currentCardArrow === undefined ||
-				currentCardArrow[0] >= game.length ||
-				currentCardArrow[1] >= game[currentCardArrow[0]].length;
-
-			if (isCurrentPositionInvalid)
-			{
-				const tmp = [...game];
-				tmp[0][0].hover = true;
-				setGame(tagDecks(tmp));
-				setcurrentCardArrow([0, 0]);
-			}
-			else if (event.code.toLowerCase().includes("down"))
-			{
-				const futurHover = Math.min(currentCardArrow[1] + 1, game[currentCardArrow[0]].length - 1);
-				changeHover(currentCardArrow[0], futurHover);
-			}
-			else if (event.code.toLowerCase().includes("up"))
-			{
-				const futurHover = Math.max(currentCardArrow[1] - 1, 0);
-				changeHover(currentCardArrow[0], futurHover);
-			}
-			else if (event.code.toLowerCase().includes("left"))
-			{
-				const futurHover = Math.max(currentCardArrow[0] - 1, 0);
-				changeHover(futurHover, Math.min(currentCardArrow[1], game[futurHover].length - 1));
-			}
-			else if (event.code.toLowerCase().includes("right"))
-			{
-				const futurHover = Math.min(currentCardArrow[0] + 1, game.length - 1);
-				changeHover(futurHover, Math.min(currentCardArrow[1], game[futurHover].length - 1));
-			}
-		}
-		else if (currentCardArrow !== undefined && event.code.toLowerCase().includes("space"))
-		{
-			event.preventDefault();
-			update(currentCardArrow[0], currentCardArrow[1]);
-		}
-
-		switch (event.key.toLowerCase())
-		{
-			case "q":
-				addCardAnd();
-				break;
-
-			case "w":
-				addCardFuse();
-				break;
-
-			case "e":
-				fuseCardAnd();
-				break;
-
-			case "r":
-				setObjectifMenuOpen((open) => !open);
-				break;
-
-			case "t":
-				retourEnArriere();
-				break;
-
-			case "escape":
-				if (currentCardArrow !== undefined)
-				{
-					const tmp = [...game];
-					tmp[currentCardArrow[0]][currentCardArrow[1]].hover = false;
-					setGame(tagDecks(tmp));
-					setcurrentCardArrow(undefined);
-				}
-				break;
-
-			default:
-				break;
-			}
-	});
-
-	useEffect(() => {
-		document.addEventListener("keydown", onKeyDown);
-
-		return () => document.removeEventListener("keydown", onKeyDown);
-	}, []);
 
 	return (
 		<div className="game">
