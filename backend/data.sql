@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS chapters CASCADE;
 DROP TABLE IF EXISTS scoring_settings CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
+DROP TABLE IF EXISTS feedback CASCADE;
 
 
 
@@ -103,7 +104,12 @@ CREATE TABLE feedback (
 
 
 
-INSERT INTO chapters (name, position) VALUES ('Chapitre 1', 1);
+INSERT INTO chapters (name, position) VALUES
+	('Chapitre 1', 1),
+	('Chapitre 2', 2),
+	('Chapitre 3', 3),
+	('Chapitre 4', 4),
+	('Chapitre 5', 5);
 
 INSERT INTO categories (name) VALUES
 	('Professeur'),
@@ -122,5 +128,66 @@ INSERT INTO quests (menu, label, unlocks_key, required_chapter, position) VALUES
 	('transitivite', 'Transitivité "=>"', 'transitivite_arrow', (SELECT id_chapter FROM chapters WHERE position = 1), 1),
 	('transitivite', 'Transitivité "<=>"', 'transitivite_equiv', (SELECT id_chapter FROM chapters WHERE position = 1), 2),
 	('transitivite', 'Transitivité "<=>" symétrique', 'transitivite_equiv_sym', (SELECT id_chapter FROM chapters WHERE position = 1), 3);
+
+INSERT INTO levels (id_chapter, num, position) VALUES
+	-- Chapitre 1 : niveaux 1 à 10
+	(1, 1, 1),
+	(1, 2, 2),
+	(1, 3, 3),
+	(1, 4, 4),
+	(1, 5, 5),
+	(1, 6, 6),
+	(1, 7, 7),
+	(1, 8, 8),
+	(1, 9, 9),
+	(1, 10, 10),
+
+	-- Chapitre 2 : niveaux 11 à 20
+	(2, 11, 1),
+	(2, 12, 2),
+	(2, 13, 3),
+	(2, 14, 4),
+	(2, 15, 5),
+	(2, 16, 6),
+	(2, 17, 7),
+	(2, 18, 8),
+	(2, 19, 9),
+	(2, 20, 10),
+
+	-- Chapitre 3 : niveaux 21 à 30
+	(3, 21, 1),
+	(3, 22, 2),
+	(3, 23, 3),
+	(3, 24, 4),
+	(3, 25, 5),
+	(3, 26, 6),
+	(3, 27, 7),
+	(3, 28, 8),
+	(3, 29, 9),
+	(3, 30, 10),
+
+	-- Chapitre 4 : niveaux 31 à 40
+	(4, 31, 1),
+	(4, 32, 2),
+	(4, 33, 3),
+	(4, 34, 4),
+	(4, 35, 5),
+	(4, 36, 6),
+	(4, 37, 7),
+	(4, 38, 8),
+	(4, 39, 9),
+	(4, 40, 10),
+
+	-- Chapitre 5 : niveaux 41 à 50
+	(5, 41, 1),
+	(5, 42, 2),
+	(5, 43, 3),
+	(5, 44, 4),
+	(5, 45, 5),
+	(5, 46, 6),
+	(5, 47, 7),
+	(5, 48, 8),
+	(5, 49, 9),
+	(5, 50, 10);
 
 INSERT INTO scoring_settings (id_settings) VALUES (1);

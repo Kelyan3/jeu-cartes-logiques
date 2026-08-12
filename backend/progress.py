@@ -1,6 +1,7 @@
 import psycopg
 
 from database import CONN_PARAMS
+from admin import get_global_scoring_params
 
 
 def get_progress(user_id):
@@ -30,17 +31,16 @@ def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=Non
 
 	Le score n'est calculé que pour le mode "Play" complété, à partir du temps
 	écoulé et du nombre de coups fournis par le client, combinés aux paramètres
-	du niveau en base (voir compute_score()). Le mode "Tutorial" n'a pas de
-	notion de score : il reste toujours à 0, comme avant.
+	de score globaux (voir compute_score() et get_global_scoring_params() dans
+	admin.py). Le mode "Tutorial" n'a pas de notion de score : il reste
+	toujours à 0, comme avant.
 
 	Si ce niveau complète entièrement son chapitre (mode "Play"), les quêtes
 	rattachées à ce chapitre sont automatiquement débloquées pour l'utilisateur.
 	"""
 	score = 0
 	if mode == "Play" and completed and elapsed_seconds is not None and moves is not None:
-		params = get_level_scoring_params(num)
-		if params is not None:
-			score = compute_score(elapsed_seconds, moves, params)
+		score = compute_score(elapsed_seconds, moves, get_global_scoring_params())
 
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
@@ -116,37 +116,6 @@ def compute_score(elapsed_seconds, moves, params):
 
 	score = params["score_max"] - penalite_temps - penalite_coups
 	return max(params["score_min"], score)
-
-def get_level_scoring_params(num):
-	with psycopg.connect(CONN_PARAMS) as conn:
-		with conn.cursor() as cur:
-			cur.execute(
-				"SELECT score_max, score_min, time_grace_s, time_interval_s, time_penalty, "
-				"moves_threshold, moves_rate FROM scoring_settings WHERE id_settings = 1"
-			)
-			row = cur.fetchone()
-
-	if row is None:
-		return {
-			"score_max": 100,
-			"score_min": 10,
-			"time_grace_s": 60,
-			"time_interval_s": 10,
-			"time_penalty": 1,
-			"moves_threshold": 10,
-			"moves_rate": 3,
-		}
-
-	score_max, score_min, time_grace_s, time_interval_s, time_penalty, moves_threshold, moves_rate = row
-	return {
-		"score_max": score_max,
-		"score_min": score_min,
-		"time_grace_s": time_grace_s,
-		"time_interval_s": time_interval_s,
-		"time_penalty": time_penalty,
-		"moves_threshold": moves_threshold,
-		"moves_rate": moves_rate,
-	}
 
 def get_chapters(user_id):
 	"""

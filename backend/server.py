@@ -2,6 +2,7 @@ import os
 import re
 import secrets
 import logging
+import psycopg
 
 from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
@@ -198,7 +199,7 @@ def profile_category():
 
 	try:
 		set_user_category(current_user.id, id_category)
-	except Exception:
+	except psycopg.IntegrityError:
 		return jsonify({"error": "Catégorie inconnue"}), 400
 
 	return jsonify({"ok": True})
@@ -297,7 +298,7 @@ def admin_create_chapter():
 @admin_required
 @audit_log("reorder_chapters")
 def admin_reorder_chapters():
-	data = request.get_json()
+	data = get_json_body()
 	ordered_ids = data.get("ordered_ids")
 
 	if not isinstance(ordered_ids, list) or not all(isinstance(i, int) for i in ordered_ids):
@@ -311,7 +312,17 @@ def admin_reorder_chapters():
 @audit_log("update_chapter")
 def admin_update_chapter(id_chapter):
 	data = get_json_body()
-	update_chapter(id_chapter, name=data.get("name"), position=data.get("position"))
+	name = data.get("name")
+	position = data.get("position")
+
+	if name is not None:
+		name = name.strip() if isinstance(name, str) else ""
+		if not name:
+			return jsonify({"error": "name doit être une chaîne non vide"}), 400
+	if position is not None and not isinstance(position, int):
+		return jsonify({"error": "position doit être un entier"}), 400
+
+	update_chapter(id_chapter, name=name, position=position)
 	return jsonify({"ok": True})
 
 
@@ -345,7 +356,7 @@ def admin_assign_level():
 
 	try:
 		id_level = assign_level(num, id_chapter, position)
-	except Exception:
+	except psycopg.IntegrityError:
 		return jsonify({"error": "Ce niveau est déjà rattaché à un chapitre, ou le chapitre n'existe pas"}), 400
 
 	return jsonify({"id_level": id_level}), 201
@@ -356,7 +367,15 @@ def admin_assign_level():
 @audit_log("update_level")
 def admin_update_level(id_level):
 	data = get_json_body()
-	update_level(id_level, id_chapter=data.get("id_chapter"), position=data.get("position"))
+	id_chapter = data.get("id_chapter")
+	position = data.get("position")
+
+	if id_chapter is not None and not isinstance(id_chapter, int):
+		return jsonify({"error": "id_chapter doit être un entier"}), 400
+	if position is not None and not isinstance(position, int):
+		return jsonify({"error": "position doit être un entier"}), 400
+
+	update_level(id_level, id_chapter=id_chapter, position=position)
 	return jsonify({"ok": True})
 
 @app.route("/api/admin/scoring", methods=["GET"])
@@ -386,7 +405,7 @@ def admin_update_global_scoring():
 @admin_required
 @audit_log("reorder_levels")
 def admin_reorder_levels():
-	data = request.get_json()
+	data = get_json_body()
 	id_chapter = data.get("id_chapter")
 	ordered_ids = data.get("ordered_ids")
 
@@ -433,13 +452,27 @@ def admin_create_quest():
 @audit_log("update_quest")
 def admin_update_quest(id_quest):
 	data = get_json_body()
+	menu = data.get("menu")
+	label = data.get("label")
+	unlocks_key = data.get("unlocks_key")
+	required_chapter = data.get("required_chapter", "__unset__")
+	position = data.get("position")
+
+	for field_name, value in (("menu", menu), ("label", label), ("unlocks_key", unlocks_key)):
+		if value is not None and (not isinstance(value, str) or not value.strip()):
+			return jsonify({"error": f"{field_name} doit être une chaîne non vide"}), 400
+	if required_chapter != "__unset__" and required_chapter is not None and not isinstance(required_chapter, int):
+		return jsonify({"error": "required_chapter doit être un entier ou null"}), 400
+	if position is not None and not isinstance(position, int):
+		return jsonify({"error": "position doit être un entier"}), 400
+
 	update_quest(
 		id_quest,
-		menu=data.get("menu"),
-		label=data.get("label"),
-		unlocks_key=data.get("unlocks_key"),
-		required_chapter=data.get("required_chapter", "__unset__"),
-		position=data.get("position"),
+		menu=menu,
+		label=label,
+		unlocks_key=unlocks_key,
+		required_chapter=required_chapter,
+		position=position,
 	)
 	return jsonify({"ok": True})
 
