@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Navigation from "../components/Navigation";
-import { useAuth } from "../hooks/authHooks";
+import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
 
 

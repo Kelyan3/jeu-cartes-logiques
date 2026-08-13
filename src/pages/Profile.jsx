@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
 
-import { useAuth } from "../hooks/authHooks";
+import { useAuth } from "../hooks/useAuth";
 
 import { API_BASE_URL as API } from "../config/api";
 

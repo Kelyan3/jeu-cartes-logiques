@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
-import { useAuth } from "../hooks/authHooks";
+import { useAuth } from "../hooks/useAuth";
 
 
 const Login = () => {

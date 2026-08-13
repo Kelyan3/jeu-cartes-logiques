@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/authHooks";
-import { useTheme } from "../hooks/themeHooks";
+import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../hooks/useTheme";
 
 
 const Navigation = () => {

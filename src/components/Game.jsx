@@ -1,297 +1,45 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+
 import Deck from "./Deck";
 import Popup from "./Popup";
 import LogicText from "./LogicText";
+import Card from "../domain/Card";
 
-import Card from "../class/Card";
-import { GameTab } from "../context/GameTab";
-import { useAuth } from "../hooks/authHooks";
 import { API_BASE_URL as API } from "../config/api";
 
-import { containCard, containCardSymmetric, computeNextMove } from "../utils/gameSolver";
+import { GameTab } from "../context/GameTab";
+import { useAuth } from "../hooks/useAuth";
+import { useGameFile } from "../hooks/useGameFile";
+import { useCardSelection } from "../hooks/useCardSelection";
+import { useGamePopups } from "../hooks/useGamePopups";
+import { useProgressSave } from "../hooks/useProgressSave";
+import { useClickOutsideMenu } from "../hooks/useClickOutsideMenu";
+import { useUnlockedActions } from "../hooks/useUnlockedActions";
 
+import { containCard, containCardSymmetric, computeNextMove } from "../domain/gameSolver";
+import { toClass, gameInput, buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, tagDecks } from "../domain/gameInput";
 
-/**
- * Transforme un objet JSON en instance {@link Card}.
- *
- * @param {JSON} obj - information mimimum pour créer une carte :
- *                     Carte simple = juste la couleur ;
- *                     Carte complexe = les 2 cartes qui la compose & la liaison
- * @param {number} i - numéro de l'id
- *
- * @returns {Card} une carte
- */
-const toClass = (obj, i) => {
-	// Si c'est une carte complexe
-	if (obj.color === undefined)
-		return new Card(i, null, false, obj.link, toClass(obj.left, 0), toClass(obj.right, 1), true, false );
-	// Si c'est une carte simple
-	else
-		return new Card(i, obj.color, false, "", null, null, true, false);
-};
+import { delCard, delDeck, delCardWithEquals, checkSubObj, CreatTabObj, findObjectifRelative, stringToLogicText } from "../domain/rules/goals";
+import { addToGame as addToGameCore } from "../domain/rules/addToGame";
+import { constructDemonstration as constructDemonstrationCore, computeAddLineDemonstration } from "../domain/rules/demonstration";
 
-/**
- * Reçoit un tableau d'un fichier JSON à qui on va appliquer la méthode {@link JSON.parse()} dans {@link openFile()}
- * ({@link JSON} ⇒ tableau d'{@link Object}) et renvoie un tableau qui peut être lu par notre site.
- *
- * @param {Object[]} data - tableau d'objets qui va servir pour l'initialisation
- *
- * @returns {Card[][]} un tableau de decks qui constitue le jeu
- */
-const gameInput = (data) => {
-	// Tableau que l'on va retourner
-	let res = [[], []];
-
-	// id de la future carte
-	let i = 0;
-
-	// Création du deck de départ
-	data[0].forEach((element) => {
-		res[0].push(toClass(element, i));
-		i++;
-	});
-
-	i = 0;
-
-	// Création du deck objectif
-	data[1].forEach((element) => {
-		res[1].push(toClass(element, i));
-		i++;
-	});
-
-	// Retourne le tableau du jeu
-	return res;
-};
-
-/**
- * Calcule l'état de jeu initial (deck de départ + objectif, et première ligne de
- * démonstration) à partir des données JSON d'un exercice.
- *
- * @param {Object|undefined} ex - données JSON de l'exercice (undefined tant que non chargé)
- * @param {"Play"|"Tutorial"|"Create"} mode
- *
- * @returns {{game: Card[][], demonstration: Array}}
- */
-function buildInitialGameSetup(ex, mode)
-{
-	if (mode === "Create")
-		return { game: tagDecks([[], []]), demonstration: [] };
-
-	if (ex === undefined)
-		return { game: tagDecks([[]]), demonstration: [] };
-
-	try
-	{
-		const tmp = gameInput(ex);
-		let res = [];
-		tmp[0].forEach((element) => {
-			res.push("On a ");
-			res.push(element.copy());
-			res.push(". ");
-		});
-
-		if (tmp.length === 2 && tmp[1].length > 0)
-		{
-			res.push("Montrons ");
-			res.push(tmp[1][0].copy());
-			res.push(".");
-		}
-
-		/**
-		 * Équivalent à addLineDemonstration([res], [0], 0, true) : voir la fonction
-		 * addLineDemonstration pour le détail du format [indentation, message].
-		 */
-		return { game: tagDecks(tmp), demonstration: [[0, res]] };
-	}
-	catch (error)
-	{
-		console.error("Erreur lors du chargement de l'exercice :", error);
-		return { game: tagDecks([[]]), demonstration: [] };
-	}
-}
-
-/**
- * Renvoie le message tutoriel à afficher au chargement d'un niveau, selon son numéro
- * (indépendant du mode, comme dans le comportement d'origine).
- *
- * @param {number} numero
- *
- * @returns {string|string[]} "" si aucun message n'est associé à ce numéro.
- */
-function buildInitialTutorialMessage(numero)
-{
-	switch (numero)
-	{
-		case 0:
-			return [
-				"Le but du jeu est de réussir à créer la carte qui est dans l'objectif dans le premier deck.",
-				"Vous pouvez sélectionner une carte en cliquant dessus.",
-			];
-
-		case 1:
-			return [
-				'Dans ce niveau nous allons apprendre le bouton "Implique".',
-				"Ce bouton a besoin de deux cartes pour fonctionner.",
-				"Sélectionnez deux cartes.",
-			];
-
-		case 2:
-			return [
-				'Dans ce niveau nous allons apprendre le quatrième bouton "Fusion".',
-				"Ce bouton a besoin de deux cartes pour fonctionner.",
-				"Sélectionnez deux cartes.",
-			];
-
-		case 3:
-			return [
-				'Dans ce niveau nous allons apprendre le bouton "+ Objectif".',
-				"Pour faire fonctionner ce bouton on doit sélectionner l'objectif.",
-			];
-
-		case 4:
-			return [
-				'Dans ce niveau nous allons apprendre le bouton "Transitivité" avec le connecteur "⟹", le bouton "Affichage Simplifié", ainsi que le fonctionnement de la carte blanche.',
-				'Cliquer sur le bouton "Affichage Simplifié" pour faire apparaître la carte blanche. Lorsqu’on l’obtient, la partie est gagnée qu’importe l’objectif.',
-				'Ensuite, le bouton "Transitivité" a besoin de deux cartes avec un connecteur "⟹" pour fonctionner. Il faut que ces cartes soient de la même forme que dans le symbole du bouton.',
-				'On obtient alors une carte avec le connecteur "⟹".',
-				"Sélectionnez deux cartes.",
-			];
-
-		case 5:
-			return [
-				'Dans ce niveau nous allons apprendre le bouton "Transitivité" avec le connecteur "⟺".',
-				'Il fonctionne de la même manière qu’avec le connecteur "⟹", il faut que les cartes sélectionnées soient de la même forme que dans le symbole du bouton.',
-				'On obtient alors une carte avec le connecteur "⟺".',
-				"Sélectionnez deux cartes.",
-			];
-
-		case 6:
-			return [
-				'Dans ce niveau nous allons apprendre le bouton "Tiers Exclus".',
-				'Il fonctionne avec une carte "¬(¬Rouge)" par exemple, qui est équivalente à la carte "Rouge ou Blanche", pour obtenir la carte "Rouge".',
-				"Sélectionner une carte.",
-			];
-
-		default:
-			return "";
-	}
-}
-
-/**
- * Compteur global utilisé pour attribuer un identifiant stable
- * à chaque nouveau tableau "deck" (colonne), au moment de sa création.
- */
-let deckIdCounter = 0;
-
-/**
- * Attribue un id stable (non énumérable, donc invisible dans les boucles
- * `for...in`/`Object.keys`/`JSON.stringify`) à chaque deck du tableau de jeu
- * reçu qui n'en a pas encore un.
- *
- * @param {Card[][]} game
- *
- * @returns {Card[][]} le même tableau (pour un usage en chaîne avec setGame)
- */
-function tagDecks(game)
-{
-	game.forEach((deck) => {
-		if (deck.__deckId === undefined)
-		{
-			deckIdCounter += 1;
-			Object.defineProperty(deck, "__deckId", {
-				value: "deck-" + deckIdCounter,
-				enumerable: false,
-			});
-		}
-	});
-
-	return game;
-}
 
 const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
 
-	/**
-	 * Clés de boutons débloquées par quête, regroupées par menu (voir /api/quests).
-	 * null tant que non chargé. Uniquement pertinent en mode "Play" : en
-	 * "Tutorial" et "Create", tous les boutons restent toujours visibles.
-	 */
-	const [unlockedKeys, setUnlockedKeys] = useState(null);
-
-	useEffect(() => {
-		if (mode !== "Play")
-			return;
-
-		fetch(`${API}/api/quests`, { credentials: "include" })
-			.then((response) => {
-				if (!response.ok)
-					throw new Error("Impossible de charger les quêtes débloquées.");
-				return response.json();
-			})
-			.then(setUnlockedKeys)
-			.catch(() => setUnlockedKeys({}));
-	}, [mode, user]);
-
-	/**
-	 * Indique si le bouton d'action portant cette clé (ex: "addGoal") doit être affiché.
-	 * Toujours vrai hors mode "Play" ; en "Play", vrai seulement si la clé fait partie
-	 * d'un menu de quêtes débloqué pour l'utilisateur courant.
-	 *
-	 * @param {string} key - id du bouton (voir seed de la table "quests").
-	 * @returns {boolean}
-	 */
-	function isActionUnlocked(key)
-	{
-		if (mode !== "Play")
-			return true;
-		if (unlockedKeys === null)
-			return false; // chargement en cours
-
-		return Object.values(unlockedKeys).some((keys) => keys.includes(key));
-	}
+	const { isActionUnlocked } = useUnlockedActions(mode, user);
 
 	/**
 	 * Ouverture/fermeture du menu déroulant "+ Objectif" (3 sous-fonctionnalités).
 	 * Se ferme au clic en dehors du menu (bouton compris).
 	 */
-	const [objectifMenuOpen, setObjectifMenuOpen] = useState(false);
-	const objectifMenuRef = useRef(null);
-
-	useEffect(() => {
-		if (!objectifMenuOpen)
-			return;
-
-		function onClickOutside(event)
-		{
-			if (objectifMenuRef.current && !objectifMenuRef.current.contains(event.target))
-				setObjectifMenuOpen(false);
-		}
-
-		document.addEventListener("mousedown", onClickOutside);
-		return () => document.removeEventListener("mousedown", onClickOutside);
-	}, [objectifMenuOpen]);
+	const { isOpen: objectifMenuOpen, setIsOpen: setObjectifMenuOpen, menuRef: objectifMenuRef } = useClickOutsideMenu();
 
 	/**
 	 * Ouverture/fermeture du menu déroulant "Transitivité" (3 sous-fonctionnalités).
 	 * Même logique que pour le menu "+ Objectif" ci-dessus.
 	 */
-	const [transitiviteMenuOpen, setTransitiviteMenuOpen] = useState(false);
-	const transitiviteMenuRef = useRef(null);
-
-	useEffect(() => {
-		if (!transitiviteMenuOpen)
-			return;
-
-		function onClickOutside(event)
-		{
-			if (transitiviteMenuRef.current && !transitiviteMenuRef.current.contains(event.target))
-				setTransitiviteMenuOpen(false);
-		}
-
-		document.addEventListener("mousedown", onClickOutside);
-		return () => document.removeEventListener("mousedown", onClickOutside);
-	}, [transitiviteMenuOpen]);
+	const { isOpen: transitiviteMenuOpen, setIsOpen: setTransitiviteMenuOpen, menuRef: transitiviteMenuRef } = useClickOutsideMenu();
 
 	/**
 	 * Calcule une fois pour toutes (au montage) l'état de jeu de départ pour cet exercice.
@@ -318,87 +66,28 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const [game, setGame] = useState(initialSetup.game);
 
-	/**
-	 * Horodatage de début de partie, utilisé pour calculer elapsed_seconds envoyé à /api/progress.
-	 */
-	const startTimeRef = useRef(null);
-	useEffect(() => {
-		startTimeRef.current = Date.now();
-	}, []);
+	const { openFileJson, gameOutput, saveAsFile, openFile } = useGameFile(game, setGame);
 
-	/**
-	 * Nombre de coups joués (un coup = un appel à saveGame()), utilisé pour le calcul du score.
-	 */
-	const movesRef = useRef(0);
-
-	const [openFileJson, setOpenFileJson] = useState("");
-
-	/**
-	 * Le nombre de cartes sélectionnées.
-	 */
-	const [nbSelec, setNbSelec] = useState(0);
-
-	/**
-	 * Indice du deck de la 1ère carte sélectionnée
-	 */
-	const [selecDeck1, setSelecDeck1] = useState(-1);
-
-	/**
-	 * Indice de la carte dans le deck de la 1ère carte sélectionnée
-	 */
-	const [selecCard1, setSelecCard1] = useState(-1);
-
-	/**
-	 * Indice du deck de la 2ème carte sélectionnée
-	 */
-	const [selecDeck2, setSelecDeck2] = useState(-1);
-
-	/**
-	 * Indice de la carte dans le deck de la 2ème carte sélectionnée
-	 */
-	const [selecCard2, setSelecCard2] = useState(-1);
-
-	const [cardHelp, setCardHelp] = useState(null);
-	const [cardHelp2, setCardHelp2] = useState(null);
+	const {
+		nbSelec,
+		selecDeck1, selecCard1,
+		selecDeck2, selecCard2,
+		cardHelp, setCardHelp,
+		cardHelp2, setCardHelp2,
+		selectCard, resetSelection,
+	} = useCardSelection();
 
 	// Bouton "Aide" désactivé temporairement.
 	const HELP_BUTTON_ENABLED = false;
 
-	/**
-	 * Variable gérant le popup d'ajout de carte en mode création
-	 * - false = on ne voit pas le popup
-	 * - true  = on voit le popup
-	 */
-	const [popupAddCard, setPopupAddCard] = useState(false);
-
-	/**
-	 * Variable gérant le popup de suppression de carte en mode création.
-	 * - false = on ne voit pas le popup
-	 * - true  = on voit le popup
-	 */
-	const [popupDeleteCard, setPopupDeleteCard] = useState(false);
-
-	/**
-	 * Indice du deck dans lequel sera ajouté la carte en mode création avec le bouton "Ajout carte"
-	 * ou en sélectionnant deux cartes en choisissant la liaison.
-	 */
-	const [indiceDeckAddCard, setIndiceDeckAddCard] = useState(0);
-
-	/**
-	 * Popup en mode création pour choisir la liaison quand deux cartes sont sélectionnées.
-	 * - false = on ne voit pas le popup
-	 * - true  = on voit le popup
-	 */
-	const [popupFusion, setPopupFusion] = useState(false);
-
-	/**
-	 * Popup quand on finit un exercice (objectif principal dans le deck 0).
-	 * - false = on ne voit pas le popup
-	 * - true  = on voit le popup
-	 */
-	const [popupWin, setPopupWin] = useState(false);
-
-	const [saveProgressFailed, setSaveProgressFailed] = useState(false);
+	const {
+		popupAddCard, setPopupAddCard,
+		popupDeleteCard, setPopupDeleteCard,
+		indiceDeckAddCard, setIndiceDeckAddCard,
+		popupFusion, setPopupFusion,
+		popupWin, setPopupWin,
+		saveProgressFailed, setSaveProgressFailed,
+	} = useGamePopups();
 
 	// Tableau de sauvegarde de copie de l'ancien tableau "game"
 	const [lastGame, setLastGame] = useState([]);
@@ -438,72 +127,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	const [affichageSimple, setAffichageSimple] = useState(true);
 
-	/**
-	 * Fonction de redirection fournie par react-router.
-	 * Utilisation : navigate(url)
-	 */
-	const navigate = useNavigate();
+	const { incrementMoves, saveProgress, nextExercise } = useProgressSave({
+		mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed,
+	});
 
-	/**
-	 * Renvoie un nouveau deck sans la carte passée en paramètre.
-	 *
-	 * @param {Card[]} deck - deck dans lequel il faut supprimer la carte
-	 * @param {number} indiceCard - indice de la carte à supprimer
-	 *
-	 * @returns {Card[]} le deck sans la carte d'indice {@link indiceCard}
-	 */
-	const delCard = (deck, indiceCard) => {
-		// Le deck que l'on va retourner
-		let finalDeck = [];
-		deck[indiceCard].setDel(true);
-
-		// Supprime la carte en la passant null
-		deck[indiceCard] = null;
-
-		let cpt = 0;
-
-		// Recopie le deck sauf la carte qui vaut null
-		for (let i = 0; i < deck.length; i++)
-		{
-			if (deck[i] !== null)
-			{
-				let tmpCard = deck[i];
-				tmpCard.id = tmpCard.id - cpt;
-				finalDeck.push(tmpCard);
-			}
-			else
-				cpt++;
-		}
-
-		// Retourne le nouveau deck
-		return finalDeck;
-	};
-
-	/**
-	 * Renvoie un nouveau tableau sans le deck passé en paramètre.
-	 *
-	 * @param {Card[][]} currentGame - tableau de la partie (avec potentiellement des modifications)
-	 * @param {number} indiceDeck - indice du Deck à supprimer
-	 *
-	 * @returns {Card[][]} le jeu sans le deck d'indice {@link indiceDeck}
-	 */
-	const delDeck = (currentGame, indiceDeck) => {
-		// Le tableau du jeu que l'on va retourner
-		let finalGame = [];
-
-		// Supprime le deck en le passant null
-		currentGame[indiceDeck] = null;
-
-		// Recopie le jeu sauf le deck qui vaut null
-		for (let i = 0; i < currentGame.length; i++)
-		{
-			if (currentGame[i] !== null)
-				finalGame.push(currentGame[i]);
-		}
-
-		// Retourne le nouveau jeu
-		return finalGame;
-	};
 
 	/**
 	 * La carte qui est déjà sélectionnée & celle qui est passée en paramètre utilisent la fonction {@link Card.select()}
@@ -520,128 +147,26 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			// Met le message d'erreur en "" ce qui ne l'affiche plus
 			setMessageError("");
 
-			setCardHelp(null);
-			setCardHelp2(null);
-
 			/**
 			 * Copie du jeu dans tmp (copie aussi le deck concerné, pas seulement
 			 * le tableau extérieur, pour ne pas modifier `game` avant setGame())
 			 */
 			let tmp = game.map((d, di) => (di === i ? [...d] : d));
 
-			// La carte sur laquelle on a cliqué
-			let currentCard = tmp[i][j];
-
-			// Copie du nombre de carte sélectionnée
-			let tmpNbselec = nbSelec;
-
-			// Copie de la 1ère carte sélectionnée
-			let tmpSelecDeck1 = selecDeck1;
-			let tmpSelecCard1 = selecCard1;
-
-			// Copie de la 2ème carte sélectionnée
-			let tmpSelecDeck2 = selecDeck2;
-			let tmpSelecCard2 = selecCard2;
-
 			setAllCardOld(tmp);
 
-			if (tmpSelecDeck1 === i && tmpSelecCard1 === j)
-			{
-				// Si la carte sélectionnée est déjà sélectionnée on la désélectionne (1ère carte)
-				tmpSelecCard1 = -1;
-				tmpSelecDeck1 = -1;
-				tmpNbselec--;
-				currentCard.select(!currentCard.active);
-			}
-			else if (tmpSelecDeck2 === i && tmpSelecCard2 === j)
-			{
-				// Si la carte sélectionnée est déjà sélectionnée on la désélectionne (2ème carte)
-				tmpSelecCard2 = -1;
-				tmpSelecDeck2 = -1;
-				tmpNbselec--;
-				currentCard.select(!currentCard.active);
-			}
-			else if (tmpSelecDeck1 === -1 && tmpSelecCard1 === -1)
-			{
-				// Aucune carte n'est sélectionnée
-				tmpSelecDeck1 = i;
-				tmpSelecCard1 = j;
-				tmpNbselec++;
-				currentCard.select(!currentCard.active);
-			}
-			else if (tmpNbselec < 2)
-			{
-				// Une seule & unique carte est sélectionnée
-				tmpSelecDeck2 = i;
-				tmpSelecCard2 = j;
-				tmpNbselec++;
-				currentCard.select(!currentCard.active);
-			}
+			const { nbSelec: tmpNbselec, selecDeck1: tmpSelecDeck1, selecDeck2: tmpSelecDeck2 } = selectCard(i, j, tmp);
 
-			// Affecte toute les variables temporaires aux vraies variables
-			setNbSelec(tmpNbselec);
-			setSelecCard1(tmpSelecCard1);
-			setSelecCard2(tmpSelecCard2);
-			setSelecDeck1(tmpSelecDeck1);
-			setSelecDeck2(tmpSelecDeck2);
-
-			// On remet la carte dans le jeu avec les changements
-			tmp[i][j] = currentCard;
-
-			// On actualise le jeu
 			setGame(tagDecks(tmp));
 
-			// Affiche le popup de fusion en mode création si 2 cartes sont séléctionnées
 			if (tmpNbselec === 2 && mode === "Create")
 				setPopupFusion(true);
 
-			// Affichage des tutoriels en fonction de l'exercice et du nombre de cartes sélectionnées
 			if (mode === "Tutorial")
 			{
-				if (numero === 0)
-				{
-					setMessageTutorial([
-						"Une fois une carte sélectionnée elle aura un contour noir et une surbrillance jaune.",
-						"Vous pouvez utiliser les boutons au-dessus pour effectuer une action.",
-						'Dans ce niveau nous allons apprendre le fonctionnement du bouton "Séparation".',
-						"Ce bouton a besoin de deux conditions :",
-						"- Une seule carte doit être sélectionnée ;",
-						'- La carte doit avoir une liaison "et".',
-						"Quand les conditions sont validées la partie gauche et droite de la carte sont ajoutées au deck.",
-					]);
-				}
-
-				if (tmpNbselec === 2 && numero === 1)
-				{
-					setMessageTutorial([
-						"Ce bouton a besoin de trois conditions :",
-						"- Avoir deux cartes sélectionnées",
-						'- Une des deux cartes doit avoir une liaison "=>"',
-						'- La partie gauche de la carte avec la liaison "=>" doit être identique à l’autre carte',
-						'Quand les conditions sont validées la partie droite de la carte avec la liaison "=>" est créée dans le deck.',
-					]);
-				}
-
-				if (tmpNbselec === 2 && numero === 2)
-				{
-					setMessageTutorial([
-						"Ce bouton a besoin de deux conditions :",
-						"- Avoir deux cartes sélectionnées ;",
-						"- Les deux cartes sélectionnées doivent comporter une ou deux cartes.",
-						'Quand les conditions sont validées une nouvelle carte est créée avec les deux autres cartes sélectionnées et cette carte aura une liaison "et"',
-					]);
-				}
-
-				if (tmpNbselec === 1 && numero === 3 && Math.max(tmpSelecDeck1, tmpSelecDeck2) === game.length - 1)
-				{
-					setMessageTutorial([
-						"Ce bouton a besoin de deux conditions :",
-						"- Une seule carte doit être sélectionnée ;",
-						"- La carte sélectionnée doit être dans le deck des objectifs.",
-						'La carte sélectionnée doit avoir une liaison "=>"',
-						"Quand les conditions sont validées un objectif secondaire est créée, l’objectif secondaire est la partie droite de la carte sélectionnée, un deck est créée avec la carte qui est à gauche de la carte sélectionnée.",
-					]);
-				}
+				const tutorialMessage = buildSelectionTutorialMessage(numero, tmpNbselec, tmpSelecDeck1, tmpSelecDeck2, game.length);
+				if (tutorialMessage !== null)
+					setMessageTutorial(tutorialMessage);
 			}
 		}
 	};
@@ -669,12 +194,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {Card[][]} tmp - tableau du jeu temporaire
 	 */
 	const allFalse = (tmp) => {
-		// On désélectionne tout
-		setNbSelec(0);
-		setSelecCard1(-1);
-		setSelecDeck1(-1);
-		setSelecCard2(-1);
-		setSelecDeck2(-1);
+		resetSelection();
 
 		// On désélectionne toutes les cartes du jeu passé en paramètre
 		try
@@ -696,12 +216,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Désélectionne toutes les cartes du jeu.
 	 */
 	const allFalseGame = () => {
-		// On désélectionne tout
-		setNbSelec(0);
-		setSelecCard1(-1);
-		setSelecDeck1(-1);
-		setSelecCard2(-1);
-		setSelecDeck2(-1);
+		resetSelection();
 
 		// Copie du jeu actuel
 		let tmp = [...game];
@@ -927,180 +442,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Transforme l'état actuel du jeu (game) en tableau d'objets ne contenant que les
-	 * informations essentielles (couleur/liaison), prêt à être exporté en JSON.
-	 *
-	 * @returns {Object[][]} un tableau d'objets
-	 */
-	const gameOutput = () => {
-		// Le tableau que l'on va retourner
-		let res = [[], []];
-
-		/**
-		 * Transforme toutes les cartes en objets (avec seulement les informations essentielles).
-		 * - la couleur ou liaison + left + right
-		 * - la carte est ajoutée dans le tableau retourné
-		 */
-		game.forEach(function (deck, index) {
-			deck.forEach(function (card) {
-				res[index].push(card.toFile());
-			});
-		});
-
-		// Retourne le tableau
-		return res;
-	};
-
-	/**
-	 * Télécharge l'état actuel du jeu au format JSON sur l'ordinateur de l'utilisateur.
-	 */
-	const saveAsFile = () => {
-		// Variable de copie
-		let res;
-
-		// Copie JSON du jeu
-		res = gameOutput();
-		const blob = new Blob([JSON.stringify(res)], { type: "text/json;charset=utf-8;", });
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement("a");
-
-		if (openFileJson !== "")
-			link.download = openFileJson;
-		else
-			link.download = "output.json";
-
-		link.href = url;
-		link.click();
-		URL.revokeObjectURL(url);
-	};
-
-	/**
-	 * Ouvre un fichier JSON et l'affiche à l'écran.
-	 *
-	 * @param {Event} event - le bouton qui ouvre les fichiers ({@link event.target.files})
-	 */
-	const openFile = (event) => {
-		// Vérifie que l'on a sélectionné un fichier
-		if (event.target.files.length > 0)
-		{
-			// Variable pour lire le fichier
-			let reader = new FileReader();
-			setOpenFileJson(event.target.files[0].name);
-
-			// Lit le fichier
-			reader.onload = (event) => {
-				// Transforme le fichier JSON en objet
-				let obj = JSON.parse(event.target.result);
-
-				// Mis à jour du jeu avec le fichier JSON reçu
-				setGame(tagDecks(gameInput(obj)));
-			};
-
-			// Effectue la fonction onload juste au-dessus avec le 1er fichier reçu
-			reader.readAsText(event.target.files[0]);
-		}
-	};
-
-	/**
-	 * Renvoie la place de l'objectif cherchée dans le tableau game[game.length-1].
-	 *
-	 * @param {Card} cardObj - la partie droite de l'objectif que l'on cherche
-	 * @param {Card[][]} [tmp] - tableau du jeu à utiliser (par défaut : l'état actuel `game`)
-	 *
-	 * @returns {number} l'indice de l'objectif dans {@link game[game.length-1]}
-	 */
-	const findObjectifRelative = (cardObj, tmp) => {
-		if (tmp === undefined)
-			tmp = game;
-
-		// Variable que l'on va retourner (-1 si il trouve pas)
-		let num = -1;
-
-		// Deck de l'objectif
-		let deck = tmp.length - 1;
-
-		/**
-		 * Cherche parmi les cartes de l'objectif s'il y a une carte dont la partie droite
-		 * est égale à la carte envoyée en paramètre.
-		 * Si oui {@link num} prend la valeur de l'index de cette carte.
-		 */
-		tmp[deck].forEach((element, index) => {
-			// Vérifie si la couleur est null (si elle est null la carte est au moins double)
-			if (element !== null && element.color === null)
-			{
-				if (element.right.equals(cardObj))
-					num = index;
-			}
-		});
-
-		// Retourne -1 ou la place de la carte
-		return num;
-	};
-
-	function checkSubObj(deck, card)
-	{
-		let res = false;
-		deck.forEach((elem) => {
-			if (elem.link === "=>" && elem.right.equals(card))
-				res = true;
-		});
-
-		return res;
-	}
-
-	/**
-	 * Crée le tableau tabObjectif en fonction des objectifs présents dans tmp.
-	 *
-	 * @param {Card[][]} tmp - tableau du jeu temporaire
-	 *
-	 * @returns {Array[]} le tableau des objectifs, sous la forme [numero objectif, indice de la carte, (numero != indice)]
-	 */
-	const CreatTabObj = (tmp) => {
-		// Création du tableau que l'on va affecter à tabObjectif
-		let tmpObj = [];
-
-		// Push l'objectif principal
-		tmpObj.push([0, 0, false]);
-
-		/**
-		 * Parcourt le deck d'objectif à la recherche d'une carte simple qui n'est pas l'objectif principal.
-		 * S'il y a en a une elle est ajouté au tableau.
-		 */
-		tmp[tmp.length - 1].forEach((element, index) => {
-			if (index !== 0)
-			{
-				if (checkSubObj(tmp[tmp.length - 1], element))
-					tmpObj.push([tmpObj.length, index, true]);
-			}
-		});
-
-		return tmpObj;
-	};
-
-	const delCardWithEquals = (deck, cardToDelete) => {
-		// Le deck que l'on va retourner
-		let finalDeck = [];
-
-		// Supprime la carte en la passant null
-		let cpt = 0;
-
-		// Recopie le deck sauf la carte qui vaut null
-		for (let i = 0; i < deck.length; i++)
-		{
-			if (!deck[i].equals(cardToDelete))
-			{
-				let tmpCard = deck[i];
-				tmpCard.id = tmpCard.id - cpt;
-				finalDeck.push(tmpCard);
-			}
-				else cpt++;
-		}
-
-		// Retourne le nouveau deck
-		return finalDeck;
-	};
-
-	/**
 	 * Vérifie si un ou plusieurs objectifs sont validés par l'état actuel du jeu, et met à jour
 	 * la partie en conséquence (ajout de cartes obtenues, suppression des objectifs résolus).
 	 * Fonction récursive : si la résolution d'un objectif secondaire permet d'en valider un autre
@@ -1283,56 +624,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Ajoute une carte au deck indiqué, après avoir vérifié qu'elle n'existe pas déjà
-	 * et qu'elle ne dépasse pas la profondeur maximale autorisée.
-	 *
-	 * @param {Card[][]} tmp - état du jeu à modifier (modifié directement)
-	 * @param {number} deckId - indice du deck dans lequel ajouter la carte
-	 * @param {Card} card - la carte à ajouter
-	 * @param {boolean} [defaultEmitError=true] - si false, n'affiche pas de message d'erreur en cas d'échec
-	 *
-	 * @returns {boolean} true si la carte a été ajoutée, false sinon
-	 */
-	const addToGame = (tmp, deckId, card, defaultEmitError) => {
-		if (defaultEmitError === undefined)
-			defaultEmitError = true;
-
-		if (containCard(tmp, deckId, card))
-		{
-			if (!defaultEmitError)
-				return false;
-
-			let deckAffiche = deckId + 1;
-			if (deckAffiche === tmp.length)
-				deckAffiche = "des objectifs";
-
-			error(`La carte ${card} existe deja dans la LPU ${deckAffiche}`, false);
-			return false;
-		}
-
-		if (deckId === tmp.length - 1 && containCard(tmp, 0, card))
-		{
-			if (!defaultEmitError)
-				return false;
-
-			error(`La carte ${card} existe deja dans la LPU 1`, false);
-			return false;
-		}
-
-		if (card.getProfondeur() > 6)
-		{
-			error(`La carte ${card} est trop grosse`, false);
-			return false;
-		}
-
-		card.id = tmp[deckId].length;
-		card.setOld(true);
-		tmp[deckId].push(card);
-
-		return true;
-	};
-
-	/**
 	 * Fonction appelée après avoir appuyé sur le bouton "Retour arrière".
 	 * Prend le dernier élément du tableau {@link lastGame} et remplace la variable {@link game}.
 	 */
@@ -1426,7 +717,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		setLastGame(tmpLastGame);
 
 		// Comptabilise ce coup pour le calcul du score
-		movesRef.current += 1;
+		incrementMoves();
 	};
 
 	/**
@@ -1909,87 +1200,29 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Construit le texte affiché pour une ligne de démonstration, en concaténant les segments
- 	 * de texte brut et les cartes (converties via toString()) du tableau reçu.
-	 *
-	 * @param {Array<string|Card>} tab - séquence de textes et de cartes à afficher
-	 *
-	 * @returns {string} le texte final, formaté pour l'affichage
+	 * Adaptateur autour de la fonction pure `constructDemonstrationCore` : lui fournit
+	 * `affichageSimple` (état React), pour garder inchangés tous les appels existants.
 	 */
-	const constructDemonstration = (tab) => {
-		let res = "";
-		tab.forEach((element) => {
-			if (typeof element === "string")
-				res += element;
-			else
-			{
-				let displayCard = element;
-				if (affichageSimple)
-					displayCard = displayCard.displayGoodCardRecur();
-
-				res += displayCard.toString();
-			}
-		});
-
-		return stringToLogicText(res);
-	};
+	const constructDemonstration = (tab) => constructDemonstrationCore(tab, affichageSimple);
 
 	/**
-	 * Ajoute une ou plusieurs lignes à la zone de démonstration, et met à jour l'indexation
-	 * qui permet de "revenir" à l'état du jeu correspondant à chaque ligne.
-	 *
-	 * @param {Array} msgArray - tableau de messages à ajouter (chaque message est lui-même
-	 *                           un tableau de textes/cartes, voir {@link constructDemonstration})
-	 * @param {number[]} indentationArray - indentation associée à chaque message de msgArray
-	 * @param {number} [num] - si différent de 0, force l'ajout des lignes même si la démonstration
-	 *                         n'est pas vide (utilisé pour les sous-objectifs imbriqués)
-	 * @param {boolean} [reset=false] - true pour repartir d'une démonstration vide (nouveau niveau)
+	 * Adaptateur autour de la fonction pure `computeAddLineDemonstration` : lui fournit
+	 * l'état actuel de la démonstration, puis enregistre le résultat calculé via les
+	 * setters React. Garde inchangés tous les appels existants à `addLineDemonstration(...)`.
 	 */
 	const addLineDemonstration = (msgArray, indentationArray, num, reset) => {
-		if (reset === undefined)
-			reset = false;
+		const result = computeAddLineDemonstration(
+			{ demonstration, tabIndentation, indentationDemonstration, tabIndiceDemonstration, lastGameLength: lastGame.length },
+			msgArray,
+			indentationArray,
+			num,
+			reset,
+		);
 
-		let tmpTabIndentation = [];
-		let tmpDemonstration = [];
-		let indentation = 0;
-		let tmpTabIndiceDemonstration = [];
-
-		// Indice d'historique partagé par toutes les lignes de cet appel.
-		const historyIndex = lastGame.length;
-
-		if (!reset)
-		{
-			tmpTabIndentation = [...tabIndentation];
-			tmpDemonstration = [...demonstration];
-			indentation = indentationDemonstration;
-			tmpTabIndiceDemonstration = [...tabIndiceDemonstration];
-		}
-		else
-		{
-			// Réinitialisation éventuelle du niveau.
-			tmpTabIndiceDemonstration = [];
-		}
-
-		msgArray.forEach((msg, index) => {
-			if (msg == null || msg.length === 0)
-				return;
-
-			if (indentationArray[index] === undefined)
-				indentationArray[index] = 0;
-
-			indentation += indentationArray[index];
-
-			tmpTabIndentation.push(indentation);
-			tmpDemonstration.push([indentation, msg]);
-
-			// Même tag pour toutes les lignes de cette action.
-			tmpTabIndiceDemonstration.push(historyIndex);
-		});
-
-		setDemonstration(tmpDemonstration);
-		setTabIndentation(tmpTabIndentation);
-		setIndentationDemonstration(indentation);
-		setTabIndiceDemonstration(tmpTabIndiceDemonstration);
+		setDemonstration(result.demonstration);
+		setTabIndentation(result.tabIndentation);
+		setIndentationDemonstration(result.indentationDemonstration);
+		setTabIndiceDemonstration(result.tabIndiceDemonstration);
 	};
 
 	/**
@@ -2038,53 +1271,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		});
 
 		return bool;
-	};
-
-	/**
-	 * Redirige vers le prochain exercice si il existe.
-	 */
-	const nextExercise = () => {
-		// S'il y a un prochain exercice
-		if (numero + 2 <= nbExo)
-		{
-			// url du prochain exercice
-			let url = "/exercise/" + mode + "/" + (numero + 2);
-
-			// Redirige vers cet url
-			navigate(url);
-		}
-
-		setPopupWin(false);
-	};
-
-	/**
-	 * Enregistre la progression du niveau actuel auprès du backend, si l'utilisateur est connecté.
-	 */
-	const saveProgress = () => {
-		setSaveProgressFailed(false);
-
-		if (!user || mode === "Create")
-			return;
-
-		const elapsedSeconds = Math.floor((Date.now() - (startTimeRef.current ?? Date.now())) / 1000);
-
-		fetch(`${API}/api/progress`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			credentials: "include",
-			body: JSON.stringify({
-				mode: mode,
-				num: numero + 1,
-				completed: true,
-				elapsed_seconds: elapsedSeconds,
-				moves: movesRef.current,
-			}),
-		})
-			.then((response) => {
-				if (!response.ok)
-					throw new Error("Échec de l'enregistrement de la progression.");
-			})
-			.catch(() => setSaveProgressFailed(true));
 	};
 
 	/**
@@ -2178,22 +1364,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Remplace les notations logiques brutes (^, =>, <=>, non, ∨) par leurs symboles unicode
-	 * espacés, pour un affichage plus lisible dans le texte des démonstrations.
-	 * 
-	 * @param {string} str - la chaîne de caractères à formater
-	 * 
-	 * @returns {string} - la chaîne de caractères formatée pour l'affichage
+	 * Adaptateur autour de la fonction pure `addToGameCore` (domain/rules/addToGame) :
+	 * lui fournit `error` comme callback d'erreur, pour garder inchangés tous les
+	 * appels existants à `addToGame(...)` dans ce composant.
 	 */
-	const stringToLogicText = (str) => {
-		str = str.replaceAll("^", " ∧ ");
-		str = str.replaceAll("non", " ¬ ");
-		str = str.replaceAll("<=>", " ⇔ ");
-		str = str.replaceAll("=>", " ⇒ ");
-		str = str.replaceAll("∨", " ∨ ");
-
-		return str;
-	};
+	const addToGame = (tmp, deckId, card, defaultEmitError) =>
+		addToGameCore(tmp, deckId, card, (message) => error(message, false), defaultEmitError);
 
 	/**
 	 * Intercepte la copie de texte sélectionné dans la zone de démonstration : reconvertit
