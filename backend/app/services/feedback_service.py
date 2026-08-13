@@ -1,6 +1,6 @@
 import psycopg
 
-from database import CONN_PARAMS
+from app.database import CONN_PARAMS
 
 
 VALID_DEVICES = ("ordinateur", "mobile", "autre")

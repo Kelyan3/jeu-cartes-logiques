@@ -1,12 +1,8 @@
-from functools import wraps
-import logging
-
-from flask import jsonify, request
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import psycopg
 
-from database import CONN_PARAMS
+from app.database import CONN_PARAMS
 
 
 class User(UserMixin):

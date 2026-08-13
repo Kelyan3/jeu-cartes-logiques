@@ -1,7 +1,7 @@
 import psycopg
 
-from database import CONN_PARAMS
-from admin import get_global_scoring_params
+from app.database import CONN_PARAMS
+from app.services.admin_service import get_global_scoring_params
 
 
 def get_progress(user_id):

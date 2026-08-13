@@ -3,7 +3,7 @@ import os
 
 import psycopg
 
-from database import CONN_PARAMS, FILENAME_MANIFEST
+from app.database import CONN_PARAMS, FILENAME_MANIFEST
 
 
 SCORING_FIELDS = ("score_max", "score_min", "time_grace_s", "time_interval_s", "time_penalty", "moves_threshold", "moves_rate")
