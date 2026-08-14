@@ -3,7 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import Deck from "./Deck";
 import Popup from "./Popup";
 import LogicText from "./LogicText";
-import Card from "../domain/Card";
+
+import AddCardPopup from "./create/AddCardPopup";
+import FusionPopup from "./create/FusionPopup";
+import DeleteCardPopup from "./create/DeleteCardPopup";
 
 import { API_BASE_URL as API } from "../config/api";
 
@@ -17,6 +20,7 @@ import { useProgressSave } from "../hooks/useProgressSave";
 import { useClickOutsideMenu } from "../hooks/useClickOutsideMenu";
 import { useUnlockedActions } from "../hooks/useUnlockedActions";
 
+import Card from "../domain/Card";
 import { containCard, containCardSymmetric, computeNextMove } from "../domain/gameSolver";
 import { toClass, gameInput, buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, tagDecks } from "../domain/gameInput";
 
@@ -29,12 +33,19 @@ import { runAddObjectif } from "../domain/rules/addObjectif";
 import { runAddCardAnd, runAddCardFuse, runFuseCardAnd } from "../domain/rules/mergeCards";
 import { runIsWin } from "../domain/rules/isWin";
 import { runTransitivite } from "../domain/rules/transitivite"
+import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard } from "../domain/rules/createMode";
 
 
 const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
 
 	const { isActionUnlocked } = useUnlockedActions(mode, user);
+
+	/**
+	 * Ouverture/fermeture du menu déroulant "Bases"
+	 * (Séparation / Implique / Fusion).
+	 */
+	const { isOpen: basesMenuOpen, setIsOpen: setBasesMenuOpen, menuRef: basesMenuRef } = useClickOutsideMenu();
 
 	/**
 	 * Ouverture/fermeture du menu déroulant "+ Objectif" (3 sous-fonctionnalités).
@@ -47,6 +58,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Même logique que pour le menu "+ Objectif" ci-dessus.
 	 */
 	const { isOpen: transitiviteMenuOpen, setIsOpen: setTransitiviteMenuOpen, menuRef: transitiviteMenuRef } = useClickOutsideMenu();
+
+	/**
+	 * Ouverture/fermeture du menu déroulant "Tiers exclus".
+	 */
+	const { isOpen: tiersExclusMenuOpen, setIsOpen: setTiersExclusMenuOpen, menuRef: tiersExclusMenuRef } = useClickOutsideMenu();
 
 	/**
 	 * Calcule une fois pour toutes (au montage) l'état de jeu de départ pour cet exercice.
@@ -259,155 +275,17 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
-	 * Crée une carte avec la couleur sélectionnée (ne ferme pas le popup quand on sélectionne une couleur).
-	 *
-	 * @param {Event} event - reçoit la couleur cliquée ({@link event.target.value}) ;
-	 *                      - on le met à false si on veut faire plusieurs fois la même couleur ({@link event.target.checked})
+	 * Objet regroupant les dépendances communes aux actions du mode Création.
 	 */
-	const choixCouleur = (event) => {
-		// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
-		saveGame();
+	const createModeDeps = () => ({
+		game, indiceDeckAddCard, selecDeck1, selecCard1, selecDeck2, selecCard2,
+		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, allFalse, allFalseGame, delCard,
+	});
 
-		// Copie du jeu actuel
-		let tmp = [...game];
-
-		// Dé-check le bouton radio
-		event.target.checked = false;
-
-		// Ajoute la carte dans le deck (indiceDeckAddCard est affecté avant de rentrer dans la fonction)
-		let cardToAdd = new Card(game[indiceDeckAddCard].length, event.target.value, false, "", null, null, true, false);
-		if (!addToGame(tmp, indiceDeckAddCard, cardToAdd))
-			return;
-
-		// Actualise le jeu et désélectionne tout
-		allFalse(tmp);
-	};
-
-	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
-	 * Crée une carte complexe avec les 2 cartes sélectionnées (cette fonction est appelée à la fin de {@link update()} en mode création).
-	 *
-	 * @param {Event} event - reçoit la liaison cliquée ({@link event.target.value})
-	 */
-	const choixLiaison = (event) => {
-		// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
-		saveGame();
-
-		// Copie du jeu actuel
-		let tmp = [...game];
-
-		// Dé-check le bouton radio
-		event.target.checked = false;
-
-		// Liaison reçu avec le bouton radio
-		const l = event.target.value;
-
-		// Copie les 2 cartes séléctionnées
-		let c1 = game[selecDeck1][selecCard1].copy();
-		let c2 = game[selecDeck2][selecCard2].copy();
-		c1.id = 0;
-		c2.id = 1;
-
-		let cardToAdd;
-		if (l === "<=>")
-		{
-			cardToAdd = new Card(
-				game[selecDeck1].length, // id
-				null, // color
-				false, // active
-				"et", // link
-				new Card(0, null, false, "=>", c1.copy(), c2.copy()), // left
-				new Card(0, null, false, "=>", c2.copy(), c1.copy()), // right
-				true,
-				false
-			);
-		}
-		else if (l === "ou")
-		{
-			cardToAdd = new Card(
-				game[selecDeck1].length, // id
-				null, // color
-				false, // active
-				"=>", // link
-				new Card(
-					c1.id,
-					null,
-					false,
-					"=>",
-					c1,
-					new Card(1, "white", false, null, null, null, true, false)
-				), // left
-				c2, // right
-				true,
-				false
-			);
-		}
-		else
-		{
-			// Ajoute la carte fusionnée dans le deck de la 1ère carte séléctionnée
-			cardToAdd = new Card(
-				game[selecDeck1].length, // id
-				null, // color
-				false, // active
-				l, // link
-				c1, // left
-				c2, // right
-				true,
-				false
-			);
-		}
-
-		// Enlève le popup
-		setPopupFusion(false);
-		if (!addToGame(tmp, selecDeck1, cardToAdd))
-			return;
-
-		// Actualise le jeu et désélectionne tout
-		allFalse(tmp);
-	};
-
-	/**
-	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
-	 * Supprime la carte qui est sélectionnée.
-	 */
-	const deleteCard = () => {
-		// Enlève le popup
-		setPopupDeleteCard(false);
-
-		// Si la carte sélectionnée n'est pas la carte 1 : tout désélectionner
-		if (!(selecCard1 === -1 && selecDeck1 === -1))
-		{
-			// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
-			saveGame();
-
-			// Copie du jeu actuel
-			let tmp = [...game];
-
-			// Supprime la carte
-			tmp[selecDeck1] = delCard(game[selecDeck1], selecCard1);
-
-			// Actualise le jeu et désélectionne tout
-			allFalse(tmp);
-		}
-		else
-			allFalseGame();
-	};
-
-	/**
-	 * Ouvre la popup de confirmation avant de supprimer une carte.
-	 * Si aucune carte n'est sélectionnée, désélectionne simplement tout
-	 * (comme le faisait auparavant deleteCard() dans ce cas).
-	 */
-	const confirmDeleteCard = () => {
-		if (selecCard1 === -1 && selecDeck1 === -1)
-		{
-			allFalseGame();
-			return;
-		}
-
-		setPopupDeleteCard(true);
-	};
+	const choixCouleur = (event) => runChoixCouleur(event, createModeDeps());
+	const choixLiaison = (event) => runChoixLiaison(event, createModeDeps());
+	const deleteCard = () => runDeleteCard(createModeDeps());
+	const confirmDeleteCard = () => runConfirmDeleteCard(createModeDeps());
 
 	const returnNonCard = (tmp) => {
 		let deckI = Math.max(selecDeck1, selecDeck2);
@@ -830,48 +708,73 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</div>
 				)}
 
-				{/* Bouton pour obtenir les 2 parties d'une carte "et" */}
-				{mode !== "Create" && isActionUnlocked("addAnd") && (
-					<div>
-						<button id="addAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 0 ? "boutonSelection" : "")} onClick={addCardAnd}>
-							<span className="buttonFormula">[P ∧ Q] → [P] [Q]</span>
-							<span className="tooltiptext">Séparation</span>
+				{/* Menu déroulant "Bases" : Séparation / Implique / Fusion */}
+				{mode !== "Create" &&
+					(isActionUnlocked("addAnd") || isActionUnlocked("addImplique") || isActionUnlocked("fuseAnd")) && (
+					<div
+						className="actionDropdown"
+						ref={basesMenuRef}
+						onMouseEnter={() => setBasesMenuOpen(true)}
+						onMouseLeave={() => setBasesMenuOpen(false)}
+					>
+						<button
+							type="button"
+							id="bases"
+							className="buttonAction"
+							onClick={() => setBasesMenuOpen((open) => !open)}
+						>
+							<span className="buttonFormula">Bases</span>
 						</button>
-					</div>
-				)}
-
-				{/* Bouton pour obtenir la partie droite d'une carte "=>" si l'on a sélectionné une autre carte qui est égale à la partie gauche */}
-				{mode !== "Create" && isActionUnlocked("addImplique") && (
-					<div>
-						<button id="addImplique" className={"buttonAction " + (mode === "Tutorial" && numero === 1 ? "boutonSelection" : "")} onClick={addCardFuse}>
-							<span className="buttonFormula">[P] [P ⇒ Q] → [Q]</span>
-							<span className="tooltiptext">Implique</span>
-						</button>
-					</div>
-				)}
-
-				{/* Fusionne 2 cartes (taille double max) et crée une 3ème carte composée de la partie gauche (1ère carte sélectionnée) & la partie droite (2ème carte sélectionnée). La carte créée aura une liaison "et" */}
-				{mode !== "Create" && isActionUnlocked("fuseAnd") && (
-					<div>
-						<button id="fuseAnd" className={"buttonAction " + (mode === "Tutorial" && numero === 2 ? "boutonSelection" : "")} onClick={fuseCardAnd}>
-							<span className="buttonFormula">[P] [Q] → [P ∧ Q]</span>
-							<span className="tooltiptext">Fusion</span>
-						</button>
+						{basesMenuOpen && (
+							<div className="actionDropdownMenu">
+								{isActionUnlocked("addAnd") && (
+									<button
+										type="button"
+										className={mode === "Tutorial" && numero === 0 ? "boutonSelection" : ""}
+										onClick={() => { setBasesMenuOpen(false); addCardAnd(); }}
+									>
+										[P ∧ Q] → [P] [Q]
+									</button>
+								)}
+								{isActionUnlocked("addImplique") && (
+									<button
+										type="button"
+										className={mode === "Tutorial" && numero === 1 ? "boutonSelection" : ""}
+										onClick={() => { setBasesMenuOpen(false); addCardFuse(); }}
+									>
+										[P] [P ⇒ Q] → [Q]
+									</button>
+								)}
+								{isActionUnlocked("fuseAnd") && (
+									<button
+										type="button"
+										className={mode === "Tutorial" && numero === 2 ? "boutonSelection" : ""}
+										onClick={() => { setBasesMenuOpen(false); fuseCardAnd(); }}
+									>
+										[P] [Q] → [P ∧ Q]
+									</button>
+								)}
+							</div>
+						)}
 					</div>
 				)}
 
 				{/* Menu déroulant "+ Objectif" : 3 sous-fonctionnalités débloquées indépendamment */}
 				{mode !== "Create" &&
 					(isActionUnlocked("addGoal_objectif") || isActionUnlocked("addGoal_lpu") || isActionUnlocked("addGoal_et")) && (
-					<div className="actionDropdown" ref={objectifMenuRef}>
+					<div
+						className="actionDropdown"
+						ref={objectifMenuRef}
+						onMouseEnter={() => setObjectifMenuOpen(true)}
+						onMouseLeave={() => setObjectifMenuOpen(false)}
+					>
 						<button
 							type="button"
 							id="addGoal"
 							className="buttonAction"
 							onClick={() => setObjectifMenuOpen((open) => !open)}
 						>
-							<span className="buttonFormula">+ ⚑</span>
-							<span className="tooltiptext">+ Objectif</span>
+							<span className="buttonFormula">Objectifs</span>
 						</button>
 						{objectifMenuOpen && (
 							<div className="actionDropdownMenu">
@@ -899,27 +802,52 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</div>
 				)}
 
+				{/* Menu déroulant "Tiers exclus" */}
 				{mode !== "Create" && isActionUnlocked("tiersExclus") && (
-					<div>
-						<button id="tiersExclus" className={"buttonAction " + (mode === "Tutorial" && numero === 6 ? "boutonSelection" : "")} onClick={tiersExclus}>
-							<span className="buttonFormula">¬[¬[P]] → [P]</span>
-							<span className="tooltiptext">Tiers Exclus</span>
+					<div
+						className="actionDropdown"
+						ref={tiersExclusMenuRef}
+						onMouseEnter={() => setTiersExclusMenuOpen(true)}
+						onMouseLeave={() => setTiersExclusMenuOpen(false)}
+					>
+						<button
+							type="button"
+							id="tiersExclus"
+							className="buttonAction"
+							onClick={() => setTiersExclusMenuOpen((open) => !open)}
+						>
+							<span className="buttonFormula">Tiers Exclus</span>
 						</button>
+						{tiersExclusMenuOpen && (
+							<div className="actionDropdownMenu">
+								<button
+									type="button"
+									className={mode === "Tutorial" && numero === 6 ? "boutonSelection" : ""}
+									onClick={() => { setTiersExclusMenuOpen(false); tiersExclus(); }}
+								>
+									¬¬[P] → [P]
+								</button>
+							</div>
+						)}
 					</div>
 				)}
 
 				{/* Menu déroulant "Transitivité" : 3 sous-fonctionnalités débloquées indépendamment */}
 				{mode !== "Create" &&
 					(isActionUnlocked("transitivite_arrow") || isActionUnlocked("transitivite_equiv") || isActionUnlocked("transitivite_equiv_sym")) && (
-					<div className="actionDropdown" ref={transitiviteMenuRef}>
+					<div
+						className="actionDropdown"
+						ref={transitiviteMenuRef}
+						onMouseEnter={() => setTransitiviteMenuOpen(true)}
+						onMouseLeave={() => setTransitiviteMenuOpen(false)}
+					>
 						<button
 							type="button"
 							id="transitivite"
 							className="buttonAction"
 							onClick={() => setTransitiviteMenuOpen((open) => !open)}
 						>
-							<span className="buttonFormula">[P ⇒ Q] [Q ⇒ R] → [P ⇒ R]</span>
-							<span className="tooltiptext">Transitivité</span>
+							<span className="buttonFormula">Transitivité</span>
 						</button>
 						{transitiviteMenuOpen && (
 							<div className="actionDropdownMenu">
@@ -929,7 +857,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 										className={mode === "Tutorial" && numero === 4 ? "boutonSelection" : ""}
 										onClick={() => { setTransitiviteMenuOpen(false); transitivite("arrow"); }}
 									>
-										{"=>"}
+										{"⇒"}
 									</button>
 								)}
 								{isActionUnlocked("transitivite_equiv") && (
@@ -943,7 +871,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 								)}
 								{isActionUnlocked("transitivite_equiv_sym") && (
 									<button type="button" onClick={() => { setTransitiviteMenuOpen(false); transitivite("equiv_sym"); }}>
-										{"<=> (symétrique)"}
+										{"<=> (Par symétrie)"}
 									</button>
 								)}
 							</div>
@@ -974,9 +902,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							checked={affichageSimple}
 						></input>
 						<label htmlFor="afficheSimple">
-							<span className="tooltiptext">
-								Affichage Simplifié
-							</span>
+							<span className="tooltiptext">Affichage Simplifié</span>
 						</label>
 					</span>
 				}
@@ -1039,36 +965,26 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				})}
 			</div>
 
-			{popupAddCard && (
-				<Popup
-					size={50}
-					content={
-						<>
-							<b>Choisissez une couleur</b>
-							<div className="colorGrid" onChange={choixCouleur}>
-								{[
-									["red", "Rouge"],
-									["yellow", "Jaune"],
-									["blue", "Bleue"],
-									["orange", "Orange"],
-									["green", "Verte"],
-									["purple", "Mauve"],
-									["black", "Vrai"],
-									["white", "Faux"],
-								].map(([value, label]) => (
-									<label className="colorSwatchLabel" key={value}>
-										<input type="radio" value={value} name="couleur" />
-										<span className="colorSwatch" style={{ backgroundColor: value }}></span>
-										<span className="colorSwatchName">{label}</span>
-									</label>
-								))}
-							</div>
+			<AddCardPopup
+				open={popupAddCard}
+				onChooseColor={choixCouleur}
+				onClose={() => setPopupAddCard(false)}
+			/>
 
-							<button className="popupClose" onClick={function () {setPopupAddCard(false);}}>✕</button>
-						</>
-					}
-				/>
-			)}
+			<FusionPopup
+				open={popupFusion}
+				onChooseConnector={choixLiaison}
+				onClose={() => setPopupFusion(false)}
+			/>
+
+			<DeleteCardPopup
+				open={popupDeleteCard}
+				card={game[selecDeck1]?.[selecCard1]}
+				deckIndex={selecDeck1}
+				cardIndex={selecCard1}
+				onConfirm={deleteCard}
+				onCancel={() => setPopupDeleteCard(false)}
+			/>
 
 			{/* Popup disponible en mode création quand on sélectionne 2 cartes pour choisir la liaison de la future carte */}
 			{popupFusion && (
