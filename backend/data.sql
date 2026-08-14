@@ -112,7 +112,6 @@ INSERT INTO chapters (name, position) VALUES
 	('Chapitre 5', 5);
 
 INSERT INTO categories (name) VALUES
-	('Professeur'),
 	('Étudiant'),
 	('Autres');
 

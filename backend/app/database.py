@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Chemin absolu vers data.sql
-FILENAME_DB_SCHEMA = os.path.join(os.path.dirname(__file__), "data.sql")
+FILENAME_DB_SCHEMA = os.path.join(os.path.dirname(__file__), "..", "data.sql")
 
 # Chemin absolu vers le manifeste des niveaux (généré par npm run generate-manifest)
-FILENAME_MANIFEST = os.path.join(os.path.dirname(__file__), "..", "public", "json", "manifest.json")
+FILENAME_MANIFEST = os.path.join(os.path.dirname(__file__), "..", "..", "public", "json", "manifest.json")
 
 # On vérifie si une URL de connexion globale est définie.
 CONN_PARAMS = os.getenv("DATABASE_URL")

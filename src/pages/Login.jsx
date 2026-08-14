@@ -34,6 +34,7 @@ const Login = () => {
 			<Navigation />
 			<div id="forms">
 				<span className="eyebrow">Connexion</span>
+				<h2>Se connecter</h2>
 				<form onSubmit={handleSubmit} className="authForm">
 					<div className="field">
 						<label htmlFor="email">Email</label>

@@ -10,7 +10,7 @@ import PopupForms from "../components/PopupForms";
  * Nombre de niveaux par défaut, utilisé en repli si le manifeste
  * n'a pas encore été chargé ou est indisponible.
  */
-const defaultCounts = { Play: 36, Tutorial: 7 };
+const defaultCounts = { Play: 50, Tutorial: 7 };
 
 
 const Exercise = () => {

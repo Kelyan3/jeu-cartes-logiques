@@ -261,23 +261,6 @@ export default class Card
 	}
 
 	/**
-	 * Renvoie la démonstration correspondante à l'action effectuée.
-	 *
-	 * @returns {string} Le texte de la démonstration.
-	 */
-	toDemonstration()
-	{
-		if (this.color !== null)
-			return "On a" + this.getColor(this.color);
-		else if (this.link === "et")
-			return "On a" + this.left.toString() + "∧" + this.right.toString();
-		else if (this.link === "ou")
-			return "On a" + this.left.toString() + "∨" + this.right.toString();
-		else
-			return "Puisque" + this.left.toString() + ", on a " + this.right.toString();
-	}
-
-	/**
 	 * Renvoie la profondeur à laquelle est située la carte dans la carte complexe.
 	 *
 	 * @returns {number} La profondeur de la carte

@@ -1,4 +1,4 @@
-import { GameTab } from "../context/GameTab";
+import { useGameTab } from "../context/GameTabContext";
 import LogicText from  "./LogicText";
 
 const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }) => {
@@ -156,24 +156,20 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }
 		};
 	}
 
+	const game = useGameTab();
+
 	return (
-		<GameTab.Consumer>
-			{(game) => {
-				return (
-					<div
-						onClick={handleClick}
-						className={
-							"card " +
-							(isWin ? "" : "hoverable ") +
-							(game[deckIndice][cardIndice].nouveau ? "nouveau " : "") +
-							(isHelp ? "aide" : "")}
-						style={calcSizeCard(game[deckIndice][cardIndice])}
-					>
-						{renderCard(game[deckIndice][cardIndice], game[deckIndice][cardIndice].active)}
-					</div>
-				);
-			}}
-		</GameTab.Consumer>
+		<div
+			onClick={handleClick}
+			className={
+				"card " +
+				(isWin ? "" : "hoverable ") +
+				(game[deckIndice][cardIndice].nouveau ? "nouveau " : "") +
+				(isHelp ? "aide" : "")}
+			style={calcSizeCard(game[deckIndice][cardIndice])}
+		>
+			{renderCard(game[deckIndice][cardIndice], game[deckIndice][cardIndice].active)}
+		</div>
 	);
 };
 

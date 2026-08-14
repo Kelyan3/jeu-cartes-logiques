@@ -7,7 +7,8 @@ import Card from "../domain/Card";
 
 import { API_BASE_URL as API } from "../config/api";
 
-import { GameTab } from "../context/GameTab";
+import { GameTabProvider } from "../context/GameTabContext";
+
 import { useAuth } from "../hooks/useAuth";
 import { useGameFile } from "../hooks/useGameFile";
 import { useCardSelection } from "../hooks/useCardSelection";
@@ -995,7 +996,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				<div className="toast toastError">{messageErreur}</div>
 			)}
 
-			<GameTab.Provider value={game}>
+			<GameTabProvider value={game}>
 				<div className="deckRow">
 					{/* Ajout des decks */}
 					{game.map((deck, index) => (
@@ -1016,7 +1017,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 						></Deck>
 					))}
 				</div>
-			</GameTab.Provider>
+			</GameTabProvider>
 
 			{/* Affichage de la démonstration de logique mathématique de l'exercice */}
 			<div className="demonstration" onCopy={copyHandler}>
