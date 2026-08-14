@@ -19,9 +19,15 @@ import { useUnlockedActions } from "../hooks/useUnlockedActions";
 import { containCard, containCardSymmetric, computeNextMove } from "../domain/gameSolver";
 import { toClass, gameInput, buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, tagDecks } from "../domain/gameInput";
 
-import { delCard, delDeck, delCardWithEquals, checkSubObj, CreatTabObj, findObjectifRelative, stringToLogicText } from "../domain/rules/goals";
+import { delCard, delDeck, delCardWithEquals, checkSubObj, CreatTabObj, findObjectifRelative, stringToLogicText, deckContain as deckContainCore } from "../domain/rules/goals";
+import { getSingleSelectedCard as getSingleSelectedCardCore } from "../domain/rules/selection";
 import { addToGame as addToGameCore } from "../domain/rules/addToGame";
 import { constructDemonstration as constructDemonstrationCore, computeAddLineDemonstration } from "../domain/rules/demonstration";
+import { runTiersExclus } from "../domain/rules/tiersExclus";
+import { runAddObjectif } from "../domain/rules/addObjectif";
+import { runAddCardAnd, runAddCardFuse, runFuseCardAnd } from "../domain/rules/mergeCards";
+import { runIsWin } from "../domain/rules/isWin";
+import { runTransitivite } from "../domain/rules/transitivite"
 
 
 const Game = ({ mode, ex, numero, nbExo }) => {
@@ -442,186 +448,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Vérifie si un ou plusieurs objectifs sont validés par l'état actuel du jeu, et met à jour
-	 * la partie en conséquence (ajout de cartes obtenues, suppression des objectifs résolus).
-	 * Fonction récursive : si la résolution d'un objectif secondaire permet d'en valider un autre
-	 * (imbriqué), elle se rappelle elle-même pour vérifier ce nouvel état.
-	 *
-	 * @param {Array} arrayMsg - messages de démonstration à compléter au fur et à mesure
-	 * @param {Array} arrayIndent - indentations correspondant à arrayMsg
-	 * @param {Card[][]} tmp - état du jeu à vérifier
-	 * @param {boolean} [originel=true] - true s'il s'agit de l'appel initial (pas d'un appel
-	 *                                     récursif interne) ; contrôle l'affichage de la démonstration
-	 *                                     et du popup de victoire.
-	 *
-	 * @returns {[Card[][], boolean, Array, Array]} [état du jeu mis à jour, victoire ou non,
-	 *                                               messages de démonstration, indentations]
+	 * Adaptateur autour de `runIsWin` : lui fournit les callbacks nécessaires, pour
+	 * garder inchangés tous les appels existants à `isWin(...)`.
 	 */
-	const isWin = (arrayMsg, arrayIndent, tmp, originel) => {
-		if (originel === undefined)
-			originel = true;
-
-		let tmpTabObjectif = CreatTabObj(tmp);
-		const listObjectif = [];
-		for (let numObjectif of tmpTabObjectif)
-			listObjectif.push([tmp[tmp.length - 1][numObjectif[1]], numObjectif,]);
-
-		let bool = false;
-		let modif = false;
-
-		const findIntermediateDeckFor = (cardObj) => {
-			const findObj = findObjectifRelative(cardObj, tmp);
-			if (findObj === -1)
-				return -1;
-
-			const hypothesis = tmp[tmp.length - 1][findObj].left;
-			for (let d = 1; d < tmp.length - 1; d++)
-			{
-				if (containCard(tmp, d, hypothesis))
-					return d;
-			}
-
-			return -1;
-		};
-
-		const checkWinForEveryObjectif = (cardArray) => {
-			const cardObj = cardArray[0];
-			const numObj = cardArray[1][0];
-			const isLinked = cardArray[1][2];
-
-			const intermediaireDeck = numObj === 0 ? 0 : findIntermediateDeckFor(cardObj);
-
-			const checkWin = (card, deckIndex) => {
-				if (card == null || cardObj == null)
-					return;
-
-				if (modif || bool)
-					return;
-
-				if (!card.equals(cardObj) && card.color !== "white")
-					return;
-
-				// Objectif principal.
-				if (numObj === 0)
-				{
-					bool = true;
-					return;
-				}
-
-				// La carte doit être dans la bonne LPU ou dans le deck de départ.
-				if (deckIndex !== 0 && deckIndex !== intermediaireDeck)
-					return;
-
-				if (intermediaireDeck === -1)
-					return;
-
-				const findObj = findObjectifRelative(cardObj, tmp);
-				if (findObj === -1)
-					return;
-
-				modif = true;
-
-				const tmpCard = tmp[tmp.length - 1][findObj].copy();
-
-				// Remonte "A ⇒ B" dans le deck juste au-dessus de la LPU
-				if (!addToGame(tmp, intermediaireDeck - 1, tmpCard))
-					return;
-
-				// Retire B des objectifs.
-				tmp[tmp.length - 1] = delCardWithEquals(tmp[tmp.length - 1], cardObj);
-
-				// Retire "A ⇒ B" du deck objectif s'il était lié.
-				if (findObj !== 0 && isLinked)
-					tmp[tmp.length - 1] = delCard(tmp[tmp.length - 1], findObj);
-
-				// Supprime la LPU intermédiaire trouvée (plus delDeck(tmp, numObj))
-				tmp = delDeck(tmp, intermediaireDeck);
-
-				arrayMsg.push(["On a ", tmpCard.copy(), "."]);
-				arrayIndent.push(-1);
-			};
-
-			// Parcourt tous les decks utiles : départ + LPU intermédiaires.
-			for (let d = 0; d < tmp.length - 1; d++)
-				tmp[d].forEach((card) => checkWin(card, d));
-
-			return bool;
-		};
-
-		listObjectif.forEach((e) => {
-			if (!bool && !modif)
-				checkWinForEveryObjectif(e);
-		});
-
-		/**
-		 * Objectifs secondaires issus d'un "et" (bouton Objectif sur (A=>B)∧(C=>D)) :
-		 * ce sont des cartes "Montrons X" ajoutées au deck objectif sans LPU intermédiaire.
-		 * Dès que X est présent dans une LPU, on retire la carte correspondante des objectifs.
-		 */
-		if (!bool && !modif)
-		{
-			const objDeckIndex = tmp.length - 1;
-			for (let i = tmp[objDeckIndex].length - 1; i >= 1; i--)
-			{
-				const goalCard = tmp[objDeckIndex][i];
-				if (goalCard == null || goalCard === undefined)
-					continue;
-
-				if (checkSubObj(tmp[objDeckIndex], goalCard))
-					continue;
-
-				let foundInLPU = false;
-				for (let d = 0; d < objDeckIndex; d++)
-				{
-					if (containCard(tmp, d, goalCard))
-					{
-						foundInLPU = true;
-						break;
-					}
-				}
-
-				if (foundInLPU)
-				{
-					tmp[objDeckIndex] = delCardWithEquals(tmp[objDeckIndex], goalCard);
-					arrayMsg.push(["On a ", goalCard.copy(), "."]);
-					arrayIndent.push(0);
-					modif = true;
-				}
-			}
-		}
-
-		/**
-		 * Regarde l'objectif précédent pour voir si le fait d'ajouter l'objectif secondaire ne l'a pas validé.
-		 * Si cela valide l'objectif principal : bool = true
-		 * Sinon : bool = false
-		 */
-		if (!bool && modif)
-		{
-			let tmpRes = isWin(arrayMsg, arrayIndent, tmp, false);
-			tmp = tmpRes[0];
-			bool = tmpRes[1];
-			arrayMsg = tmpRes[2];
-			arrayIndent = tmpRes[3];
-		}
-
-		if (originel)
-		{
-			addLineDemonstration(arrayMsg, arrayIndent);
-			setSavedGame(tmp);
-			allFalse(tmp);
-			let tmpVar = CreatTabObj(tmp);
-			setTabObjectif(tmpVar);
-		}
-
-		if (originel && bool)
-		{
-			setWin(true);
-			setPopupWin(true);
-			saveProgress();
-		}
-
-		return [tmp, bool, arrayMsg, arrayIndent];
-	};
+	const isWin = (arrayMsg, arrayIndent, tmp, originel) => runIsWin(arrayMsg, arrayIndent, tmp, originel, {
+		addToGame, addLineDemonstration, setSavedGame, allFalse, setTabObjectif, setWin, setPopupWin, saveProgress,
+	});
 
 	/**
 	 * Fonction appelée après avoir appuyé sur le bouton "Retour arrière".
@@ -721,483 +553,57 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Fonction appelée après avoir appuyé sur le bouton "Ajouter carte et".
-	 *
-	 * Une seule et unique carte doit être sélectionnée sinon un popup d'erreur apparaît avec ce message :
-	 *    Si 2 cartes sont sélectionnées :  "Vous devez sélectionner une seule carte !"
-	 *    Si 0 carte sont sélectionnées  :  "Vous devez sélectionner une carte !"
-	 *
-	 * La carte sélectionner doit avoir une liaison principale de type "et" sinon un popup d'erreur apparait avec ce message :
-	 *    "La carte sélectionnée doit avoir une liaison principale de type "et" !"
-	 *
-	 * Si toutes les conditions énumérées au-dessus sont respectées les parties gauche et droite de la carte sont ajoutées au Deck.
+	 * Objet regroupant les dépendances communes à `addCardAnd`, `addCardFuse` et
+	 * `fuseCardAnd`, pour éviter de le reconstruire 3 fois.
 	 */
-	const addCardAnd = () => {
-		if (navigation || win)
-			return;
-
-		// Si 2 cartes sont sélectionnées
-		if (nbSelec > 1)
-		{
-			error("Vous devez sélectionner une seule carte !");
-			return;
-		}
-
-		// Si aucune carte n'est sélectionnée
-		if (nbSelec === 0)
-		{
-			error("Vous devez sélectionner une carte !");
-			return;
-		}
-
-		/**
-		 * Prend la carte qui est sélectionnée.
-		 * Si elle n'est pas sélectionnée c'est -1 donc on prend la plus haute valeur.
-		 */
-		let deckI = Math.max(selecDeck1, selecDeck2);
-		let cardI = Math.max(selecCard1, selecCard2);
-
-		// La carte sélectionnée doit avoir la liaison principal "et"
-		if (game[deckI][cardI].link !== "et")
-		{
-			error('La carte sélectionnée doit avoir une liaison principale de type "et" !');
-			return;
-		}
-
-		// Ajoute si les 2 cartes à séparer n'existent pas déjà dans le deck
-		if (containCard(game, deckI, game[deckI][cardI].left) ||
-			containCard(game, deckI, game[deckI][cardI].right))
-		{
-			error("Les cartes que vous voulez ajouter existe déjà !");
-			return;
-		}
-
-		// Sauvegarde du jeu actuel
-		saveGame();
-
-		// Copie du jeu actuel
-		let tmp = [...game];
-
-		// Ajoute la partie gauche de la carte dans le jeu
-		let tmpCard1 = game[deckI][cardI].left.copy();
-		addToGame(tmp, deckI, tmpCard1, false);
-
-		// Ajoute la partie droite de la carte dans le jeu
-		let tmpCard2 = game[deckI][cardI].right.copy();
-		addToGame(tmp, deckI, tmpCard2, false);
-
-		// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
-		isWin([["On a ", tmpCard1.copy(), ". On a ", tmpCard2.copy(), "."]], [0], tmp);
-	};
+	const cardActionDeps = () => ({
+		navigation, win, nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, saveGame, addToGame, isWin,
+	});
 
 	/**
-	 * Fonction appelée après avoir appuyé sur le bouton "Ajouter carte =>".
-	 *
-	 * Deux cartes sont demandées pour faire fonctionner cette fonction sinon un popup d'erreur apparaît avec ce message :
-	 *    "Vous devez sélectionner deux cartes !"
-	 *
-	 * Au moins une des deux cartes doit avoir une liaison principale du type "=>" sinon un popup d'erreur apparaît avec ce message :
-	 *    Une des deux cartes doit avoir une liaison principale de type "=>" !"
-	 *
-	 * La partie gauche de la carte la plus complexe doit être égale à l'autre carte sinon un popup d'erreur apparaît avec ce message :
-	 *    "La partie gauche de la carte "=>" doit être égale à la deuxième carte sélectionnée !"
-	 *
-	 * Si toutes les conditions énumérées au-dessus sont respectées la partie droite est ajoutée au deck le plus haut.
+	 * Adaptateur autour de `runAddCardAnd` : garde inchangé l'appel existant à `addCardAnd()`.
 	 */
-	const addCardFuse = () => {
-		if (navigation || win)
-			return;
-
-		// S'il n'y a pas 2 cartes sélectionnées
-		if (nbSelec !== 2)
-		{
-			error("Vous devez sélectionner deux cartes !");
-			return;
-		}
-
-		// Prend le deck le plus grand
-		let finalDeck = Math.max(selecDeck1, selecDeck2);
-		if (finalDeck === game.length - 1)
-		{
-			error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
-			return;
-		}
-
-		// Copie du jeu actuel
-		let tmp = [...game];
-			/**
-			 * Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
-			 * Met le résultat dans {@link bool}.
-			 * On ne met pas directement la condition dans le if car on veut savoir avec quelle condition on y est rentré.
-			 */
-
-		let bool =
-			tmp[selecDeck2][selecCard2].link === "=>" &&
-			tmp[selecDeck2][selecCard2].left.equals(tmp[selecDeck1][selecCard1]);
-
-		// Une des 2 cartes doit avoir une liaison =>
-		if (bool ||
-			(tmp[selecDeck1][selecCard1].link === "=>" &&
-			tmp[selecDeck1][selecCard1].left.equals(
-			tmp[selecDeck2][selecCard2])))
-		{
-			// Initialisation de la carte où la liaison => va être utilisée
-			let deckCarteComplex;
-			let cardCarteComplex;
-
-			// Détermine & affecte l'id de la carte => utilisée
-			if (bool)
-			{
-				deckCarteComplex = selecDeck2;
-				cardCarteComplex = selecCard2;
-			}
-			else
-			{
-				deckCarteComplex = selecDeck1;
-				cardCarteComplex = selecCard1;
-			}
-
-			if (containCard(game,finalDeck, tmp[deckCarteComplex][cardCarteComplex].right))
-			{
-				error("La carte que vous voulez ajouter existe déjà !");
-				return;
-			}
-
-			// Sauvegarde du jeu actuel
-			saveGame();
-
-			// Ajoute la partie droite de la carte => utilisée dans le deck le plus haut
-			let cardToAdd = tmp[deckCarteComplex][cardCarteComplex].right.copy();
-			addToGame(tmp, finalDeck, cardToAdd);
-
-			// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
-			isWin(
-				[
-					[
-						"Puisque ",
-						tmp[deckCarteComplex][cardCarteComplex].left.copy(),
-						", on a ",
-						tmp[deckCarteComplex][cardCarteComplex].right.copy(),
-						".",
-					],
-				],
-				[0],
-				tmp
-			);
-		}
-		else
-		{
-			// Si aucune des 2 cartes n'a de liaison =>
-			if (tmp[selecDeck2][selecCard2].link !== "=>" &&
-				tmp[selecDeck1][selecCard1].link !== "=>")
-			{
-				error('Une des deux cartes doit avoir une liaison principale de type "=>" !');
-			}
-			else
-				error('La partie gauche de la carte "=>" doit être égale à la deuxième carte sélectionnée !');
-		}
-	};
+	const addCardAnd = () => runAddCardAnd(cardActionDeps());
 
 	/**
-	 * Fonction appelée après avoir appuyé sur le bouton "Fusion carte et".
-	 *
-	 * Deux cartes sont demandées pour faire fonctionner cette fonction sinon un popup d'erreur apparaît avec ce message :
-	 *    "Vous devez sélectionner deux cartes !"
-	 *
-	 * Si toutes les conditions énumérées au-dessus sont respectées les deux cartes fusionnent en une nouvelle carte qui prend la liaison "et" dans le deck le plus haut des deux cartes.
+	 * Adaptateur autour de `runAddCardFuse` : garde inchangé l'appel existant à `addCardFuse()`.
 	 */
-	const fuseCardAnd = () => {
-		if (!navigation && !win)
-		{
-			// Si 2 cartes sont sélectionnées
-			if (selecCard1 !== -1 && selecCard2 !== -1 &&
-				selecDeck1 !== -1 && selecDeck2 !== -1)
-			{
-				// Prend le deck le plus haut
-				let finalDeck = Math.max(selecDeck1, selecDeck2);
-				if (finalDeck !== game.length - 1)
-				{
-					// Copie du jeu actuel
-					let tmp = [...game];
-
-					if (!containCard(game, finalDeck, new Card(0, null, false, "et", tmp[selecDeck1][selecCard1], tmp[selecDeck2][selecCard2], true, false)))
-					{
-						// Sauvegarde du jeu actuel
-						saveGame();
-
-						// Copie les 2 cartes sélectionnées
-						let tmpCard1 = tmp[selecDeck1][selecCard1].copy();
-						let tmpCard2 = tmp[selecDeck2][selecCard2].copy();
-						tmpCard1.id = 0;
-						tmpCard2.id = 1;
-						tmpCard1.setOld(true);
-						tmpCard2.setOld(true);
-
-						// Ajoute la nouvelle carte dans le deck le plus haut avec les 2 autres cartes & une liaison "et"
-						let cardToAdd = new Card(tmp[finalDeck].length, null, false, "et", tmpCard1, tmpCard2, true, false);
-						if (!addToGame(tmp, finalDeck, cardToAdd))
-							return;
-
-						// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
-						isWin([["On a ", tmpCard1.copy(), "^", tmpCard2.copy(), ".",], ], [0], tmp);
-					}
-					else
-						error("La carte que vous voulez ajouter existe déjà !");
-				}
-				else
-					error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
-			}
-			else
-				error("Vous devez sélectionner deux cartes !");
-		}
-	};
+	const addCardFuse = () => runAddCardFuse(cardActionDeps());
 
 	/**
-	 * Vérifie qu'une seule carte est sélectionnée et renvoie ses coordonnées [deckI, cardI].
-	 * Renvoie null si la sélection n'est pas valide (un message d'erreur a alors déjà
-	 * été affiché). Factorisé pour être partagé par les 3 variantes du bouton "+ Objectif".
+	 * Adaptateur autour de `runFuseCardAnd` : garde inchangé l'appel existant à `fuseCardAnd()`.
 	 */
-	function getSingleSelectedCard()
-	{
-		// S'il n'y a qu'une carte de sélectionné
-		if ((selecCard1 !== -1 && selecCard2 === -1 && selecDeck1 !== -1 && selecDeck2 === -1) ||
-			(selecCard1 === -1 && selecCard2 !== -1 && selecDeck1 === -1 && selecDeck2 !== -1))
-			return [Math.max(selecDeck1, selecDeck2), Math.max(selecCard1, selecCard2)];
-
-		if (nbSelec > 1)
-			error("Vous devez sélectionner une seule carte !");
-		else if (nbSelec === 0)
-			error("Vous devez sélectionner une carte !");
-
-		return null;
-	}
+	const fuseCardAnd = () => runFuseCardAnd(cardActionDeps());
 
 	/**
-	 * Variante "=> dans objectif" : la carte sélectionnée (dans le deck objectif, liaison
-	 * "=>") devient un objectif secondaire : sa partie droite reste dans l'objectif, sa
-	 * partie gauche est déposée dans un nouveau deck LPU intermédiaire à compléter.
+	 * Adaptateur autour de la fonction pure `getSingleSelectedCardCore` : lui fournit
+	 * l'état de sélection et `error` comme callback, pour garder inchangé l'appel
+	 * existant à `getSingleSelectedCard()`.
 	 */
-	function addObjectifDepuisObjectif(deckI, cardI)
-	{
-		// Copie du jeu actuel
-		let tmp = [...game];
-
-		// Sauvegarde du jeu actuel
-		saveGame();
-
-		// Message en mode tutoriel
-		if (mode === "Tutorial" && numero === 3)
-		{
-			setMessageTutorial([
-				"Vous devez maintenant compléter l’objectif secondaire.",
-				"Si vous complétez l’objectif secondaire cela créera la carte d’où il a été créé dans deck avant, dans notre cas dans le deck départ cela complétera l’objectif principal.",
-			]);
-		}
-
-		// Copie de la partie droite de la carte sélectionnée
-		let secondObjectif = game[deckI][cardI].right.copy();
-
-		// Rajoute le second objectif dans le deck objectif
-		if (!addToGame(tmp, tmp.length - 1, secondObjectif))
-			return;
-
-		// Copie de la partie gauche de la carte sélectionnée
-		let tmpCard = tmp[deckI][cardI].left.copy();
-
-		// Rajoute le deck intermediaire
-		tmp.splice(tmp.length - 1, 0, []);
-
-		// Ajoute cette partie dans le deck qui vient d'etre créer
-		addToGame(tmp, tmp.length - 2, tmpCard);
-
-		// Copie du tableau objectif
-		let tmpObj = [...tabObjectif];
-
-		// Ajoute l'objectif secondaire dans le tableau objectif
-		tmpObj.push([tabObjectif.length, tmp[tmp.length - 1].length - 1, true,]);
-
-		// Met à jour le tableau objectif
-		setTabObjectif(tmpObj);
-		addLineDemonstration([["Supposons ", tmpCard.copy(), ". Montrons ", secondObjectif.copy(), ".",], ], [0]);
-		setIndentationDemonstration((prev) => prev + 1);
-
-		// Met à jour le jeu & désélectionne toutes les cartes
-		allFalse(tmp);
-		setSavedGame(tmp);
-	}
+	const getSingleSelectedCard = () => getSingleSelectedCardCore({
+		selecCard1, selecCard2, selecDeck1, selecDeck2, nbSelec, onError: error,
+	});
 
 	/**
-	 * Variante "=> dans LPU" : la carte sélectionnée (dans une LPU, liaison "=>", partie
-	 * gauche elle-même munie d'une liaison "=>") a sa partie gauche déposée directement
-	 * dans le deck objectif. Ce n'est pas considéré comme un objectif secondaire.
+	 * Adaptateur autour de la fonction pure `runAddObjectif` : lui fournit tout l'état
+	 * et les callbacks nécessaires, pour garder inchangé l'appel existant à
+	 * `addObjectif(variant)` (menu "+ Objectif").
 	 */
-	function addObjectifDepuisLPU(deckI, cardI)
-	{
-		// Copie du jeu actuel
-		let tmp = [...game];
-
-		// Sauvegarde du jeu actuel
-		saveGame();
-
-		// Copie de la partie gauche de la carte sélectionnée
-		let secondObjectif = tmp[deckI][cardI].left.copy();
-
-		// Met la carte copiée dans le deck objectif (ce n'est pas un objectif secondaire)
-		if (!addToGame(tmp, tmp.length - 1, secondObjectif))
-			return;
-
-		addLineDemonstration([["Montrons ", secondObjectif.copy(), ".", ], ], [0]);
-
-		// Met à jour le jeu & désélectionne toutes les cartes
-		allFalse(tmp);
-		setSavedGame(tmp);
-	}
+	const addObjectif = (variant) => runAddObjectif(variant, {
+		game, mode, numero, tabObjectif, navigation, win,
+		setTabObjectif, setIndentationDemonstration, setSavedGame, setMessageTutorial,
+		saveGame, addToGame, addLineDemonstration, allFalse, error, deckContain, getSingleSelectedCard,
+	});
 
 	/**
-	 * Variante "et" : la carte sélectionnée (dans le deck objectif, carte "et") a chacune
-	 * de ses deux parties ajoutée comme nouvel objectif à démontrer, pour celles qui ont
-	 * elles-mêmes une liaison "=>".
+	 * Adaptateur autour de la fonction pure `runTiersExclus` : lui fournit l'état de
+	 * sélection/jeu et les callbacks nécessaires, pour garder inchangé l'appel existant
+	 * à `tiersExclus()` (bouton "Tiers Exclus").
 	 */
-	function addObjectifEt(deckI, cardI)
-	{
-		let tmp = [...game];
-
-		// Sauvegarde du jeu actuel
-		saveGame();
-
-		// Copie de les deux parties de la carte sélectionnée
-		let secondObjectif1 = game[deckI][cardI].left.copy();
-		let secondObjectif2 = game[deckI][cardI].right.copy();
-		let firstArrayDemo = [];
-		let secondArrayDemo = [];
-		if (secondObjectif1.haveImpliqueLinkRecur())
-		{
-			if (addToGame(tmp, tmp.length - 1, secondObjectif1, false))
-				firstArrayDemo = ["Montrons ", secondObjectif1.copy(), ". ",];
-		}
-
-		if (secondObjectif2.haveImpliqueLinkRecur())
-		{
-			if (addToGame(tmp, tmp.length - 1, secondObjectif2, false))
-				secondArrayDemo = ["Montrons ", secondObjectif2.copy(), ".",];
-		}
-
-		addLineDemonstration([firstArrayDemo.concat(secondArrayDemo)], [0]);
-
-		// Met à jour le jeu & désélectionne toutes les cartes
-		allFalse(tmp);
-		setSavedGame(tmp);
-	}
-
-	/**
-	 * Fonction appelée après avoir choisi une des 3 options du menu "+ Objectif".
-	 *
-	 * @param {"objectif"|"lpu"|"et"} variant - la sous-fonctionnalité choisie :
-	 *   "objectif" : la carte sélectionnée doit être dans le deck objectif, liaison "=>".
-	 *   "lpu"      : la carte sélectionnée doit être dans une LPU, liaison "=>" et partie
-	 *                gauche elle-même munie d'une liaison "=>".
-	 *   "et"       : la carte sélectionnée doit être dans le deck objectif, carte "et".
-	 *
-	 * Une seule & unique carte doit être sélectionnée, sinon un popup d'erreur apparaît.
-	 * Si la carte sélectionnée ne correspond pas à la variante choisie, un message
-	 * d'erreur spécifique à cette variante est affiché plutôt qu'un message générique.
-	 */
-	const addObjectif = (variant) => {
-		if (navigation || win)
-			return;
-
-		const selection = getSingleSelectedCard();
-		if (selection === null)
-			return;
-
-		const [deckI, cardI] = selection;
-		const isObjectifDeck = deckI === game.length - 1;
-
-		// Si le 1er sous-objectif choisi n'est pas créé à partir de l'objectif principal
-		if (!isObjectifDeck && game.length <= 2)
-		{
-			error("Le premier objectif secondaire doit être créé à l'aide de l'objectif principal !");
-			return;
-		}
-
-		// Si le sous-objectif existe déjà
-		if (deckContain(deckI, cardI))
-		{
-			error("Cet objectif existe déjà !");
-			return;
-		}
-
-		const card = game[deckI][cardI];
-
-		if (variant === "objectif")
-		{
-			if (!isObjectifDeck)
-				error("Ce bouton ne fonctionne que sur une carte de l'objectif !");
-			else if (card.link !== "=>")
-				error('L\'objectif secondaire doit avoir une liaison "=>" !');
-			else
-				addObjectifDepuisObjectif(deckI, cardI);
-		}
-		else if (variant === "lpu")
-		{
-			if (isObjectifDeck)
-				error("Ce bouton ne fonctionne que sur une carte de la LPU !");
-			else if (card.link !== "=>")
-				error('L\'objectif secondaire doit avoir une liaison "=>" !');
-			else if (!card.left.haveImpliqueLinkRecur())
-				error('La partie gauche de l\'objectif secondaire doit avoir une liaison "=>" !');
-			else
-				addObjectifDepuisLPU(deckI, cardI);
-		}
-		else if (variant === "et")
-		{
-			if (!isObjectifDeck)
-				error("Ce bouton ne fonctionne que sur une carte de l'objectif !");
-			else if (!card.isCardEtObjectif())
-				error('La carte sélectionnée doit être une carte "et" contenant au moins une liaison "=>" !');
-			else
-				addObjectifEt(deckI, cardI);
-		}
-	};
-
-	/**
-	 * Applique le "tiers exclu" (élimination de la double négation) sur la carte sélectionnée :
-	 * si elle est de la forme non(non(X)), ajoute X au deck. Si la carte sélectionnée
-	 * est dans le deck objectif, délègue plutôt à {@link transformIntoNonCard}.
-	 */
-	const tiersExclus = () => {
-		if (navigation || win)
-			return;
-
-		// S'il n'y a qu'une carte de sélectionné
-		if ((selecCard1 !== -1 && selecCard2 === -1 && selecDeck1 !== -1 && selecDeck2 === -1) ||
-			(selecCard1 === -1 && selecCard2 !== -1 && selecDeck1 === -1 && selecDeck2 !== -1))
-		{
-			// Prend la carte sélectionnée
-			let deckI = Math.max(selecDeck1, selecDeck2);
-			let cardI = Math.max(selecCard1, selecCard2);
-			let tmp = [...game];
-			let cardTmp = tmp[deckI][cardI];
-			if (deckI === tmp.length - 1)
-			{
-				transformIntoNonCard();
-				return;
-			}
-
-			if (!cardTmp.canUseTiersExclus())
-			{
-				error(`La carte${cardTmp.toString()} n'est pas une carte non(non(Carte))`);
-				return;
-			}
-
-			let cardToAdd = cardTmp.left.left;
-			if (!addToGame(tmp, deckI, cardToAdd))
-				return;
-
-			// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
-			isWin([["Puisque ", cardTmp.copy(), ", on a ", cardToAdd.copy(), ".", ], ], [0], tmp);
-		}
-	};
+	const tiersExclus = () => runTiersExclus({
+		navigation, win, selecCard1, selecCard2, selecDeck1, selecDeck2, game,
+		transformIntoNonCard, error, addToGame, isWin,
+	});
 
 	/**
 	 * Adaptateur autour de la fonction pure `constructDemonstrationCore` : lui fournit
@@ -1226,52 +632,10 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Cette fonction sert à déterminer si un objectif est déjà créé.
-	 * Cherche dans les objectifs s'il existe une carte qui est égale à :
-	 * - Si le deck est l'objectif, alors la partie droite de la carte est reçue ;
-	 * - Sinon, c'est la partie gauche de la carte qui est reçue.
-	 *
-	 * @param {number} deck - indice du deck
-	 * @param {number} card - indice de la carte
-	 *
-	 * @returns {boolean} true ou false
+	 * Adaptateur autour de la fonction pure `deckContainCore` : lui fournit `game`
+	 * (état React), pour garder inchangé l'appel existant à `deckContain(deck, card)`.
 	 */
-	const deckContain = (deck, card) => {
-		// Variable que l'on va retourner (false par défaut)
-		let bool = false;
-		if (game[deck][card].color !== null)
-			return false;
-
-		let cardIsDoubleArrow = game[deck][card].isDoubleArrow();
-
-		// Parcourt le deck objectif
-		game[game.length - 1].forEach((element) => {
-			// Si le deck passé en paramètre est l'objectif
-			if (deck === game.length - 1)
-			{
-				/**
-				 * S'il y a une carte dans les objectifs qui est égale à la partie droite
-				 * de la carte que l'on a passé en paramètre.
-				 */
-				if (game[deck][card].link === "=>" && element.equals(game[deck][card].right))
-					bool = true;
-
-				if (cardIsDoubleArrow && (element.equals(game[deck][card].right) || element.equals(game[deck][card].left)))
-					bool = true;
-			}
-			else
-			{
-				/**
-				 * S'il y a une carte dans les objectifs qui est égale à la partie gauche
-				 * de la carte que l'on a passé en paramètre.
-				 */
-				if (element.equals(game[deck][card].left))
-					bool = true;
-			}
-		});
-
-		return bool;
-	};
+	const deckContain = (deck, card) => deckContainCore(game, deck, card);
 
 	/**
 	 * Fait une copie du jeu actuel en créant un nouveau tableau & en copiant toutes les cartes.
@@ -1431,186 +795,13 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	}
 
 	/**
-	 * Vérifie la sélection commune aux 3 variantes du bouton Transitivité : exactement
-	 * 2 cartes sélectionnées, ni l'une ni l'autre dans le deck objectif.
-	 *
-	 * @returns {[number, Card, Card]|null} [finalDeck, card1, card2], ou null si la
-	 * sélection n'est pas valide (un message d'erreur a alors déjà été affiché).
+	 * Adaptateur autour de `runTransitivite` : lui fournit tout l'état et les callbacks
+	 * nécessaires, pour garder inchangé l'appel existant à `transitivite(variant)`
+	 * (menu "Transitivité").
 	 */
-	function getTransitiviteSelection()
-	{
-		if (nbSelec !== 2)
-		{
-			error("Vous devez sélectionner deux cartes !");
-			return null;
-		}
-
-		// Prend le deck le plus grand
-		let finalDeck = Math.max(selecDeck1, selecDeck2);
-		if (finalDeck === game.length - 1)
-		{
-			error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
-			return null;
-		}
-
-		return [finalDeck, game[selecDeck1][selecCard1], game[selecDeck2][selecCard2]];
-	}
-
-	/**
-	 * Ajoute la carte déduite par transitivité au deck (sauf si skipAdd, pour le cas
-	 * où un doublon a déjà été détecté en amont), puis vérifie la victoire. Factorisé
-	 * car identique pour les 3 variantes, seuls le symbole affiché et cardToAdd changent.
-	 */
-	function finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRight, sign, skipAdd)
-	{
-		let tmp = [...game];
-		if (!skipAdd)
-			addToGame(tmp, finalDeck, cardToAdd, false);
-
-		// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
-		isWin(
-			[
-				[
-					"Par transitivité, on a : ",
-					cardLeft.copy(),
-					` ${sign} `,
-					cardMiddle.copy(),
-					` ${sign} `,
-					cardRight.copy(),
-					".",
-				],
-			],
-			[0],
-			tmp
-		);
-	}
-
-	/**
-	 * Variante "=>" : combine 2 cartes "A⇒B" et "B⇒C" (sélectionnées dans n'importe
-	 * quel ordre) pour en déduire "A⇒C".
-	 */
-	function transitiviteArrow()
-	{
-		const selection = getTransitiviteSelection();
-		if (selection === null)
-			return;
-		const [finalDeck, card1, card2] = selection;
-
-		if (card1.link !== "=>" || card2.link !== "=>")
-		{
-			error('Les 2 cartes sélectionnées doivent avoir une liaison "=>" !');
-			return;
-		}
-
-		let cardLeft, cardMiddle, cardRight, cardToAdd;
-		if (card1.left.equals(card2.right))
-		{
-			cardRight = card1.right;
-			cardLeft = card2.left;
-			cardMiddle = card1.left;
-			cardToAdd = new Card(game[finalDeck].length, null, false, "=>", card2.left.copy(), card1.right.copy());
-		}
-		else if (card1.right.equals(card2.left))
-		{
-			cardRight = card2.right;
-			cardLeft = card1.left;
-			cardMiddle = card2.left;
-			cardToAdd = new Card(game[finalDeck].length, null, false, "=>", card1.left.copy(), card2.right.copy());
-		}
-		else
-		{
-			error("Vous ne pouvez pas utiliser ce bouton avec ces cartes !");
-			return;
-		}
-
-		finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRight, "=>", false);
-	}
-
-	/**
-	 * Variantes "<=>" (symétrique ou non) : combine 2 cartes "A<=>B" et "B<=>C" pour
-	 * en déduire "A<=>C".
-	 *
-	 * @param {boolean} symmetric - si true, "B<=>C" et "C<=>B" sont considérées comme
-	 * la même carte (voir Card.equalsSymmetric) : le terme commun entre les 2 cartes
-	 * sélectionnées est cherché parmi les 4 combinaisons possibles (au lieu des 2
-	 * combinaisons historiques en mode non symétrique), et la détection de doublon
-	 * avant ajout reconnaît les deux écritures d'une même équivalence.
-	 */
-	function transitiviteEquiv(symmetric)
-	{
-		const selection = getTransitiviteSelection();
-		if (selection === null)
-			return;
-		const [finalDeck, card1, card2] = selection;
-
-		if (!card1.isDoubleArrow() || !card2.isDoubleArrow())
-		{
-			error('Les 2 cartes sélectionnées doivent avoir une liaison "<=>" !');
-			return;
-		}
-
-		// Les 2 "bouts" de chaque équivalence : card.left.left <=> card.left.right
-		const ends1 = [card1.left.left, card1.left.right];
-		const ends2 = [card2.left.left, card2.left.right];
-
-		// [i, j] = quel bout de card1 est comparé à quel bout de card2. Les 2
-		// premières combinaisons sont celles de la version d'origine à bouton
-		// unique (ordre de priorité conservé) ; les 2 suivantes ne sont essayées
-		// qu'en mode symétrique.
-		const combos = symmetric ? [[1, 0], [0, 1], [0, 0], [1, 1]] : [[1, 0], [0, 1]];
-
-		let cardLeft, cardMiddle, cardRight;
-		for (const [i, j] of combos)
-		{
-			if (ends1[i].equals(ends2[j]))
-			{
-				cardMiddle = ends1[i];
-				cardLeft = ends1[1 - i];
-				cardRight = ends2[1 - j];
-				break;
-			}
-		}
-
-		if (cardLeft === undefined)
-		{
-			error("Vous ne pouvez pas utiliser ce bouton avec ces cartes !");
-			return;
-		}
-
-		const cardToAdd = new Card(
-			game[finalDeck].length,
-			null,
-			false,
-			"et",
-			new Card(0, null, false, "=>", cardLeft.copy(), cardRight.copy()),
-			new Card(0, null, false, "=>", cardRight.copy(), cardLeft.copy())
-		);
-
-		const isDuplicate = symmetric && containCardSymmetric(game, finalDeck, cardToAdd);
-		finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRight, "<=>", isDuplicate);
-	}
-
-	/**
-	 * Fonction appelée après avoir choisi une des 3 options du menu "Transitivité".
-	 *
-	 * @param {"arrow"|"equiv"|"equiv_sym"} variant
-	 *   "arrow"     : combine 2 cartes "=>" en une nouvelle carte "=>".
-	 *   "equiv"     : combine 2 cartes "<=>" en une nouvelle carte "<=>" (recherche
-	 *                 stricte du terme commun, comme la version d'origine à bouton unique).
-	 *   "equiv_sym" : comme "equiv", mais traite "P<=>Q" et "Q<=>P" comme la même carte
-	 *                 (recherche élargie du terme commun + détection de doublon adaptée).
-	 */
-	const transitivite = (variant) => {
-		if (navigation || win)
-			return;
-
-		if (variant === "arrow")
-			transitiviteArrow();
-		else if (variant === "equiv")
-			transitiviteEquiv(false);
-		else if (variant === "equiv_sym")
-			transitiviteEquiv(true);
-	};
+	const transitivite = (variant) => runTransitivite(variant, {
+		navigation, win, nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, addToGame, isWin,
+	});
 
 	return (
 		<div className="game">

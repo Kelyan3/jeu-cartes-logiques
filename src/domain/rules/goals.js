@@ -198,3 +198,53 @@ export function stringToLogicText(str)
 
 	return str;
 }
+
+/**
+ * Indique si le deck objectif contient déjà, sous une forme compatible, la carte
+ * (deck, card) en tant que sous-objectif potentiel : sa partie gauche (cas général),
+ * ou sa partie droite/gauche si elle est "⟺" (double flèche), ou sa partie droite
+ * si le deck passé est lui-même le deck objectif.
+ *
+ * @param {Card[][]} game
+ * @param {number} deck - indice du deck de la carte à vérifier
+ * @param {number} card - indice de la carte à vérifier dans ce deck
+ *
+ * @returns {boolean}
+ */
+export function deckContain(game, deck, card)
+{
+	// Variable que l'on va retourner (false par défaut)
+	let bool = false;
+	if (game[deck][card].color !== null)
+		return false;
+
+	let cardIsDoubleArrow = game[deck][card].isDoubleArrow();
+
+	// Parcourt le deck objectif
+	game[game.length - 1].forEach((element) => {
+		// Si le deck passé en paramètre est l'objectif
+		if (deck === game.length - 1)
+		{
+			/**
+			 * S'il y a une carte dans les objectifs qui est égale à la partie droite
+			 * de la carte que l'on a passé en paramètre.
+			 */
+			if (game[deck][card].link === "=>" && element.equals(game[deck][card].right))
+				bool = true;
+
+			if (cardIsDoubleArrow && (element.equals(game[deck][card].right) || element.equals(game[deck][card].left)))
+				bool = true;
+		}
+		else
+		{
+			/**
+			 * S'il y a une carte dans les objectifs qui est égale à la partie gauche
+			 * de la carte que l'on a passé en paramètre.
+			 */
+			if (element.equals(game[deck][card].left))
+				bool = true;
+		}
+	});
+
+	return bool;
+}
