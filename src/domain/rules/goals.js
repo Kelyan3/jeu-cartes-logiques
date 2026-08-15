@@ -11,7 +11,6 @@ export function delCard(deck, indiceCard)
 {
 	// Le deck que l'on va retourner
 	let finalDeck = [];
-	deck[indiceCard].setDel(true);
 
 	// Supprime la carte en la passant null
 	deck[indiceCard] = null;

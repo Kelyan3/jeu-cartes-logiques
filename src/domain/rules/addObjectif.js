@@ -1,3 +1,5 @@
+import { copyGameArray } from "../gameSolver";
+
 /**
  * Variante "=> dans objectif" : la carte sélectionnée (dans le deck objectif, liaison
  * "=>") devient un objectif secondaire : sa partie droite reste dans l'objectif, sa
@@ -12,7 +14,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	} = deps;
 
 	// Copie du jeu actuel
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 
 	// Sauvegarde du jeu actuel
 	saveGame();
@@ -68,7 +70,7 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
 	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, allFalse } = deps;
 
 	// Copie du jeu actuel
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 
 	// Sauvegarde du jeu actuel
 	saveGame();
@@ -96,7 +98,7 @@ function addObjectifEt(deckI, cardI, deps)
 {
 	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, allFalse } = deps;
 
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 
 	// Sauvegarde du jeu actuel
 	saveGame();

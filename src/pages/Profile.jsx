@@ -67,10 +67,14 @@ const Profile = () => {
 
 		setResetting(true);
 		fetch(`${API}/api/progress`, { method: "DELETE", credentials: "include", })
-			.then(() => {
+			.then((response) => {
+				if (!response.ok)
+					throw new Error("Impossible de réinitialiser la progression.");
+
 				setPlayCompleted(0);
 				setPlayScore(0);
 			})
+			.catch(() => setStatsError(true))
 			.finally(() => setResetting(false));
 	};
 

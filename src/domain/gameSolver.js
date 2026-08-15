@@ -10,13 +10,7 @@
  */
 export function containCard(tmp, deckId, card)
 {
-	let result = false;
-	tmp[deckId].forEach((cardElement) => {
-		if (cardElement.equals(card))
-			result = true;
-	});
-
-	return result;
+	return tmp[deckId].some((cardElement) => cardElement.equals(card));
 }
 
 /**
@@ -33,13 +27,7 @@ export function containCard(tmp, deckId, card)
  */
 export function containCardSymmetric(tmp, deckId, card)
 {
-	let result = false;
-	tmp[deckId].forEach((cardElement) => {
-		if (cardElement.equalsSymmetric(card))
-			result = true;
-	});
-
-	return result;
+	return tmp[deckId].some((cardElement) => cardElement.equalsSymmetric(card));
 }
 
 /**
@@ -154,20 +142,15 @@ function isEtLeadingTo(card, cardObjectif)
  *
  * @returns {Card[][]} une copie du jeu
  */
-function copyGameArray(game)
+export function copyGameArray(game)
 {
-	let tmp = [];
+	const tmp = [];
 	for (let i = 0; i < game.length; i++)
 	{
 		tmp[i] = [];
 		for (let j = 0; j < game[i].length; j++)
 		{
-			try
-			{
-				tmp[i].push(game[i][j].copy());
-			} catch (error) {
-				console.error(error);
-			}
+			tmp[i].push(game[i][j].copy());
 		}
 	}
 

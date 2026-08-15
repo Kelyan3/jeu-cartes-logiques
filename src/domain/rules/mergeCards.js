@@ -1,5 +1,5 @@
 import Card from "../Card";
-import { containCard } from "../gameSolver";
+import { containCard, copyGameArray } from "../gameSolver";
 
 
 /**
@@ -67,7 +67,7 @@ export function runAddCardAnd(deps)
 	saveGame();
 
 	// Copie du jeu actuel
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 
 	// Ajoute la partie gauche de la carte dans le jeu
 	let tmpCard1 = game[deckI][cardI].left.copy();
@@ -111,13 +111,9 @@ export function runAddCardFuse(deps)
 	}
 
 	// Copie du jeu actuel
-	let tmp = [...game];
-		/**
-		 * Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
-		 * Met le résultat dans {@link bool}.
-		 * On ne met pas directement la condition dans le if car on veut savoir avec quelle condition on y est rentré.
-		 */
+	let tmp = copyGameArray(game);
 
+	// Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
 	let bool =
 		tmp[selecDeck2][selecCard2].link === "=>" &&
 		tmp[selecDeck2][selecCard2].left.equals(tmp[selecDeck1][selecCard1]);
@@ -206,7 +202,7 @@ export function runFuseCardAnd(deps)
 			if (finalDeck !== game.length - 1)
 			{
 				// Copie du jeu actuel
-				let tmp = [...game];
+				let tmp = copyGameArray(game);
 
 				if (!containCard(game, finalDeck, new Card(0, null, false, "et", tmp[selecDeck1][selecCard1], tmp[selecDeck2][selecCard2], true, false)))
 				{

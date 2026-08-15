@@ -1,19 +1,7 @@
-//=============================
-// Conteneur de page générique
-//=============================
-.home {
-	min-height: 100vh;
-	width: 100%;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding-top: 90px;
-	padding-bottom: 60px;
-}
-
-//====================================
-// Carte centrée de type "formulaire"
-//====================================
+//=============================================================
+// Conteneur de page générique (page standard ou "formulaire")
+//=============================================================
+.home,
 .forms {
 	min-height: 100vh;
 	width: 100%;

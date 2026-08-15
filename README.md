@@ -198,6 +198,16 @@ npm run dev
 
 Le site est accessible sur `http://localhost:5173`.
 
+### 4. Créer un premier compte administrateur
+
+Aucun compte admin n'est créé automatiquement par `data.sql`. Inscrivez-vous normalement depuis le site (`/register`), puis promouvez votre compte directement en base :
+
+```sql
+UPDATE users SET role = 'admin' WHERE email = 'votre@email.fr';
+```
+
+Reconnectez-vous ensuite pour accéder à la page `/admin`.
+
 ## Variables d'environnement
 
 ### `backend/.env`

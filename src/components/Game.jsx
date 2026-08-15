@@ -1,14 +1,15 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 
 import Deck from "./Deck";
-import Popup from "./Popup";
-import LogicText from "./LogicText";
+
+import GameActionBar from "./game/GameActionBar";
+import GameDemonstration from "./game/GameDemonstration";
+import GameToasts from "./game/GameToasts";
+import GameWinPopup from "./game/GameWinPopup";
 
 import AddCardPopup from "./create/AddCardPopup";
 import FusionPopup from "./create/FusionPopup";
 import DeleteCardPopup from "./create/DeleteCardPopup";
-
-import { API_BASE_URL as API } from "../config/api";
 
 import { GameTabProvider } from "../context/GameTabContext";
 
@@ -17,14 +18,13 @@ import { useGameFile } from "../hooks/useGameFile";
 import { useCardSelection } from "../hooks/useCardSelection";
 import { useGamePopups } from "../hooks/useGamePopups";
 import { useProgressSave } from "../hooks/useProgressSave";
-import { useClickOutsideMenu } from "../hooks/useClickOutsideMenu";
 import { useUnlockedActions } from "../hooks/useUnlockedActions";
 
 import Card from "../domain/Card";
-import { containCard, containCardSymmetric, computeNextMove } from "../domain/gameSolver";
-import { toClass, gameInput, buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, tagDecks } from "../domain/gameInput";
+import { computeNextMove, copyGameArray } from "../domain/gameSolver";
+import { buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, tagDecks } from "../domain/gameInput";
 
-import { delCard, delDeck, delCardWithEquals, checkSubObj, CreatTabObj, findObjectifRelative, stringToLogicText, deckContain as deckContainCore } from "../domain/rules/goals";
+import { delCard, CreatTabObj, deckContain as deckContainCore } from "../domain/rules/goals";
 import { getSingleSelectedCard as getSingleSelectedCardCore } from "../domain/rules/selection";
 import { addToGame as addToGameCore } from "../domain/rules/addToGame";
 import { constructDemonstration as constructDemonstrationCore, computeAddLineDemonstration } from "../domain/rules/demonstration";
@@ -32,7 +32,7 @@ import { runTiersExclus } from "../domain/rules/tiersExclus";
 import { runAddObjectif } from "../domain/rules/addObjectif";
 import { runAddCardAnd, runAddCardFuse, runFuseCardAnd } from "../domain/rules/mergeCards";
 import { runIsWin } from "../domain/rules/isWin";
-import { runTransitivite } from "../domain/rules/transitivite"
+import { runTransitivite } from "../domain/rules/transitivite";
 import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard } from "../domain/rules/createMode";
 
 
@@ -40,29 +40,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
 
 	const { isActionUnlocked } = useUnlockedActions(mode, user);
-
-	/**
-	 * Ouverture/fermeture du menu déroulant "Bases"
-	 * (Séparation / Implique / Fusion).
-	 */
-	const { isOpen: basesMenuOpen, setIsOpen: setBasesMenuOpen, menuRef: basesMenuRef } = useClickOutsideMenu();
-
-	/**
-	 * Ouverture/fermeture du menu déroulant "+ Objectif" (3 sous-fonctionnalités).
-	 * Se ferme au clic en dehors du menu (bouton compris).
-	 */
-	const { isOpen: objectifMenuOpen, setIsOpen: setObjectifMenuOpen, menuRef: objectifMenuRef } = useClickOutsideMenu();
-
-	/**
-	 * Ouverture/fermeture du menu déroulant "Transitivité" (3 sous-fonctionnalités).
-	 * Même logique que pour le menu "+ Objectif" ci-dessus.
-	 */
-	const { isOpen: transitiviteMenuOpen, setIsOpen: setTransitiviteMenuOpen, menuRef: transitiviteMenuRef } = useClickOutsideMenu();
-
-	/**
-	 * Ouverture/fermeture du menu déroulant "Tiers exclus".
-	 */
-	const { isOpen: tiersExclusMenuOpen, setIsOpen: setTiersExclusMenuOpen, menuRef: tiersExclusMenuRef } = useClickOutsideMenu();
 
 	/**
 	 * Calcule une fois pour toutes (au montage) l'état de jeu de départ pour cet exercice.
@@ -89,7 +66,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const [game, setGame] = useState(initialSetup.game);
 
-	const { openFileJson, gameOutput, saveAsFile, openFile } = useGameFile(game, setGame);
+	const { openFileJson, saveAsFile, openFile } = useGameFile(game, setGame);
 
 	const {
 		nbSelec,
@@ -200,15 +177,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {Card[][]} tmp - tableau du jeu temporaire
 	 */
 	const setAllCardOld = (tmp) => {
-		try {
-			tmp.forEach((e) => {
-				e.forEach((s) => {
-					s.setOld(false);
-				});
+		tmp.forEach((deck) => {
+			deck.forEach((card) => {
+				card.setOld(false);
 			});
-		} catch (error) {
-			console.error(error);
-		}
+		});
 	};
 
 	/**
@@ -220,16 +193,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		resetSelection();
 
 		// On désélectionne toutes les cartes du jeu passé en paramètre
-		try
-		{
-			tmp.forEach((e) => {
-				e.forEach((s) => {
-					s.select(false);
-				});
+		tmp.forEach((deck) => {
+			deck.forEach((card) => {
+				card.select(false);
 			});
-		} catch (error) {
-			console.error(error);
-		}
+		});
 
 		// On actualise le jeu
 		setGame(tagDecks(tmp));
@@ -242,19 +210,14 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		resetSelection();
 
 		// Copie du jeu actuel
-		let tmp = [...game];
+		const tmp = copyGameArray(game);
 
 		// On désélectionne toutes les cartes du jeu actuel
-		try
-		{
-			tmp.forEach((e) => {
-				e.forEach((s) => {
-					s.select(false);
-				});
+		tmp.forEach((deck) => {
+			deck.forEach((card) => {
+				card.select(false);
 			});
-		} catch (error) {
-			console.error(error);
-		}
+		});
 
 		// On actualise le jeu
 		setGame(tagDecks(tmp));
@@ -318,8 +281,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		}
 
 		saveGame();
-		let tmp = [...game];
 
+		const tmp = copyGameArray(game);
 		if (!addToGame(tmp, selecDeck1, returnNonCard(tmp)))
 			return;
 
@@ -500,8 +463,6 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			{ demonstration, tabIndentation, indentationDemonstration, tabIndiceDemonstration, lastGameLength: lastGame.length },
 			msgArray,
 			indentationArray,
-			num,
-			reset,
 		);
 
 		setDemonstration(result.demonstration);
@@ -518,33 +479,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	/**
 	 * Fait une copie du jeu actuel en créant un nouveau tableau & en copiant toutes les cartes.
-	 *
-	 * @returns {Card[][]} une copie de la partie actuelle
 	 */
-	const copyGame = () => {
-		// Nouveau tableau vide que l'on va retourner
-		let tmp = [];
-
-		// Boucle de la taille du jeu
-		for (let i = 0; i < game.length; i++)
-		{
-			// Crée le deck vide
-			tmp[i] = [];
-
-			for (let j = 0; j < game[i].length; j++)
-			{
-				// Ajoute une copie de la carte dans le deck
-				try {
-					tmp[i].push(game[i][j].copy());
-				} catch (error) {
-					console.error(error);
-				}
-			}
-		}
-
-		// Retourne le nouveau tableau
-		return tmp;
-	};
+	const copyGame = () => copyGameArray(game);
 
 	/**
 	 * Récupère le numéro de la démonstration et met le jeu à ce moment-là de la partie.
@@ -708,176 +644,17 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					</div>
 				)}
 
-				{/* Menu déroulant "Bases" : Séparation / Implique / Fusion */}
-				{mode !== "Create" &&
-					(isActionUnlocked("addAnd") || isActionUnlocked("addImplique") || isActionUnlocked("fuseAnd")) && (
-					<div
-						className="actionDropdown"
-						ref={basesMenuRef}
-						onMouseEnter={() => setBasesMenuOpen(true)}
-						onMouseLeave={() => setBasesMenuOpen(false)}
-					>
-						<button
-							type="button"
-							id="bases"
-							className="buttonAction"
-							onClick={() => setBasesMenuOpen((open) => !open)}
-						>
-							<span className="buttonFormula">Bases</span>
-						</button>
-						{basesMenuOpen && (
-							<div className="actionDropdownMenu">
-								{isActionUnlocked("addAnd") && (
-									<button
-										type="button"
-										className={mode === "Tutorial" && numero === 0 ? "boutonSelection" : ""}
-										onClick={() => { setBasesMenuOpen(false); addCardAnd(); }}
-									>
-										[P ∧ Q] → [P] [Q]
-									</button>
-								)}
-								{isActionUnlocked("addImplique") && (
-									<button
-										type="button"
-										className={mode === "Tutorial" && numero === 1 ? "boutonSelection" : ""}
-										onClick={() => { setBasesMenuOpen(false); addCardFuse(); }}
-									>
-										[P] [P ⇒ Q] → [Q]
-									</button>
-								)}
-								{isActionUnlocked("fuseAnd") && (
-									<button
-										type="button"
-										className={mode === "Tutorial" && numero === 2 ? "boutonSelection" : ""}
-										onClick={() => { setBasesMenuOpen(false); fuseCardAnd(); }}
-									>
-										[P] [Q] → [P ∧ Q]
-									</button>
-								)}
-							</div>
-						)}
-					</div>
-				)}
-
-				{/* Menu déroulant "+ Objectif" : 3 sous-fonctionnalités débloquées indépendamment */}
-				{mode !== "Create" &&
-					(isActionUnlocked("addGoal_objectif") || isActionUnlocked("addGoal_lpu") || isActionUnlocked("addGoal_et")) && (
-					<div
-						className="actionDropdown"
-						ref={objectifMenuRef}
-						onMouseEnter={() => setObjectifMenuOpen(true)}
-						onMouseLeave={() => setObjectifMenuOpen(false)}
-					>
-						<button
-							type="button"
-							id="addGoal"
-							className="buttonAction"
-							onClick={() => setObjectifMenuOpen((open) => !open)}
-						>
-							<span className="buttonFormula">Objectifs</span>
-						</button>
-						{objectifMenuOpen && (
-							<div className="actionDropdownMenu">
-								{isActionUnlocked("addGoal_objectif") && (
-									<button
-										type="button"
-										className={mode === "Tutorial" && numero === 3 ? "boutonSelection" : ""}
-										onClick={() => { setObjectifMenuOpen(false); addObjectif("objectif"); }}
-									>
-										{"=> dans objectif"}
-									</button>
-								)}
-								{isActionUnlocked("addGoal_lpu") && (
-									<button type="button" onClick={() => { setObjectifMenuOpen(false); addObjectif("lpu"); }}>
-										{"=> dans LPU"}
-									</button>
-								)}
-								{isActionUnlocked("addGoal_et") && (
-									<button type="button" onClick={() => { setObjectifMenuOpen(false); addObjectif("et"); }}>
-										et
-									</button>
-								)}
-							</div>
-						)}
-					</div>
-				)}
-
-				{/* Menu déroulant "Tiers exclus" */}
-				{mode !== "Create" && isActionUnlocked("tiersExclus") && (
-					<div
-						className="actionDropdown"
-						ref={tiersExclusMenuRef}
-						onMouseEnter={() => setTiersExclusMenuOpen(true)}
-						onMouseLeave={() => setTiersExclusMenuOpen(false)}
-					>
-						<button
-							type="button"
-							id="tiersExclus"
-							className="buttonAction"
-							onClick={() => setTiersExclusMenuOpen((open) => !open)}
-						>
-							<span className="buttonFormula">Tiers Exclus</span>
-						</button>
-						{tiersExclusMenuOpen && (
-							<div className="actionDropdownMenu">
-								<button
-									type="button"
-									className={mode === "Tutorial" && numero === 6 ? "boutonSelection" : ""}
-									onClick={() => { setTiersExclusMenuOpen(false); tiersExclus(); }}
-								>
-									¬¬[P] → [P]
-								</button>
-							</div>
-						)}
-					</div>
-				)}
-
-				{/* Menu déroulant "Transitivité" : 3 sous-fonctionnalités débloquées indépendamment */}
-				{mode !== "Create" &&
-					(isActionUnlocked("transitivite_arrow") || isActionUnlocked("transitivite_equiv") || isActionUnlocked("transitivite_equiv_sym")) && (
-					<div
-						className="actionDropdown"
-						ref={transitiviteMenuRef}
-						onMouseEnter={() => setTransitiviteMenuOpen(true)}
-						onMouseLeave={() => setTransitiviteMenuOpen(false)}
-					>
-						<button
-							type="button"
-							id="transitivite"
-							className="buttonAction"
-							onClick={() => setTransitiviteMenuOpen((open) => !open)}
-						>
-							<span className="buttonFormula">Transitivité</span>
-						</button>
-						{transitiviteMenuOpen && (
-							<div className="actionDropdownMenu">
-								{isActionUnlocked("transitivite_arrow") && (
-									<button
-										type="button"
-										className={mode === "Tutorial" && numero === 4 ? "boutonSelection" : ""}
-										onClick={() => { setTransitiviteMenuOpen(false); transitivite("arrow"); }}
-									>
-										{"⇒"}
-									</button>
-								)}
-								{isActionUnlocked("transitivite_equiv") && (
-									<button
-										type="button"
-										className={mode === "Tutorial" && numero === 5 ? "boutonSelection" : ""}
-										onClick={() => { setTransitiviteMenuOpen(false); transitivite("equiv"); }}
-									>
-										{"<=>"}
-									</button>
-								)}
-								{isActionUnlocked("transitivite_equiv_sym") && (
-									<button type="button" onClick={() => { setTransitiviteMenuOpen(false); transitivite("equiv_sym"); }}>
-										{"<=> (Par symétrie)"}
-									</button>
-								)}
-							</div>
-						)}
-					</div>
-				)}
+				<GameActionBar
+					mode={mode}
+					numero={numero}
+					isActionUnlocked={isActionUnlocked}
+					addCardAnd={addCardAnd}
+					addCardFuse={addCardFuse}
+					fuseCardAnd={fuseCardAnd}
+					addObjectif={addObjectif}
+					tiersExclus={tiersExclus}
+					transitivite={transitivite}
+				/>
 
 				{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
 				{mode === "Create" && (
@@ -908,19 +685,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				}
 			</div>
 
-			{/* Message d'aide en mode tutoriel */}
-			{mode === "Tutorial" && messageTutorial !== "" && (
-				<div className="toast toastTutorial">
-					{messageTutorial.map((element, index) => {
-						return <div key={index}>{element}</div>;
-					})}
-				</div>
-			)}
-
-			{/* Message d'erreur si on essaye de faire un mouvement illégal (ex: vouloir séparer une carte qui n'a pas une liaison "et") */}
-			{messageErreur !== "" && (
-				<div className="toast toastError">{messageErreur}</div>
-			)}
+			<GameToasts
+				mode={mode}
+				messageTutorial={messageTutorial}
+				messageErreur={messageErreur}
+			/>
 
 			<GameTabProvider value={game}>
 				<div className="deckRow">
@@ -945,25 +714,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				</div>
 			</GameTabProvider>
 
-			{/* Affichage de la démonstration de logique mathématique de l'exercice */}
-			<div className="demonstration" onCopy={copyHandler}>
-				{demonstration.map((element, index) => {
-					return (
-						<div
-							key={index}
-							id={"demo" + index}
-							onClick={demonstrationClickHandler}
-							style={
-								index === 1
-									? {marginLeft: 20 + element[0] * 20, marginTop: 20, }
-									: { marginLeft: 20 + element[0] * 20 }
-							}
-						>
-							<LogicText>{constructDemonstration(element[1])}</LogicText>
-						</div>
-					);
-				})}
-			</div>
+			<GameDemonstration
+				demonstration={demonstration}
+				constructDemonstration={constructDemonstration}
+				onLineClick={demonstrationClickHandler}
+				onCopy={copyHandler}
+			/>
 
 			<AddCardPopup
 				open={popupAddCard}
@@ -986,106 +742,18 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				onCancel={() => setPopupDeleteCard(false)}
 			/>
 
-			{/* Popup disponible en mode création quand on sélectionne 2 cartes pour choisir la liaison de la future carte */}
-			{popupFusion && (
-				<Popup
-					size={50}
-					content={
-						<>
-							<b>Choisissez une liaison</b>
-							<div className="connectorGrid" onChange={choixLiaison}>
-								{[
-									["et", "∧", "Et"],
-									["ou", "∨", "Ou"],
-									["=>", "⇒", "Implique"],
-									["<=>", "⇔", "Équivaut"],
-								].map(([value, symbol, label]) => (
-									<label className="connectorLabel" key={value}>
-										<input type="radio" value={value} name="liaison" />
-										<span className="connectorSymbol">{symbol}</span>
-										<span className="connectorName">{label}</span>
-									</label>
-								))}
-							</div>
-							<button className="popupClose" onClick={function () {setPopupFusion(false);}}>✕</button>
-						</>
-					}
-				/>
-			)}
-
-			{/* Popup disponible en mode création pour supprimer une carte avec un bouton qui lui est dédié */}
-			{popupDeleteCard && !(selecCard1 === -1 || selecDeck1 === -1) && (
-				<Popup
-					size={50}
-					content={
-						<>
-							<b>
-								Voulez-vous supprimer cette carte{" "}
-								{game[selecDeck1][selecCard1].toString()} : [
-								{selecDeck1}][{selecCard1}] ?
-							</b>
-							<br />
-							<div className="popupDeleteActions">
-								<button className="btnSecondary" onClick={() => setPopupDeleteCard(false)}>
-									Annuler
-								</button>
-								<button className="btnDanger" onClick={deleteCard}>
-									Supprimer
-								</button>
-							</div>
-						</>
-					}
-				/>
-			)}
-
-			{/* Popup de victoire quand on réussit l'objectif principal */}
-			{popupWin && (
-				<Popup
-					content={
-						<>
-							<b>Bravo, vous avez trouvé la solution !</b>
-							{saveProgressFailed && (
-								<p className="saveProgressWarning">
-									⚠ Votre progression n'a pas pu être enregistrée. Vérifiez votre connexion.
-								</p>
-							)}
-							<span
-								className="closeButton"
-								onClick={function () {
-									setPopupWin(false);
-									if (mode === "Tutorial")
-										nextExercise();
-								}}
-							>
-								✖
-							</span>
-							<div className="demonstration-win" onCopy={copyHandler}>
-								{demonstration.map((element, index) => {
-									return (
-										<div
-											key={index}
-											style={index === 1 ?
-												{ marginLeft: 20 + element[0] * 20, marginTop: 20, } :
-												{ marginLeft: 20 + element[0] * 20, }
-											}
-										>
-											<LogicText>{constructDemonstration(element[1])}</LogicText>
-										</div>
-									);
-								})}
-							</div>
-							<div className="popupWinActions">
-								<button className="popupSecondary" onClick={function() {setPopupWin(false);}}>
-									Revoir le niveau
-								</button>
-								{numero + 2 <= nbExo && (
-									<button className="popupPrimary" onClick={nextExercise}>Niveau suivant</button>
-								)}
-							</div>
-						</>
-					}
-				/>
-			)}
+			<GameWinPopup
+				open={popupWin}
+				mode={mode}
+				numero={numero}
+				nbExo={nbExo}
+				saveProgressFailed={saveProgressFailed}
+				demonstration={demonstration}
+				constructDemonstration={constructDemonstration}
+				onCopy={copyHandler}
+				onClose={() => setPopupWin(false)}
+				onNext={nextExercise}
+			/>
 		</div>
 	);
 };

@@ -1,5 +1,5 @@
 import Card from "../Card";
-import { containCardSymmetric } from "../gameSolver";
+import { containCardSymmetric, copyGameArray } from "../gameSolver";
 
 
 /**
@@ -39,7 +39,7 @@ function finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRi
 {
 	const { game, addToGame, isWin } = deps;
 
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 	if (!skipAdd)
 		addToGame(tmp, finalDeck, cardToAdd, false);
 

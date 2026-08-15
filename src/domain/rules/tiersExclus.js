@@ -1,3 +1,5 @@
+import { copyGameArray } from "../gameSolver";
+
 /**
  * Applique la règle du "tiers exclus" (¬(¬Carte) devient Carte) sur la carte
  * actuellement sélectionnée seule, si les conditions sont réunies.
@@ -27,7 +29,7 @@ export function runTiersExclus({ navigation, win, selecCard1, selecCard2, selecD
 		// Prend la carte sélectionnée
 		let deckI = Math.max(selecDeck1, selecDeck2);
 		let cardI = Math.max(selecCard1, selecCard2);
-		let tmp = [...game];
+		let tmp = copyGameArray(game);
 		let cardTmp = tmp[deckI][cardI];
 		if (deckI === tmp.length - 1)
 		{

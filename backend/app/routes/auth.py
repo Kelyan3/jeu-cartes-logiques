@@ -10,19 +10,12 @@ from app.services.auth_service import (
 	create_user,
 	get_user_row_by_email,
 	verify_password,
+	get_categories,
+	set_user_category,
 )
 
 from app.utils.helpers import get_json_body
 
-from app.services.auth_service import (
-	User,
-	email_or_username_exists,
-	create_user,
-	get_user_row_by_email,
-	verify_password,
-	get_categories,
-	set_user_category,
-)
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/api")
 
@@ -46,7 +39,7 @@ def register():
 		return jsonify({"error": "Cet email ou ce nom d'utilisateur est déjà utilisé"}), 409
 
 	id_user = create_user(username, email, password)
-	user = User(id_user, username, email)
+	user = User(id_user, username, email, role="user", id_category=None)
 	login_user(user)
 
 	return jsonify({"username": user.username, "email": user.email, "role": user.role, "id_category": user.id_category}), 201

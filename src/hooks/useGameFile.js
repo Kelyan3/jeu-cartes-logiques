@@ -63,8 +63,15 @@ export function useGameFile(game, setGame)
 			setOpenFileJson(event.target.files[0].name);
 
 			reader.onload = (event) => {
-				let obj = JSON.parse(event.target.result);
-				setGame(tagDecks(gameInput(obj)));
+				try
+				{
+					let obj = JSON.parse(event.target.result);
+					setGame(tagDecks(gameInput(obj)));
+				}
+				catch (error)
+				{
+					console.error("Erreur lors du chargement du fichier :", error);
+				}
 			};
 
 			reader.readAsText(event.target.files[0]);

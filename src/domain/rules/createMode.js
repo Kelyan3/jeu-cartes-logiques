@@ -1,4 +1,5 @@
 import Card from "../Card";
+import { copyGameArray } from "../gameSolver";
 
 
 /**
@@ -24,7 +25,7 @@ export function runChoixCouleur(event, deps)
 	saveGame();
 
 	// Copie du jeu actuel
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 
 	// Dé-check le bouton radio
 	event.target.checked = false;
@@ -64,7 +65,7 @@ export function runChoixLiaison(event, deps)
 	saveGame();
 
 	// Copie du jeu actuel
-	let tmp = [...game];
+	let tmp = copyGameArray(game);
 
 	// Dé-check le bouton radio
 	event.target.checked = false;
@@ -166,10 +167,10 @@ export function runDeleteCard(deps)
 		saveGame();
 
 		// Copie du jeu actuel
-		let tmp = [...game];
+		let tmp = copyGameArray(game);
 
 		// Supprime la carte
-		tmp[selecDeck1] = delCard(game[selecDeck1], selecCard1);
+		tmp[selecDeck1] = delCard(tmp[selecDeck1], selecCard1);
 
 		// Actualise le jeu et désélectionne tout
 		allFalse(tmp);

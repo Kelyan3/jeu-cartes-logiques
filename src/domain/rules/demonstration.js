@@ -45,36 +45,21 @@ export function constructDemonstration(tab, affichageSimple)
  * @param {Array} msgArray - tableau de messages à ajouter (chaque message est lui-même
  *                           un tableau de textes/cartes, voir {@link constructDemonstration})
  * @param {number[]} indentationArray - indentation associée à chaque message de msgArray
- * @param {number} [num] - si différent de 0, force l'ajout des lignes même si la démonstration
- *                         n'est pas vide (utilisé pour les sous-objectifs imbriqués)
- * @param {boolean} [reset=false] - true pour repartir d'une démonstration vide (nouveau niveau)
  *
  * @returns {{demonstration: Array, tabIndentation: number[], indentationDemonstration: number, tabIndiceDemonstration: number[]}}
  */
-export function computeAddLineDemonstration(currentState, msgArray, indentationArray, num, reset=false)
+export function computeAddLineDemonstration(currentState, msgArray, indentationArray)
 {
 	const { demonstration, tabIndentation, indentationDemonstration, tabIndiceDemonstration, lastGameLength } = currentState;
 
-	let tmpTabIndentation = [];
-	let tmpDemonstration = [];
-	let indentation = 0;
-	let tmpTabIndiceDemonstration = [];
+	// Repart de l'état actuel de la démonstration (aucun appelant ne demande de reset).
+	let tmpTabIndentation = [...tabIndentation];
+	let tmpDemonstration = [...demonstration];
+	let indentation = indentationDemonstration;
+	let tmpTabIndiceDemonstration = [...tabIndiceDemonstration];
 
 	// Indice d'historique partagé par toutes les lignes de cet appel.
 	const historyIndex = lastGameLength;
-
-	if (!reset)
-	{
-		tmpTabIndentation = [...tabIndentation];
-		tmpDemonstration = [...demonstration];
-		indentation = indentationDemonstration;
-		tmpTabIndiceDemonstration = [...tabIndiceDemonstration];
-	}
-	else
-	{
-		// Réinitialisation éventuelle du niveau.
-		tmpTabIndiceDemonstration = [];
-	}
 
 	msgArray.forEach((msg, index) => {
 		if (msg == null || msg.length === 0)

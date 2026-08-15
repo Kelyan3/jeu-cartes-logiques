@@ -41,6 +41,9 @@ export function addToGame(tmp, deckId, card, onError, defaultEmitError=true)
 
 	if (card.getProfondeur() > 6)
 	{
+		if (!defaultEmitError)
+			return false;
+
 		onError(`La carte ${card} est trop grosse`);
 		return false;
 	}
