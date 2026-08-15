@@ -15,10 +15,13 @@ import { API_BASE_URL as API } from "../config/api";
  * @param {Object|null} params.user - utilisateur connecté (depuis useAuth), ou null
  * @param {Function} params.setPopupWin
  * @param {Function} params.setSaveProgressFailed
+ * @param {Function} params.setGameResult - reçoit {elapsedSeconds, moves, score} ; le temps et les
+ *                                          coups sont connus immédiatement, le score n'arrive qu'une
+ *                                          fois la réponse du serveur reçue (voir saveProgress ci-dessous).
  *
  * @returns {{incrementMoves: Function, saveProgress: Function, nextExercise: Function}}
  */
-export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed })
+export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult })
 {
 	const navigate = useNavigate();
 
@@ -48,10 +51,14 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 	const saveProgress = () => {
 		setSaveProgressFailed(false);
 
+		const elapsedSeconds = Math.floor((Date.now() - (startTimeRef.current ?? Date.now())) / 1000);
+		const moves = movesRef.current;
+
+		// Le temps et le nombre de coups sont connus tout de suite, donc on les affiche immédiatement.
+		setGameResult({ elapsedSeconds, moves, score: null });
+
 		if (!user || mode === "Create")
 			return;
-
-		const elapsedSeconds = Math.floor((Date.now() - (startTimeRef.current ?? Date.now())) / 1000);
 
 		fetch(`${API}/api/progress`, {
 			method: "POST",
@@ -62,13 +69,15 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 				num: numero + 1,
 				completed: true,
 				elapsed_seconds: elapsedSeconds,
-				moves: movesRef.current,
+				moves: moves,
 			}),
 		})
 			.then((response) => {
 				if (!response.ok)
 					throw new Error("Échec de l'enregistrement de la progression.");
+				return response.json();
 			})
+			.then((data) => setGameResult((prev) => ({ ...prev, score: data.score })))
 			.catch(() => setSaveProgressFailed(true));
 	};
 

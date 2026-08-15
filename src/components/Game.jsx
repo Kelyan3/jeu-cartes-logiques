@@ -127,8 +127,13 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	const [affichageSimple, setAffichageSimple] = useState(true);
 
+	/**
+	 * Résultat de la partie gagnée, affiché dans le popup de victoire.
+	 */
+	const [gameResult, setGameResult] = useState(null);
+
 	const { incrementMoves, saveProgress, nextExercise } = useProgressSave({
-		mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed,
+		mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult,
 	});
 
 
@@ -748,6 +753,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				numero={numero}
 				nbExo={nbExo}
 				saveProgressFailed={saveProgressFailed}
+				gameResult={gameResult}
 				demonstration={demonstration}
 				constructDemonstration={constructDemonstration}
 				onCopy={copyHandler}

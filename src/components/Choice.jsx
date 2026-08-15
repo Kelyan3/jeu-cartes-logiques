@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
+import { formatTime } from "../utils/formatTime";
+
 
 const Choice = ({ mode }) => {
 	/**
@@ -211,6 +213,11 @@ const Choice = ({ mode }) => {
 					}
 				>
 					<p>{label}</p>
+					{level.completed && (
+						<p className="levelScore">
+							{formatTime(level.best_time_seconds)} | {level.score} pts
+						</p>
+					)}
 				</td>
 			);
 		});

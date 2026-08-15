@@ -1,5 +1,6 @@
 import Popup from "../Popup";
 import GameDemonstration from "./GameDemonstration";
+import { formatTime } from "../../utils/formatTime";
 
 
 /**
@@ -11,6 +12,7 @@ const GameWinPopup = ({
 	numero,
 	nbExo,
 	saveProgressFailed,
+	gameResult,
 	demonstration,
 	constructDemonstration,
 	onCopy,
@@ -25,6 +27,12 @@ const GameWinPopup = ({
 			content={
 				<>
 					<b>Bravo, vous avez trouvé la solution !</b>
+					{gameResult && mode !== "Create" && (
+						<p className="gameResultSummary">
+							Temps : {formatTime(gameResult.elapsedSeconds)}
+							{mode === "Play" && gameResult.score !== null && ` | Score : ${gameResult.score}`}
+						</p>
+					)}
 					{saveProgressFailed && (
 						<p className="saveProgressWarning">
 							⚠ Votre progression n'a pas pu être enregistrée. Vérifiez votre connexion.

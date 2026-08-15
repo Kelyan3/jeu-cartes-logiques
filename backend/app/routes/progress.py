@@ -37,8 +37,8 @@ def progress_post():
 	if moves is not None and not isinstance(moves, int):
 		return jsonify({"error": "moves doit être un entier"}), 400
 
-	save_progress(current_user.id, mode, num, completed, elapsed_seconds, moves)
-	return jsonify({"ok": True})
+	score = save_progress(current_user.id, mode, num, completed, elapsed_seconds, moves)
+	return jsonify({"ok": True, "score": score})
 
 
 @progress_bp.route("/progress", methods=["DELETE"])

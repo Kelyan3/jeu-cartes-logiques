@@ -39,28 +39,36 @@ def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=Non
 	rattachées à ce chapitre sont automatiquement débloquées pour l'utilisateur.
 	"""
 	score = 0
+	best_time_seconds = None
 	if mode == "Play" and completed and elapsed_seconds is not None and moves is not None:
 		score = compute_score(elapsed_seconds, moves, get_global_scoring_params())
+		best_time_seconds = elapsed_seconds
 
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
 			cur.execute(
 				"""
-				INSERT INTO progression (id_user, mode, num, completed, score)
-				VALUES (%s, %s, %s, %s, %s)
+				INSERT INTO progression (id_user, mode, num, completed, score, best_time_seconds)
+				VALUES (%s, %s, %s, %s, %s, %s)
 				ON CONFLICT (id_user, mode, num)
 				DO UPDATE SET
 					completed = progression.completed OR EXCLUDED.completed,
 					score = GREATEST(progression.score, EXCLUDED.score),
+					best_time_seconds = LEAST(
+						COALESCE(progression.best_time_seconds, EXCLUDED.best_time_seconds),
+						COALESCE(EXCLUDED.best_time_seconds, progression.best_time_seconds)
+					),
 					updated_at = NOW()
 				""",
-				(user_id, mode, num, completed, score),
+				(user_id, mode, num, completed, score, best_time_seconds),
 			)
 
 			if mode == "Play" and completed:
 				_unlock_quests_if_chapter_completed(cur, user_id, num)
 
 			conn.commit()
+
+	return score
 
 def _unlock_quests_if_chapter_completed(cur, user_id, num):
 	"""
@@ -126,7 +134,9 @@ def get_chapters(user_id):
 	débloqué ; un niveau est débloqué seulement si le niveau qui le précède
 	(dans l'ordre chapitre -> position) a été complété.
 
-	Renvoie : [{"id_chapter", "name", "position", "unlocked", "levels": [{"num", "position", "unlocked", "completed"}, ...]}, ...]
+	Renvoie : [{"id_chapter", "name", "position", "unlocked", "levels": [{"num", "position", "unlocked",
+	"completed", "score", "best_time_seconds"}, ...]}, ...] ("score"/"best_time_seconds" valent None
+	tant que le niveau n'est pas complété.)
 	"""
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
@@ -141,13 +151,17 @@ def get_chapters(user_id):
 			)
 			levels_rows = cur.fetchall()
 
-			completed_nums = set()
+			progress_by_num = {}
 			if user_id is not None:
 				cur.execute(
-					"SELECT num FROM progression WHERE id_user = %s AND mode = 'Play' AND completed = TRUE",
+					"SELECT num, score, best_time_seconds FROM progression "
+					"WHERE id_user = %s AND mode = 'Play' AND completed = TRUE",
 					(user_id,),
 				)
-				completed_nums = {row[0] for row in cur.fetchall()}
+				progress_by_num = {
+					num: {"score": score, "best_time_seconds": best_time_seconds}
+					for num, score, best_time_seconds in cur.fetchall()
+				}
 
 	levels_by_chapter = {}
 	for id_level, id_chapter, num, position in levels_rows:
@@ -165,7 +179,10 @@ def get_chapters(user_id):
 		levels = sorted(levels_by_chapter.get(id_chapter, []), key=lambda level: level["position"])
 		for level in levels:
 			level["unlocked"] = previous_completed
-			level["completed"] = level["num"] in completed_nums
+			progress = progress_by_num.get(level["num"])
+			level["completed"] = progress is not None
+			level["score"] = progress["score"] if progress else None
+			level["best_time_seconds"] = progress["best_time_seconds"] if progress else None
 			previous_completed = level["unlocked"] and level["completed"]
 
 		chapters.append(

@@ -33,6 +33,7 @@ CREATE TABLE progression (
 	num INTEGER NOT NULL,
 	completed BOOLEAN DEFAULT FALSE,
 	score INTEGER DEFAULT 0,
+	best_time_seconds INTEGER,
 	updated_at TIMESTAMP DEFAULT NOW(),
 	UNIQUE(id_user, mode, num)
 );

@@ -37,6 +37,14 @@
 	font-family: 'Sora', sans-serif;
 }
 
+.popup-box .box .gameResultSummary {
+	margin: -8px 0 16px 0;
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--accent-amber);
+}
+
 .popup-box .box .closeButton {
 	position: absolute;
 	top: 14px;
