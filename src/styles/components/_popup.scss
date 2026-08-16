@@ -45,6 +45,18 @@
 	color: var(--accent-amber);
 }
 
+.popup-box .box .saveProgressWarning {
+	margin: 0 0 16px 0;
+	padding: 10px 12px;
+	border: 1px solid var(--danger);
+	border-radius: 8px;
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+	color: var(--danger);
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+}
+
 .popup-box .box .closeButton {
 	position: absolute;
 	top: 14px;
