@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { API_BASE_URL as API } from "../config/api";
@@ -29,9 +29,14 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 	 * Horodatage de début de partie, utilisé pour calculer elapsed_seconds envoyé à /api/progress.
 	 */
 	const startTimeRef = useRef(null);
-	useEffect(() => {
-		startTimeRef.current = Date.now();
-	}, []);
+
+	/**
+	 * Démarre le chrono, si ce n'est pas déjà fait.
+	 */
+	const startTimer = () => {
+		if (startTimeRef.current === null)
+			startTimeRef.current = Date.now();
+	};
 
 	/**
 	 * Nombre de coups joués (un coup = un appel à saveGame()), utilisé pour le calcul du score.
@@ -98,5 +103,5 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 		setPopupWin(false);
 	};
 
-	return { incrementMoves, saveProgress, nextExercise };
+	return { incrementMoves, saveProgress, nextExercise, startTimer };
 }

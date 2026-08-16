@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Deck from "./Deck";
 
@@ -39,7 +39,7 @@ import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard }
 const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
 
-	const { isActionUnlocked } = useUnlockedActions(mode, user);
+	const { isActionUnlocked, actionsReady } = useUnlockedActions(mode, user);
 
 	/**
 	 * Calcule une fois pour toutes (au montage) l'état de jeu de départ pour cet exercice.
@@ -132,10 +132,17 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const [gameResult, setGameResult] = useState(null);
 
-	const { incrementMoves, saveProgress, nextExercise } = useProgressSave({
+	const { incrementMoves, saveProgress, nextExercise, startTimer } = useProgressSave({
 		mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult,
 	});
 
+	/**
+	 * Démarre le chrono une fois les boutons d'action réellement affichés.
+	 */
+	useEffect(() => {
+		if (actionsReady)
+			startTimer();
+	}, [actionsReady, startTimer]);
 
 	/**
 	 * La carte qui est déjà sélectionnée & celle qui est passée en paramètre utilisent la fonction {@link Card.select()}

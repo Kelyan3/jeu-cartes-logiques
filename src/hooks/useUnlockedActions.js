@@ -13,7 +13,7 @@ import { API_BASE_URL as API } from "../config/api";
  * @param {"Play"|"Tutorial"|"Create"} mode
  * @param {Object|null} user - utilisateur connecté (depuis useAuth), ou null
  *
- * @returns {{isActionUnlocked: Function}}
+ * @returns {{isActionUnlocked: Function, actionsReady: boolean}}
  */
 export function useUnlockedActions(mode, user)
 {
@@ -55,5 +55,7 @@ export function useUnlockedActions(mode, user)
 		return Object.values(unlockedKeys).some((keys) => keys.includes(key));
 	}
 
-	return { isActionUnlocked };
+	const actionsReady = mode !== "Play" || unlockedKeys !== null;
+
+	return { isActionUnlocked, actionsReady };
 }
