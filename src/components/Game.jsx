@@ -35,6 +35,8 @@ import { runIsWin } from "../domain/rules/isWin";
 import { runTransitivite } from "../domain/rules/transitivite";
 import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard } from "../domain/rules/createMode";
 
+import { formatTime } from "../utils/formatTime";
+
 
 const Game = ({ mode, ex, numero, nbExo }) => {
 	const { user } = useAuth();
@@ -132,7 +134,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const [gameResult, setGameResult] = useState(null);
 
-	const { incrementMoves, saveProgress, nextExercise, startTimer } = useProgressSave({
+	const { incrementMoves, saveProgress, nextExercise, startTimer, displaySeconds, displayMoves } = useProgressSave({
 		mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult,
 	});
 
@@ -632,6 +634,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	return (
 		<div className="game">
+			{mode === "Play" && (
+				<div className="gameStatus">
+					⏱ {formatTime(displaySeconds)} | {displayMoves} coup{displayMoves !== 1 ? "s" : ""}
+				</div>
+			)}
+
 			{win && numero + 2 <= nbExo && (
 				<button className="buttonWin" onClick={nextExercise}>
 					Niveau suivant

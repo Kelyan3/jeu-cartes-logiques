@@ -4,7 +4,7 @@
 	border-radius: 12px;
 	padding: 40px 48px;
 	box-shadow: var(--shadow-soft);
-	max-width: min(820px, 94vw);
+	max-width: min(920px, 94vw);
 }
 
 #regles h1 {
@@ -12,29 +12,217 @@
 	margin-bottom: 32px;
 }
 
-#regles h2 {
-	display: block;
-	text-align: left;
-	margin-top: 32px;
-	margin-bottom: 16px;
-	font-size: 32px;
-}
-
-#regles h2::after {
-	left: 0;
-	transform: none;
-}
-
-#regles ul {
-	padding-left: 36px;
-}
-
-#regles li {
-	line-height: 1.7;
-	color: var(--text-muted);
-}
-
 #regles strong {
 	color: var(--text-primary);
 	font-weight: 600;
+}
+
+//========================
+// Onglets (étapes 1 à 6)
+//========================
+.rulesTabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-bottom: 28px;
+}
+
+.rulesTab {
+	padding: 8px 14px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--text-muted);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: border-color .15s ease, color .15s ease, background .15s ease;
+}
+
+.rulesTab:hover {
+	border-color: var(--accent-cyan);
+	color: var(--text-primary);
+}
+
+.rulesTabActive {
+	border-color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.1);
+	color: var(--accent-cyan);
+}
+
+//===========================
+// Contenu de l'onglet actif
+//===========================
+.rulesIntro {
+	font-family: 'Sora', sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	margin-bottom: 16px;
+}
+
+.rulesPanel ol {
+	padding-left: 24px;
+	margin-bottom: 24px;
+}
+
+.rulesPanel li {
+	line-height: 1.7;
+	color: var(--text-muted);
+	margin-bottom: 4px;
+}
+
+//==================
+// Cartes d'exemple
+//==================
+.rulesExampleRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.exampleCard {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.exampleCard .card {
+	margin: 0 0 8px 0;
+}
+
+.exampleCardLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	color: var(--text-muted);
+	text-align: center;
+}
+
+//================================================
+// Schéma de circulation Banque / LPU / Objectifs
+//================================================
+.flowSchema {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	margin-top: 24px;
+	padding: 24px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+}
+
+.flowBox {
+	padding: 14px 18px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 10px;
+	background: var(--bg-surface-alt);
+	font-family: 'Sora', sans-serif;
+	font-weight: 600;
+	color: var(--text-primary);
+	text-align: center;
+	transition: border-color .15s ease, background .15s ease, color .15s ease;
+}
+
+.flowBoxActive {
+	border-color: var(--accent-amber);
+	background: color-mix(in srgb, var(--accent-amber) 12%, var(--bg-surface));
+	color: var(--accent-amber);
+}
+
+.flowArrow {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: var(--accent-cyan);
+}
+
+.flowArrow span {
+	font-family: 'Inter', sans-serif;
+	font-size: 11px;
+	color: var(--text-muted);
+	margin-bottom: 2px;
+	white-space: nowrap;
+}
+
+.flowArrow::after {
+	content: "→";
+	font-size: 20px;
+}
+
+//==================================================
+// Pouvoir des connecteurs : lignes "avant / après"
+//==================================================
+.rulesPowerRow {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: 8px;
+	margin-bottom: 24px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+.rulesPowerRow:last-child {
+	border-bottom: none;
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.rulesPowerArrow {
+	font-size: 22px;
+	color: var(--accent-cyan);
+	align-self: center;
+}
+
+//==================================================================
+// Onglet "Score" : aperçus (popup de victoire / liste des niveaux)
+//==================================================================
+.rulesScorePreview {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 16px;
+	margin-top: 20px;
+}
+
+.rulesScorePreviewItem {
+	flex: 1 1 220px;
+	padding: 16px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 10px;
+	background: var(--bg-surface-alt);
+}
+
+.scorePreviewLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	color: var(--text-muted);
+	margin-bottom: 8px;
+}
+
+.scorePreviewResult {
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--accent-amber);
+}
+
+.scorePreviewLevel {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 10px 14px;
+	border-radius: 8px;
+	background: color-mix(in srgb, var(--accent-amber) 12%, var(--bg-surface));
+}
+
+.scorePreviewLevel .levelScoreValue {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--text-muted);
 }

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { API_BASE_URL as API } from "../config/api";
@@ -19,7 +19,8 @@ import { API_BASE_URL as API } from "../config/api";
  *                                          coups sont connus immédiatement, le score n'arrive qu'une
  *                                          fois la réponse du serveur reçue (voir saveProgress ci-dessous).
  *
- * @returns {{incrementMoves: Function, saveProgress: Function, nextExercise: Function}}
+ * @returns {{incrementMoves: Function, saveProgress: Function, nextExercise: Function,
+ *            startTimer: Function, displaySeconds: number, displayMoves: number}}
  */
 export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult })
 {
@@ -29,37 +30,64 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 	 * Horodatage de début de partie, utilisé pour calculer elapsed_seconds envoyé à /api/progress.
 	 */
 	const startTimeRef = useRef(null);
+	const intervalRef = useRef(null);
+
+	/**
+	 * Versions réactives du temps écoulé et du nombre de coups.
+	 */
+	const [displaySeconds, setDisplaySeconds] = useState(0);
 
 	/**
 	 * Démarre le chrono, si ce n'est pas déjà fait.
 	 */
 	const startTimer = () => {
-		if (startTimeRef.current === null)
-			startTimeRef.current = Date.now();
+		if (startTimeRef.current !== null)
+			return;
+
+		startTimeRef.current = Date.now();
+		intervalRef.current = setInterval(() => {
+			setDisplaySeconds(Math.floor((Date.now() - startTimeRef.current) / 1000));
+		}, 1000);
 	};
+
+	/**
+	 * Arrête le chrono affiché (le temps ne défile plus une fois la partie gagnée).
+	 */
+	const stopTimer = () => {
+		if (intervalRef.current !== null)
+		{
+			clearInterval(intervalRef.current);
+			intervalRef.current = null;
+		}
+	};
+
+	// Ne laisse jamais un intervalle tourner dans le vide si le composant est démonté en cours de partie.
+	useEffect(() => stopTimer, []);
 
 	/**
 	 * Nombre de coups joués (un coup = un appel à saveGame()), utilisé pour le calcul du score.
 	 */
 	const movesRef = useRef(0);
+	const [displayMoves, setDisplayMoves] = useState(0);
 
 	/**
 	 * Comptabilise un coup joué.
 	 */
 	const incrementMoves = () => {
 		movesRef.current += 1;
+		setDisplayMoves(movesRef.current);
 	};
 
 	/**
 	 * Enregistre la progression du niveau actuel auprès du backend, si l'utilisateur est connecté.
 	 */
 	const saveProgress = () => {
+		stopTimer();
 		setSaveProgressFailed(false);
 
 		const elapsedSeconds = Math.floor((Date.now() - (startTimeRef.current ?? Date.now())) / 1000);
 		const moves = movesRef.current;
 
-		// Le temps et le nombre de coups sont connus tout de suite, donc on les affiche immédiatement.
 		setGameResult({ elapsedSeconds, moves, score: null });
 
 		if (!user || mode === "Create")
@@ -103,5 +131,5 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 		setPopupWin(false);
 	};
 
-	return { incrementMoves, saveProgress, nextExercise, startTimer };
+	return { incrementMoves, saveProgress, nextExercise, startTimer, displaySeconds, displayMoves };
 }
