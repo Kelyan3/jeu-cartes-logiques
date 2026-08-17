@@ -119,17 +119,18 @@ const Home = () => {
 
 						{activeTab === "banque" && (
 							<>
+								<FlowSchema highlight="banque" /><br />
 								<p className="rulesIntro">La Banque contient toutes les cartes du jeu, en nombre illimité.</p>
 								<ol>
 									<li><strong>Obtenir</strong> une carte : elle rejoint définitivement votre LPU.</li>
 									<li><strong>Emprunter</strong> une carte : elle rejoint votre LPU, à rendre plus tard dans la partie.</li>
 								</ol>
-								<FlowSchema highlight="banque" />
 							</>
 						)}
 
 						{activeTab === "lpu" && (
 							<>
+								<FlowSchema highlight="lpu" /><br />
 								<p className="rulesIntro">La LPU liste les cartes que vous possédez à un instant donné.</p>
 								<ol>
 									<li>Présenter une ou plusieurs cartes de la LPU permet d'en <strong>obtenir de nouvelles</strong>.</li>
@@ -138,18 +139,17 @@ const Home = () => {
 								<div className="rulesExampleRow">
 									<ExampleCard index={1} label="Dans votre LPU" />
 								</div>
-								<FlowSchema highlight="lpu" />
 							</>
 						)}
 
 						{activeTab === "objectifs" && (
 							<>
+								<FlowSchema highlight="objectifs" /><br />
 								<p className="rulesIntro">La Zone d'Objectifs liste les cartes à faire apparaître dans la LPU pour gagner.</p>
 								<ol>
 									<li>La partie s'arrête, victorieuse, dès que la LPU contient toutes les cartes-objectifs.</li>
 									<li>Vous pouvez ajouter vous-même une carte intermédiaire, pour avancer étape par étape.</li>
 								</ol>
-								<FlowSchema highlight="objectifs" />
 							</>
 						)}
 

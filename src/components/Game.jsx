@@ -117,7 +117,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 	const [indentationDemonstration, setIndentationDemonstration] = useState(0);
 
-	const [tabIndiceDemonstration, setTabIndiceDemonstration] = useState([0]);
+	const [tabIndiceDemonstration, setTabIndiceDemonstration] = useState([-1]);
 
 	const [navigation, setNavigation] = useState();
 
@@ -373,7 +373,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			{
 				setDemonstration(initialSetup.demonstration);
 				setTabIndentation([0]);
-				setTabIndiceDemonstration([0]);
+				setTabIndiceDemonstration([-1]);
 				setIndentationDemonstration(0);
 			}
 		}
@@ -382,7 +382,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			allFalseGame();
 			setDemonstration(initialSetup.demonstration); // S'il n'y a plus d'historique, on force la démonstration initiale.
 			setTabIndentation([0]);
-			setTabIndiceDemonstration([0]);
+			setTabIndiceDemonstration([-1]);
 			setIndentationDemonstration(0);
 		}
 	};
@@ -509,30 +509,41 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (indiceRetour === undefined)
 			return;
 
-		if (indiceRetour !== lastGame.length)
+		// Ligne initiale de la consigne : état de départ.
+		if (indiceRetour === -1)
 		{
-			let tmpLastGame = [...lastGame];
-			let tmpSavedGame = tmpLastGame[indiceRetour];
+			if (lastGame.length > 0)
+			{
+				const initialGameArray = lastGame[0];
+				if (initialGameArray === undefined || initialGameArray === null)
+					return;
+
+				setNavigation(true);
+				allFalse(copyGameArray(initialGameArray));
+			}
+			else
+			{
+				setNavigation(false);
+				allFalse(savedGame);
+			}
+
+			return;
+		}
+
+		// État juste après l'action taguée indiceRetour.
+		const afterIndex = indiceRetour + 1;
+		if (afterIndex < lastGame.length)
+		{
+			const tmpSavedGame = lastGame[afterIndex];
 			if (tmpSavedGame === undefined || tmpSavedGame === null)
 				return;
 
 			setNavigation(true);
-
-			// Initialise le futur tableau de jeu.
-			let tmpFutureGame = [];
-
-			// Copie le dernier tableau de jeu sauvegardé dans le futur tableau.
-			for (let i = 0; i < tmpSavedGame.length; i++)
-			{
-				tmpFutureGame[i] = [];
-				for (let j = 0; j < tmpSavedGame[i].length; j++)
-					tmpFutureGame[i].push(tmpSavedGame[i][j].copy());
-			}
-
-			allFalse(tmpFutureGame);
+			allFalse(copyGameArray(tmpSavedGame));
 		}
 		else
 		{
+			// Dernière action (ou au-delà) : plateau courant.
 			setNavigation(false);
 			allFalse(savedGame);
 		}
@@ -544,10 +555,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {string} message - le message d'erreur à afficher
 	 * @param {boolean} [allFalseBool=true] - si false, n'annule pas la sélection de cartes en cours
 	 */
-	const error = (message, allFalseBool) => {
-		if (allFalseBool === undefined)
-			allFalseBool = true;
-
+	const error = (message, allFalseBool=true) => {
 		setMessageError(message);
 
 		if (!allFalseBool)
