@@ -23,6 +23,17 @@ def get_progress(user_id):
 				for mode, num, completed, score in rows
 			]
 
+def _is_level_unlocked(user_id, num):
+	"""
+	True si le niveau num (mode "Play") est débloqué pour user_id, False sinon (y compris
+	si le niveau n'existe pas).
+	"""
+	for chapter in get_chapters(user_id):
+		for level in chapter["levels"]:
+			if level["num"] == num:
+				return level["unlocked"]
+	return False
+
 def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=None):
 	"""
 	Enregistre ou met à jour la progression d'un utilisateur sur un niveau.
@@ -38,6 +49,9 @@ def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=Non
 	Si ce niveau complète entièrement son chapitre (mode "Play"), les quêtes
 	rattachées à ce chapitre sont automatiquement débloquées pour l'utilisateur.
 	"""
+	if mode == "Play" and completed and not _is_level_unlocked(user_id, num):
+		completed = False
+
 	score = 0
 	best_time_seconds = None
 	if mode == "Play" and completed and elapsed_seconds is not None and moves is not None:

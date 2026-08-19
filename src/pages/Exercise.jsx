@@ -5,6 +5,9 @@ import Game from "../components/Game";
 import Navigation from "../components/Navigation";
 import PopupForms from "../components/PopupForms";
 
+import { useAuth } from "../hooks/useAuth";
+import { API_BASE_URL as API } from "../config/api";
+
 
 /**
  * Nombre de niveaux par défaut, utilisé en repli si le manifeste
@@ -15,8 +18,11 @@ const defaultCounts = { Play: 50, Tutorial: 7 };
 
 const Exercise = () => {
 	const { num: tmpNum, mode } = useParams();
-	const navigate = useNavigate();
+	const { user } = useAuth();
 	const [manifest, setManifest] = useState(null);
+	const [unlockStatus, setUnlockStatus] = useState("ok");
+	const navigate = useNavigate();
+
 	const exerciseKey = mode + "-" + tmpNum;
 
 	/**
@@ -35,6 +41,24 @@ const Exercise = () => {
 			.then((data) => setManifest(data))
 			.catch(() => setManifest(defaultCounts));
 	}, []);
+
+	useEffect(() => {
+		if (mode !== "Play" || !user)
+		{
+			setUnlockStatus("ok");
+			return;
+		}
+
+		setUnlockStatus("checking");
+		fetch(`${API}/api/chapters`, { credentials: "include" })
+			.then((response) => response.json())
+			.then((chapters) => {
+				const level = chapters.flatMap((chapter) => chapter.levels).find((l) => l.num === Number(tmpNum));
+				setUnlockStatus(level?.unlocked ? "ok" : "locked");
+			})
+			// En cas d'échec réseau, on ne bloque pas l'accès pour une raison indépendante du déblocage.
+			.catch(() => setUnlockStatus("ok"));
+	}, [mode, user, tmpNum]);
 
 	/**
 	 * Valeurs entièrement dérivées de tmpNum/mode/manifest : calculées au rendu,
@@ -79,7 +103,12 @@ const Exercise = () => {
 	return (
 		<div className="home">
 			<Navigation />
-			{ex !== undefined && (
+			
+			{unlockStatus === "locked" && (
+				<p className="levelLockedMessage">Vous n'avez pas encore débloqué ce niveau.</p>
+			)}
+
+			{unlockStatus === "ok" && ex !== undefined && (
 				<Game
 					key={exerciseKey}
 					mode={mode}
