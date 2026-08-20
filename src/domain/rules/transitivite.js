@@ -39,9 +39,9 @@ function finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRi
 {
 	const { game, addToGame, isWin } = deps;
 
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 	if (!skipAdd)
-		addToGame(tmp, finalDeck, cardToAdd, false);
+		addToGame(workingGame, finalDeck, cardToAdd, false);
 
 	// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
 	isWin(
@@ -57,7 +57,7 @@ function finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRi
 			],
 		],
 			[0],
-		tmp
+		workingGame
 	);
 }
 

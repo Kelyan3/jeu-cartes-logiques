@@ -1,13 +1,13 @@
 import { useGameTab } from "../context/GameTabContext";
 import LogicText from  "./LogicText";
 
-const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }) => {
+const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) => {
 	/**
 	 * Fonction qui détecte le clique sur une carte & qui appelle la fonction {@link update()} passée par le
 	 * component Deck.
 	 */
 	const handleClick = () => {
-		update(cardIndice);
+		update(cardIndex);
 	}
 
 	/**
@@ -164,11 +164,11 @@ const Card = ({ deckIndice, cardIndice, update, isWin, affichageSimple, isHelp }
 			className={
 				"card " +
 				(isWin ? "" : "hoverable ") +
-				(game[deckIndice][cardIndice].nouveau ? "nouveau " : "") +
+				(game[deckIndex][cardIndex].nouveau ? "nouveau " : "") +
 				(isHelp ? "aide" : "")}
-			style={calcSizeCard(game[deckIndice][cardIndice])}
+			style={calcSizeCard(game[deckIndex][cardIndex])}
 		>
-			{renderCard(game[deckIndice][cardIndice], game[deckIndice][cardIndice].active)}
+			{renderCard(game[deckIndex][cardIndex], game[deckIndex][cardIndex].active)}
 		</div>
 	);
 };

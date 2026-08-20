@@ -25,18 +25,18 @@ export function runChoixCouleur(event, deps)
 	saveGame();
 
 	// Copie du jeu actuel
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Dé-check le bouton radio
 	event.target.checked = false;
 
 	// Ajoute la carte dans le deck (indiceDeckAddCard est affecté avant de rentrer dans la fonction)
 	let cardToAdd = new Card(game[indiceDeckAddCard].length, event.target.value, false, "", null, null, true, false);
-	if (!addToGame(tmp, indiceDeckAddCard, cardToAdd))
+	if (!addToGame(workingGame, indiceDeckAddCard, cardToAdd))
 		return;
 
 	// Actualise le jeu et désélectionne tout
-	clearSelectionFromGameState(tmp);
+	clearSelectionFromGameState(workingGame);
 }
 
 /**
@@ -65,7 +65,7 @@ export function runChoixLiaison(event, deps)
 	saveGame();
 
 	// Copie du jeu actuel
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Dé-check le bouton radio
 	event.target.checked = false;
@@ -130,11 +130,11 @@ export function runChoixLiaison(event, deps)
 
 	// Enlève le popup
 	setPopupFusion(false);
-	if (!addToGame(tmp, firstSelectedDeckIndex, cardToAdd))
+	if (!addToGame(workingGame, firstSelectedDeckIndex, cardToAdd))
 		return;
 
 	// Actualise le jeu et désélectionne tout
-	clearSelectionFromGameState(tmp);
+	clearSelectionFromGameState(workingGame);
 }
 
 /**
@@ -167,13 +167,13 @@ export function runDeleteCard(deps)
 		saveGame();
 
 		// Copie du jeu actuel
-		let tmp = copyGameArray(game);
+		let workingGame = copyGameArray(game);
 
 		// Supprime la carte
-		tmp[firstSelectedDeckIndex] = delCard(tmp[firstSelectedDeckIndex], firstSelectedCardIndex);
+		workingGame[firstSelectedDeckIndex] = delCard(workingGame[firstSelectedDeckIndex], firstSelectedCardIndex);
 
 		// Actualise le jeu et désélectionne tout
-		clearSelectionFromGameState(tmp);
+		clearSelectionFromGameState(workingGame);
 	}
 	else
 		clearCurrentGameSelection();

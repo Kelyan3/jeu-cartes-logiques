@@ -17,8 +17,8 @@ import { containCard, copyGameArray } from "../gameSolver";
  * @param {Card[][]} deps.game
  * @param {Function} deps.error - error(message: string)
  * @param {Function} deps.saveGame
- * @param {Function} deps.addToGame - addToGame(tmp, deckId, card, defaultEmitError) => boolean
- * @param {Function} deps.isWin - isWin(msgArray, indentArray, tmp)
+ * @param {Function} deps.addToGame - addToGame(gameState, deckIndex, card, defaultEmitError) => boolean
+ * @param {Function} deps.isWin - isWin(msgArray, indentArray, gameState)
  */
 export function runAddCardAnd(deps)
 {
@@ -67,18 +67,18 @@ export function runAddCardAnd(deps)
 	saveGame();
 
 	// Copie du jeu actuel
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Ajoute la partie gauche de la carte dans le jeu
 	let tmpCard1 = game[deckI][cardI].left.copy();
-	addToGame(tmp, deckI, tmpCard1, false);
+	addToGame(workingGame, deckI, tmpCard1, false);
 
 	// Ajoute la partie droite de la carte dans le jeu
 	let tmpCard2 = game[deckI][cardI].right.copy();
-	addToGame(tmp, deckI, tmpCard2, false);
+	addToGame(workingGame, deckI, tmpCard2, false);
 
 	// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
-	isWin([["On a ", tmpCard1.copy(), ". On a ", tmpCard2.copy(), "."]], [0], tmp);
+	isWin([["On a ", tmpCard1.copy(), ". On a ", tmpCard2.copy(), "."]], [0], workingGame);
 }
 
 /**
@@ -111,18 +111,18 @@ export function runAddCardFuse(deps)
 	}
 
 	// Copie du jeu actuel
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
 	let bool =
-		 tmp[secondSelectedDeckIndex][secondSelectedCardIndex].link === "=>" &&
-		 tmp[secondSelectedDeckIndex][secondSelectedCardIndex].left.equals(tmp[firstSelectedDeckIndex][firstSelectedCardIndex]);
+			 workingGame[secondSelectedDeckIndex][secondSelectedCardIndex].link === "=>" &&
+			 workingGame[secondSelectedDeckIndex][secondSelectedCardIndex].left.equals(workingGame[firstSelectedDeckIndex][firstSelectedCardIndex]);
 
 	// Une des 2 cartes doit avoir une liaison =>
 	if (bool ||
-		(tmp[firstSelectedDeckIndex][firstSelectedCardIndex].link === "=>" &&
-		tmp[firstSelectedDeckIndex][firstSelectedCardIndex].left.equals(
-			tmp[secondSelectedDeckIndex][secondSelectedCardIndex])))
+		(workingGame[firstSelectedDeckIndex][firstSelectedCardIndex].link === "=>" &&
+		workingGame[firstSelectedDeckIndex][firstSelectedCardIndex].left.equals(
+			workingGame[secondSelectedDeckIndex][secondSelectedCardIndex])))
 	{
 		// Initialisation de la carte où la liaison => va être utilisée
 		let deckCarteComplex;
@@ -140,7 +140,7 @@ export function runAddCardFuse(deps)
 			cardCarteComplex = firstSelectedCardIndex;
 		}
 
-		if (containCard(game, finalDeck, tmp[deckCarteComplex][cardCarteComplex].right))
+		if (containCard(game, finalDeck, workingGame[deckCarteComplex][cardCarteComplex].right))
 		{
 			error("La carte que vous voulez ajouter existe déjà !");
 			return;
@@ -150,29 +150,29 @@ export function runAddCardFuse(deps)
 		saveGame();
 
 		// Ajoute la partie droite de la carte => utilisée dans le deck le plus haut
-		let cardToAdd = tmp[deckCarteComplex][cardCarteComplex].right.copy();
-		addToGame(tmp, finalDeck, cardToAdd);
+		let cardToAdd = workingGame[deckCarteComplex][cardCarteComplex].right.copy();
+		addToGame(workingGame, finalDeck, cardToAdd);
 
 		// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
 		isWin(
 			[
 				[
 					"Puisque ",
-					tmp[deckCarteComplex][cardCarteComplex].left.copy(),
+					workingGame[deckCarteComplex][cardCarteComplex].left.copy(),
 					", on a ",
-					tmp[deckCarteComplex][cardCarteComplex].right.copy(),
+					workingGame[deckCarteComplex][cardCarteComplex].right.copy(),
 					".",
 				],
 			],
 			[0],
-			tmp
+			workingGame
 		);
 	}
 	else
 	{
 		// Si aucune des 2 cartes n'a de liaison =>
-		if (tmp[secondSelectedDeckIndex][secondSelectedCardIndex].link !== "=>" &&
-			tmp[firstSelectedDeckIndex][firstSelectedCardIndex].link !== "=>")
+		if (workingGame[secondSelectedDeckIndex][secondSelectedCardIndex].link !== "=>" &&
+			workingGame[firstSelectedDeckIndex][firstSelectedCardIndex].link !== "=>")
 		{
 			error('Une des deux cartes doit avoir une liaison principale de type "=>" !');
 		}
@@ -202,28 +202,28 @@ export function runFuseCardAnd(deps)
 			if (finalDeck !== game.length - 1)
 			{
 				// Copie du jeu actuel
-				let tmp = copyGameArray(game);
+				let workingGame = copyGameArray(game);
 
-				if (!containCard(game, finalDeck, new Card(0, null, false, "et", tmp[firstSelectedDeckIndex][firstSelectedCardIndex], tmp[secondSelectedDeckIndex][secondSelectedCardIndex], true, false)))
+				if (!containCard(game, finalDeck, new Card(0, null, false, "et", workingGame[firstSelectedDeckIndex][firstSelectedCardIndex], workingGame[secondSelectedDeckIndex][secondSelectedCardIndex], true, false)))
 				{
 					// Sauvegarde du jeu actuel
 					saveGame();
 
 					// Copie les 2 cartes sélectionnées
-					let tmpCard1 = tmp[firstSelectedDeckIndex][firstSelectedCardIndex].copy();
-					let tmpCard2 = tmp[secondSelectedDeckIndex][secondSelectedCardIndex].copy();
+					let tmpCard1 = workingGame[firstSelectedDeckIndex][firstSelectedCardIndex].copy();
+					let tmpCard2 = workingGame[secondSelectedDeckIndex][secondSelectedCardIndex].copy();
 					tmpCard1.id = 0;
 					tmpCard2.id = 1;
 					tmpCard1.setOld(true);
 					tmpCard2.setOld(true);
 
 					// Ajoute la nouvelle carte dans le deck le plus haut avec les 2 autres cartes & une liaison "et"
-					let cardToAdd = new Card(tmp[finalDeck].length, null, false, "et", tmpCard1, tmpCard2, true, false);
-					if (!addToGame(tmp, finalDeck, cardToAdd))
+					let cardToAdd = new Card(workingGame[finalDeck].length, null, false, "et", tmpCard1, tmpCard2, true, false);
+					if (!addToGame(workingGame, finalDeck, cardToAdd))
 						return;
 
 					// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
-					isWin([["On a ", tmpCard1.copy(), "^", tmpCard2.copy(), ".",], ], [0], tmp);
+					isWin([["On a ", tmpCard1.copy(), "^", tmpCard2.copy(), ".",], ], [0], workingGame);
 				}
 				else
 					error("La carte que vous voulez ajouter existe déjà !");

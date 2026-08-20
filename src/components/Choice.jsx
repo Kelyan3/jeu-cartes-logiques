@@ -233,9 +233,9 @@ const Choice = ({ mode }) => {
 	 */
 	function afficheChapters()
 	{
-		const res = [];
+		const chapterSections = [];
 		chapters.forEach((chapter, chapterIndex) => {
-			res.push(
+			chapterSections.push(
 				<h2 key={"h-" + chapter.id_chapter}>
 					{chapter.name} {!chapter.unlocked && "🔒"}
 				</h2>
@@ -245,14 +245,14 @@ const Choice = ({ mode }) => {
 			for (let i = 0; i < chapter.levels.length; i += 5)
 				rows.push(createChapterRow(chapter.levels.slice(i, i + 5), chapterIndex + "-" + i));
 
-			res.push(
+			chapterSections.push(
 				<table key={chapter.id_chapter}>
 					<tbody>{rows}</tbody>
 				</table>
 			);
 		});
 
-		return res;
+		return chapterSections;
 	}
 
 	/**
@@ -263,11 +263,11 @@ const Choice = ({ mode }) => {
 	 */
 	function afficheChoice()
 	{
-		const res = [];
+		const difficultySections = [];
 		difficulty.forEach((category, index) => {
 			let table = [];
 			let y = 1;
-			res.push(<h2 key={"h-" + index}>{category[2]}</h2>);
+			difficultySections.push(<h2 key={"h-" + index}>{category[2]}</h2>);
 
 			for (let i = category[0] - 1; i <= category[1] - 1; i++)
 			{
@@ -285,14 +285,14 @@ const Choice = ({ mode }) => {
 					y--;
 			}
 
-			res.push(
+			difficultySections.push(
 				<table key={category[2]}>
 					<tbody>{table}</tbody>
 				</table>
 			);
 		});
 
-		return res;
+		return difficultySections;
 	}
 
 	/**

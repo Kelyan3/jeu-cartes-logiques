@@ -13,21 +13,21 @@ import { stringToLogicText } from "./goals";
  */
 export function constructDemonstration(tab, affichageSimple)
 {
-	let res = "";
+	let logicText = "";
 	tab.forEach((element) => {
 		if (typeof element === "string")
-			res += element;
+			logicText += element;
 		else
 		{
 			let displayCard = element;
 			if (affichageSimple)
 				displayCard = displayCard.displayGoodCardRecur();
 
-			res += displayCard.toString();
+			logicText += displayCard.toString();
 		}
 	});
 
-	return stringToLogicText(res);
+	return stringToLogicText(logicText);
 }
 
 /**

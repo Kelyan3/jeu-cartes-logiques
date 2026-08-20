@@ -162,16 +162,16 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			setErrorMessage("");
 
 			/**
-			 * Copie du jeu dans tmp (copie aussi le deck concerné, pas seulement
+			 * Copie du jeu dans nextGameState (copie aussi le deck concerné, pas seulement
 			 * le tableau extérieur, pour ne pas modifier `game` avant setGame())
 			 */
-			let tmp = game.map((d, di) => (di === i ? [...d] : d));
+			let nextGameState = game.map((d, di) => (di === i ? [...d] : d));
 
-			setAllCardOld(tmp);
+			setAllCardOld(nextGameState);
 
-			const { selectedCardCount: nextSelectedCardCount, firstSelectedDeckIndex: nextFirstSelectedDeckIndex, secondSelectedDeckIndex: nextSecondSelectedDeckIndex } = selectCard(i, j, tmp);
+			const { selectedCardCount: nextSelectedCardCount, firstSelectedDeckIndex: nextFirstSelectedDeckIndex, secondSelectedDeckIndex: nextSecondSelectedDeckIndex } = selectCard(i, j, nextGameState);
 
-			setGame(ensureDeckIds(tmp));
+			setGame(ensureDeckIds(nextGameState));
 
 			if (nextSelectedCardCount === 2 && mode === "Create")
 				setPopupFusion(true);
@@ -188,10 +188,10 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	/**
 	 * Marque toutes les cartes du tableau reçu comme "non nouvelles" (arrête l'animation d'apparition).
 	 *
-	 * @param {Card[][]} tmp - tableau du jeu temporaire
+	 * @param {Card[][]} gameState - tableau du jeu temporaire
 	 */
-	const setAllCardOld = (tmp) => {
-		tmp.forEach((deck) => {
+	const setAllCardOld = (gameState) => {
+		gameState.forEach((deck) => {
 			deck.forEach((card) => {
 				card.setOld(false);
 			});
@@ -201,20 +201,20 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	/**
 	 * Désélectionne toutes les cartes dans le tableau reçu et devient le jeu.
 	 *
-	 * @param {Card[][]} tmp - tableau du jeu temporaire
+	 * @param {Card[][]} gameState - tableau du jeu temporaire
 	 */
-	const clearSelectionFromGameState = (tmp) => {
+	const clearSelectionFromGameState = (gameState) => {
 		resetSelection();
 
 		// On désélectionne toutes les cartes du jeu passé en paramètre
-		tmp.forEach((deck) => {
+		gameState.forEach((deck) => {
 			deck.forEach((card) => {
 				card.select(false);
 			});
 		});
 
 		// On actualise le jeu
-		setGame(ensureDeckIds(tmp));
+		setGame(ensureDeckIds(gameState));
 	};
 
 	/**
@@ -224,28 +224,28 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		resetSelection();
 
 		// Copie du jeu actuel
-		const tmp = copyGameArray(game);
+		const gameState = copyGameArray(game);
 
 		// On désélectionne toutes les cartes du jeu actuel
-		tmp.forEach((deck) => {
+		gameState.forEach((deck) => {
 			deck.forEach((card) => {
 				card.select(false);
 			});
 		});
 
 		// On actualise le jeu
-		setGame(ensureDeckIds(tmp));
+		setGame(ensureDeckIds(gameState));
 	};
 
 	/**
 	 * /!\ Attention cette fonction doit être uniquement appelée en mode Create ou pour faire des tests !
 	 * Fait apparaître le popup qui nous demande la couleur de la carte qu'on veut ajouter.
 	 *
-	 * @param {number} deckIndice - l'indice du deck où l'on ajoute une carte
+	 * @param {number} deckIndex - l'indice du deck où l'on ajoute une carte
 	 */
-	const addCard = (deckIndice) => {
+	const addCard = (deckIndex) => {
 		// Indique dans quel deck on veut ajouter une carte
-		setIndiceDeckAddCard(deckIndice);
+		setIndiceDeckAddCard(deckIndex);
 
 		// Affiche le popup pour ajouter une carte simple
 		setPopupAddCard(true);
@@ -264,10 +264,10 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const deleteCard = () => runDeleteCard(createModeDeps());
 	const confirmDeleteCard = () => runConfirmDeleteCard(createModeDeps());
 
-	const returnNonCard = (tmp) => {
+	const returnNonCard = (gameState) => {
 		let deckI = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
 		let cardI = Math.max(firstSelectedCardIndex, secondSelectedCardIndex);
-		const futureCardNon = tmp[deckI][cardI].copy();
+		const futureCardNon = gameState[deckI][cardI].copy();
 
 		let cardToAdd = new Card(
 			0,
@@ -296,18 +296,18 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 		saveGame();
 
-		const tmp = copyGameArray(game);
-		if (!addToGame(tmp, firstSelectedDeckIndex, returnNonCard(tmp)))
+		const gameState = copyGameArray(game);
+		if (!addToGame(gameState, firstSelectedDeckIndex, returnNonCard(gameState)))
 			return;
 
-		clearSelectionFromGameState(tmp);
+		clearSelectionFromGameState(gameState);
 	};
 
 	/**
 	 * Adaptateur autour de `runIsWin` : lui fournit les callbacks nécessaires, pour
 	 * garder inchangés tous les appels existants à `isWin(...)`.
 	 */
-	const isWin = (arrayMsg, arrayIndent, tmp, originel) => runIsWin(arrayMsg, arrayIndent, tmp, originel, {
+	const isWin = (arrayMsg, arrayIndent, gameState, originel) => runIsWin(arrayMsg, arrayIndent, gameState, originel, {
 		addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setObjectives, setWin, setPopupWin, saveProgress,
 	});
 
@@ -569,8 +569,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * lui fournit `error` comme callback d'erreur, pour garder inchangés tous les
 	 * appels existants à `addToGame(...)` dans ce composant.
 	 */
-	const addToGame = (tmp, deckIndex, card, defaultEmitError) =>
-		addToGameCore(tmp, deckIndex, card, (message) => error(message, false), defaultEmitError);
+	const addToGame = (gameState, deckIndex, card, defaultEmitError) =>
+		addToGameCore(gameState, deckIndex, card, (message) => error(message, false), defaultEmitError);
 
 	/**
 	 * Intercepte la copie de texte sélectionné dans la zone de démonstration : reconvertit
@@ -603,9 +603,9 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 						futurArrayPoint.push(element);
 				});
 
-				let res = futurArrayPoint.join(". ");
-				if (!futurArrayElement.includes(res))
-					futurArrayElement.push(res);
+				let normalizedPoint = futurArrayPoint.join(". ");
+				if (!futurArrayElement.includes(normalizedPoint))
+					futurArrayElement.push(normalizedPoint);
 			});
 
 			futurArrayLine.push(futurArrayElement.join(", "));

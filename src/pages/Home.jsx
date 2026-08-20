@@ -49,7 +49,7 @@ const exampleGame = [exampleCards];
  */
 const ExampleCard = ({ index, label }) => (
 	<div className="exampleCard">
-		<Card deckIndice={0} cardIndice={index} update={() => {}} isWin={true} affichageSimple={false} isHelp={false} />
+		<Card deckIndex={0} cardIndex={index} update={() => {}} isWin={true} affichageSimple={false} isHelp={false} />
 		{label && <p className="exampleCardLabel">{label}</p>}
 	</div>
 );

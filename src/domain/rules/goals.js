@@ -104,23 +104,23 @@ export function delCardWithEquals(deck, cardToDelete)
  */
 export function checkSubObj(deck, card)
 {
-	let res = false;
+	let objectiveFound = false;
 	deck.forEach((elem) => {
 		if (elem.link === "=>" && elem.right.equals(card))
-			res = true;
+			objectiveFound = true;
 	});
 
-	return res;
+	return objectiveFound;
 }
 
 /**
- * Crée le tableau objectives en fonction des objectifs présents dans tmp.
+ * Crée le tableau objectives en fonction des objectifs présents dans gameState.
  *
- * @param {Card[][]} tmp - tableau du jeu temporaire
+ * @param {Card[][]} gameState - tableau du jeu temporaire
  *
  * @returns {Array[]} le tableau des objectifs, sous la forme [numero objectif, indice de la carte, (numero != indice)]
  */
-export function buildObjectives(tmp)
+export function buildObjectives(gameState)
 {
 	// Création du tableau que l'on va affecter à objectives
 	let tmpObj = [];
@@ -132,10 +132,10 @@ export function buildObjectives(tmp)
 	 * Parcourt le deck d'objectif à la recherche d'une carte simple qui n'est pas l'objectif principal.
 	 * S'il y a en a une elle est ajouté au tableau.
 	 */
-	tmp[tmp.length - 1].forEach((element, index) => {
+	gameState[gameState.length - 1].forEach((element, index) => {
 		if (index !== 0)
 		{
-			if (checkSubObj(tmp[tmp.length - 1], element))
+			if (checkSubObj(gameState[gameState.length - 1], element))
 				tmpObj.push([tmpObj.length, index, true]);
 		}
 	});
@@ -144,29 +144,29 @@ export function buildObjectives(tmp)
 }
 
 /**
- * Cherche parmi les cartes du deck d'objectif de tmp s'il y a une carte "=>" dont
+ * Cherche parmi les cartes du deck d'objectif de gameState s'il y a une carte "=>" dont
  * la partie droite est égale à cardObj.
  *
  * @param {Card} cardObj
- * @param {Card[][]} tmp - tableau du jeu (le paramètre est désormais obligatoire :
+ * @param {Card[][]} gameState - tableau du jeu (le paramètre est désormais obligatoire :
  *                         l'ancien défaut sur `game` a été retiré car jamais utilisé)
  *
  * @returns {number} l'indice de la carte trouvée dans le deck d'objectif, ou -1 si non trouvée
  */
-export function findObjectifRelative(cardObj, tmp)
+export function findObjectifRelative(cardObj, gameState)
 {
 	// Variable que l'on va retourner (-1 si il trouve pas)
 	let num = -1;
 
 	// Deck de l'objectif
-	let deck = tmp.length - 1;
+	let deck = gameState.length - 1;
 
 	/**
 	 * Cherche parmi les cartes de l'objectif s'il y a une carte dont la partie droite
 	 * est égale à la carte envoyée en paramètre.
 	 * Si oui {@link num} prend la valeur de l'index de cette carte.
 	 */
-	tmp[deck].forEach((element, index) => {
+	gameState[deck].forEach((element, index) => {
 		// Vérifie si la couleur est null (si elle est null la carte est au moins double)
 		if (element !== null && element.color === null)
 		{

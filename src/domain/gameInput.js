@@ -100,25 +100,25 @@ export function buildInitialGameSetup(ex, mode)
 	try
 	{
 		const tmp = gameInput(ex);
-		let res = [];
+		let demonstrationLines = [];
 		tmp[0].forEach((element) => {
-			res.push("On a ");
-			res.push(element.copy());
-			res.push(". ");
+			demonstrationLines.push("On a ");
+			demonstrationLines.push(element.copy());
+			demonstrationLines.push(". ");
 		});
 
 		if (tmp.length === 2 && tmp[1].length > 0)
 		{
-			res.push("Montrons ");
-			res.push(tmp[1][0].copy());
-			res.push(".");
+			demonstrationLines.push("Montrons ");
+			demonstrationLines.push(tmp[1][0].copy());
+			demonstrationLines.push(".");
 		}
 
 		/**
-		 * Équivalent à addLineDemonstration([res], [0], 0, true) : voir la fonction
+		 * Équivalent à addLineDemonstration([demonstrationLines], [0], 0, true) : voir la fonction
 		 * addLineDemonstration pour le détail du format [indentation, message].
 		 */
-		return { game: ensureDeckIds(tmp), demonstration: [[0, res]] };
+		return { game: ensureDeckIds(tmp), demonstration: [[0, demonstrationLines]] };
 	}
 	catch (error)
 	{

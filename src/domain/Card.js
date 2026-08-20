@@ -58,36 +58,36 @@ export default class Card
 	 */
 	toString()
 	{
-		let res = "";
+		let stringRepresentation = "";
 
 		if (this.link === "non")
 			return "non" + this.right.toString();
 
 		// Couleur de la carte.
 		if (this.color !== null)
-			res += this.getColor(this.color);
+			stringRepresentation += this.getColor(this.color);
 
 		// Carte gauche.
 		if (this.left !== null)
-			res += "(" + this.left.toString();
+			stringRepresentation += "(" + this.left.toString();
 
 		// Liaison.
 		if (this.link === "et")
-			res += "^";
+			stringRepresentation += "^";
 		else if (this.link === "ou")
-			res += "∨";
+			stringRepresentation += "∨";
 		else if (this.link === "=>")
-			res += "=>";
+			stringRepresentation += "=>";
 		else if (this.link === "<=>")
-			res += "<=>";
+			stringRepresentation += "<=>";
 		else
-			res += this.link;
+			stringRepresentation += this.link;
 
 		// Carte droite.
 		if (this.right !== null)
-			res += this.right.toString() + ")";
+			stringRepresentation += this.right.toString() + ")";
 
-		return res;
+		return stringRepresentation;
 	}
 
 	/**
@@ -267,16 +267,16 @@ export default class Card
 	 */
 	getProfondeur()
 	{
-		let res = 1;
+		let cardDepth = 1;
 		if (this.color !== null)
-			return res;
+			return cardDepth;
 
 		const temp1 = this.left.getProfondeur();
 		const temp2 = this.right.getProfondeur();
 		const finalTemp = Math.max(temp1, temp2);
-		res += finalTemp;
+		cardDepth += finalTemp;
 
-		return res;
+		return cardDepth;
 	}
 
 	/**
@@ -289,11 +289,11 @@ export default class Card
 		if (this.color !== null)
 			return false;
 
-		let res = false;
+		let containsImplicationLink = false;
 		if (this.link === "=>")
-			res = true;
+			containsImplicationLink = true;
 
-		return (res || this.left.haveImpliqueLinkRecur() || this.right.haveImpliqueLinkRecur());
+		return (containsImplicationLink || this.left.haveImpliqueLinkRecur() || this.right.haveImpliqueLinkRecur());
 	}
 
 	/**

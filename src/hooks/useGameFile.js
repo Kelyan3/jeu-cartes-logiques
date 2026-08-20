@@ -19,25 +19,25 @@ export function useGameFile(game, setGame)
 	 * pour préparer l'export JSON.
 	 */
 	const gameOutput = () => {
-		let res = [[], []];
+		let fileData = [[], []];
 
 		game.forEach(function (deck, index) {
 			deck.forEach(function (card) {
-				res[index].push(card.toFile());
+				fileData[index].push(card.toFile());
 			});
 		});
 
-		return res;
+		return fileData;
 	};
 
 	/**
 	 * Télécharge l'état actuel du jeu au format JSON sur l'ordinateur de l'utilisateur.
 	 */
 	const saveAsFile = () => {
-		let res;
+		let fileData;
 
-		res = gameOutput();
-		const blob = new Blob([JSON.stringify(res)], { type: "text/json;charset=utf-8;", });
+		fileData = gameOutput();
+		const blob = new Blob([JSON.stringify(fileData)], { type: "text/json;charset=utf-8;", });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");
 

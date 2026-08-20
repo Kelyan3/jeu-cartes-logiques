@@ -10,7 +10,7 @@ import { buildObjectives, findObjectifRelative, checkSubObj, delCard, delDeck, d
  *
  * @param {Array} arrayMsg
  * @param {number[]} arrayIndent
- * @param {Card[][]} tmp
+ * @param {Card[][]} gameState
  * @param {boolean} [originel=true] - true pour l'appel initial (déclenche les effets
  *                                    de bord : mise à jour du jeu, popup de victoire...).
  *                                    false pour les appels récursifs internes.
@@ -24,32 +24,32 @@ import { buildObjectives, findObjectifRelative, checkSubObj, delCard, delDeck, d
  * @param {Function} deps.setPopupWin
  * @param {Function} deps.saveProgress
  *
- * @returns {[Card[][], boolean, Array, number[]]} [tmp, bool, arrayMsg, arrayIndent]
+ * @returns {[Card[][], boolean, Array, number[]]} [gameState, bool, arrayMsg, arrayIndent]
  */
-export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
+export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
 {
 	if (originel === undefined)
 		originel = true;
 
 	const { addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setObjectives, setWin, setPopupWin, saveProgress } = deps;
 
-	let tmpTabObjectif = buildObjectives(tmp);
+	let currentObjectives = buildObjectives(gameState);
 	const listObjectif = [];
-	for (let numObjectif of tmpTabObjectif)
-		listObjectif.push([tmp[tmp.length - 1][numObjectif[1]], numObjectif,]);
+	for (let numObjectif of currentObjectives)
+		listObjectif.push([gameState[gameState.length - 1][numObjectif[1]], numObjectif,]);
 
 	let bool = false;
 	let modif = false;
 
 	const findIntermediateDeckFor = (cardObj) => {
-		const findObj = findObjectifRelative(cardObj, tmp);
+		const findObj = findObjectifRelative(cardObj, gameState);
 		if (findObj === -1)
 			return -1;
 
-		const hypothesis = tmp[tmp.length - 1][findObj].left;
-		for (let d = 1; d < tmp.length - 1; d++)
+		const hypothesis = gameState[gameState.length - 1][findObj].left;
+		for (let d = 1; d < gameState.length - 1; d++)
 		{
-			if (containCard(tmp, d, hypothesis))
+			if (containCard(gameState, d, hypothesis))
 				return d;
 		}
 
@@ -87,35 +87,35 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 			if (intermediaireDeck === -1)
 				return;
 
-			const findObj = findObjectifRelative(cardObj, tmp);
+			const findObj = findObjectifRelative(cardObj, gameState);
 			if (findObj === -1)
 				return;
 
 			modif = true;
 
-			const tmpCard = tmp[tmp.length - 1][findObj].copy();
+			const objectiveCard = gameState[gameState.length - 1][findObj].copy();
 
 			// Remonte "A ⇒ B" dans le deck juste au-dessus de la LPU
-			if (!addToGame(tmp, intermediaireDeck - 1, tmpCard))
+			if (!addToGame(gameState, intermediaireDeck - 1, objectiveCard))
 				return;
 
 			// Retire B des objectifs.
-			tmp[tmp.length - 1] = delCardWithEquals(tmp[tmp.length - 1], cardObj);
+			gameState[gameState.length - 1] = delCardWithEquals(gameState[gameState.length - 1], cardObj);
 
 			// Retire "A ⇒ B" du deck objectif s'il était lié.
 			if (findObj !== 0 && isLinked)
-				tmp[tmp.length - 1] = delCard(tmp[tmp.length - 1], findObj);
+				gameState[gameState.length - 1] = delCard(gameState[gameState.length - 1], findObj);
 
-			// Supprime la LPU intermédiaire trouvée (plus delDeck(tmp, numObj))
-			tmp = delDeck(tmp, intermediaireDeck);
+			// Supprime la LPU intermédiaire trouvée (plus delDeck(gameState, numObj))
+			gameState = delDeck(gameState, intermediaireDeck);
 
-			arrayMsg.push(["On a ", tmpCard.copy(), "."]);
+			arrayMsg.push(["On a ", objectiveCard.copy(), "."]);
 			arrayIndent.push(-1);
 		};
 
 		// Parcourt tous les decks utiles : départ + LPU intermédiaires.
-		for (let d = 0; d < tmp.length - 1; d++)
-			tmp[d].forEach((card) => checkWin(card, d));
+		for (let d = 0; d < gameState.length - 1; d++)
+			gameState[d].forEach((card) => checkWin(card, d));
 
 		return bool;
 	};
@@ -132,20 +132,20 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 	 */
 	if (!bool && !modif)
 	{
-		const objDeckIndex = tmp.length - 1;
-		for (let i = tmp[objDeckIndex].length - 1; i >= 1; i--)
+		const objDeckIndex = gameState.length - 1;
+		for (let i = gameState[objDeckIndex].length - 1; i >= 1; i--)
 		{
-			const goalCard = tmp[objDeckIndex][i];
+			const goalCard = gameState[objDeckIndex][i];
 			if (goalCard == null || goalCard === undefined)
 				continue;
 
-			if (checkSubObj(tmp[objDeckIndex], goalCard))
+			if (checkSubObj(gameState[objDeckIndex], goalCard))
 				continue;
 
 			let foundInLPU = false;
 			for (let d = 0; d < objDeckIndex; d++)
 			{
-				if (containCard(tmp, d, goalCard))
+				if (containCard(gameState, d, goalCard))
 				{
 					foundInLPU = true;
 					break;
@@ -154,7 +154,7 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 
 			if (foundInLPU)
 			{
-				tmp[objDeckIndex] = delCardWithEquals(tmp[objDeckIndex], goalCard);
+				gameState[objDeckIndex] = delCardWithEquals(gameState[objDeckIndex], goalCard);
 				arrayMsg.push(["On a ", goalCard.copy(), "."]);
 				arrayIndent.push(0);
 				modif = true;
@@ -169,20 +169,20 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 	 */
 	if (!bool && modif)
 	{
-		let tmpRes = runIsWin(arrayMsg, arrayIndent, tmp, false, deps);
-		tmp = tmpRes[0];
-		bool = tmpRes[1];
-		arrayMsg = tmpRes[2];
-		arrayIndent = tmpRes[3];
+		let recursiveResult = runIsWin(arrayMsg, arrayIndent, gameState, false, deps);
+		gameState = recursiveResult[0];
+		bool = recursiveResult[1];
+		arrayMsg = recursiveResult[2];
+		arrayIndent = recursiveResult[3];
 	}
 
 	if (originel)
 	{
 		addLineDemonstration(arrayMsg, arrayIndent);
-		setSavedGame(tmp);
-		clearSelectionFromGameState(tmp);
-		let tmpVar = buildObjectives(tmp);
-		setObjectives(tmpVar);
+		setSavedGame(gameState);
+		clearSelectionFromGameState(gameState);
+		currentObjectives = buildObjectives(gameState);
+		setObjectives(currentObjectives);
 	}
 
 	if (originel && bool)
@@ -192,5 +192,5 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 		saveProgress();
 	}
 
-	return [tmp, bool, arrayMsg, arrayIndent];
+	return [gameState, bool, arrayMsg, arrayIndent];
 }

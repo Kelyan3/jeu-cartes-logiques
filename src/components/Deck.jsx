@@ -66,13 +66,13 @@ const Deck = ({
 				num = element[0];
 		});
 
-		let res = -1;
+		let objectiveLabel = -1;
 		if (num === 0)
-			res = "principal";
+			objectiveLabel = "principal";
 		if (num !== -1 && num !== 0)
-			res = "secondaire " + num;
+			objectiveLabel = "secondaire " + num;
 
-		return res;
+		return objectiveLabel;
 	};
 
 	const isCardHelp = (index) => {
@@ -113,8 +113,8 @@ const Deck = ({
 									</b>
 
 									<Card
-										deckIndice={indice}
-										cardIndice={index}
+										deckIndex={indice}
+										cardIndex={index}
 										update={update}
 										isWin={isWin}
 										affichageSimple={affichageSimple}
@@ -136,8 +136,8 @@ const Deck = ({
 						{principalEntries.map(({ card, index }) => (
 							<Card
 								key={card.toString()}
-								deckIndice={indice}
-								cardIndice={index}
+								deckIndex={indice}
+								cardIndex={index}
 								update={update}
 								isWin={isWin}
 								affichageSimple={affichageSimple}
@@ -186,8 +186,8 @@ const Deck = ({
 				{game[indice].map((card, index) => (
 					<div key={card.toString()}>
 						<Card
-							deckIndice={indice}
-							cardIndice={index}
+							deckIndex={indice}
+							cardIndex={index}
 							update={update}
 							isWin={isWin}
 							affichageSimple={affichageSimple}

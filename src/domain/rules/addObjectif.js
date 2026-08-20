@@ -14,7 +14,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	} = deps;
 
 	// Copie du jeu actuel
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Sauvegarde du jeu actuel
 	saveGame();
@@ -32,23 +32,23 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	let secondObjectif = game[deckI][cardI].right.copy();
 
 	// Rajoute le second objectif dans le deck objectif
-	if (!addToGame(tmp, tmp.length - 1, secondObjectif))
+	if (!addToGame(workingGame, workingGame.length - 1, secondObjectif))
 		return;
 
 	// Copie de la partie gauche de la carte sélectionnée
-	let tmpCard = tmp[deckI][cardI].left.copy();
+	let tmpCard = workingGame[deckI][cardI].left.copy();
 
 	// Rajoute le deck intermediaire
-	tmp.splice(tmp.length - 1, 0, []);
+	workingGame.splice(workingGame.length - 1, 0, []);
 
 	// Ajoute cette partie dans le deck qui vient d'etre créer
-	addToGame(tmp, tmp.length - 2, tmpCard);
+	addToGame(workingGame, workingGame.length - 2, tmpCard);
 
 	// Copie du tableau objectif
 	let updatedObjectives = [...objectives];
 
 	// Ajoute l'objectif secondaire dans le tableau objectif
-	updatedObjectives.push([objectives.length, tmp[tmp.length - 1].length - 1, true,]);
+	updatedObjectives.push([objectives.length, workingGame[workingGame.length - 1].length - 1, true,]);
 
 	// Met à jour le tableau objectif
 	setObjectives(updatedObjectives);
@@ -56,8 +56,8 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	setIndentationDemonstration((prev) => prev + 1);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	clearSelectionFromGameState(tmp);
-	setSavedGame(tmp);
+	clearSelectionFromGameState(workingGame);
+	setSavedGame(workingGame);
 }
 
 /**
@@ -70,23 +70,23 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
 	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState } = deps;
 
 	// Copie du jeu actuel
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Sauvegarde du jeu actuel
 	saveGame();
 
 	// Copie de la partie gauche de la carte sélectionnée
-	let secondObjectif = tmp[deckI][cardI].left.copy();
+	let secondObjectif = workingGame[deckI][cardI].left.copy();
 
 	// Met la carte copiée dans le deck objectif (ce n'est pas un objectif secondaire)
-	if (!addToGame(tmp, tmp.length - 1, secondObjectif))
+	if (!addToGame(workingGame, workingGame.length - 1, secondObjectif))
 		return;
 
 	addLineDemonstration([["Montrons ", secondObjectif.copy(), ".", ], ], [0]);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	clearSelectionFromGameState(tmp);
-	setSavedGame(tmp);
+	clearSelectionFromGameState(workingGame);
+	setSavedGame(workingGame);
 }
 
 /**
@@ -98,7 +98,7 @@ function addObjectifEt(deckI, cardI, deps)
 {
 	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState } = deps;
 
-	let tmp = copyGameArray(game);
+	let workingGame = copyGameArray(game);
 
 	// Sauvegarde du jeu actuel
 	saveGame();
@@ -110,21 +110,21 @@ function addObjectifEt(deckI, cardI, deps)
 	let secondArrayDemo = [];
 	if (secondObjectif1.haveImpliqueLinkRecur())
 	{
-		if (addToGame(tmp, tmp.length - 1, secondObjectif1, false))
+		if (addToGame(workingGame, workingGame.length - 1, secondObjectif1, false))
 			firstArrayDemo = ["Montrons ", secondObjectif1.copy(), ". ",];
 	}
 
 	if (secondObjectif2.haveImpliqueLinkRecur())
 	{
-		if (addToGame(tmp, tmp.length - 1, secondObjectif2, false))
+		if (addToGame(workingGame, workingGame.length - 1, secondObjectif2, false))
 			secondArrayDemo = ["Montrons ", secondObjectif2.copy(), ".",];
 	}
 
 	addLineDemonstration([firstArrayDemo.concat(secondArrayDemo)], [0]);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	clearSelectionFromGameState(tmp);
-	setSavedGame(tmp);
+	clearSelectionFromGameState(workingGame);
+	setSavedGame(workingGame);
 }
 
 /**
