@@ -40,7 +40,7 @@ export function constructDemonstration(tab, affichageSimple)
  * @param {number[]} currentState.tabIndentation
  * @param {number}   currentState.indentationDemonstration
  * @param {number[]} currentState.tabIndiceDemonstration
- * @param {number}   currentState.lastGameLength - longueur actuelle de l'historique (lastGame.length)
+ * @param {number}   currentState.lastGameLength - longueur actuelle de l'historique (gameHistory.length)
  *
  * @param {Array} msgArray - tableau de messages à ajouter (chaque message est lui-même
  *                           un tableau de textes/cartes, voir {@link constructDemonstration})

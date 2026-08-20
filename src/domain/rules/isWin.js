@@ -1,5 +1,5 @@
 import { containCard } from "../gameSolver";
-import { CreatTabObj, findObjectifRelative, checkSubObj, delCard, delDeck, delCardWithEquals } from "./goals";
+import { buildObjectives, findObjectifRelative, checkSubObj, delCard, delDeck, delCardWithEquals } from "./goals";
 
 
 /**
@@ -19,7 +19,7 @@ import { CreatTabObj, findObjectifRelative, checkSubObj, delCard, delDeck, delCa
  * @param {Function} deps.addLineDemonstration
  * @param {Function} deps.setSavedGame
  * @param {Function} deps.clearSelectionFromGameState
- * @param {Function} deps.setTabObjectif
+ * @param {Function} deps.setObjectives
  * @param {Function} deps.setWin
  * @param {Function} deps.setPopupWin
  * @param {Function} deps.saveProgress
@@ -31,9 +31,9 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 	if (originel === undefined)
 		originel = true;
 
-	const { addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setTabObjectif, setWin, setPopupWin, saveProgress } = deps;
+	const { addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setObjectives, setWin, setPopupWin, saveProgress } = deps;
 
-	let tmpTabObjectif = CreatTabObj(tmp);
+	let tmpTabObjectif = buildObjectives(tmp);
 	const listObjectif = [];
 	for (let numObjectif of tmpTabObjectif)
 		listObjectif.push([tmp[tmp.length - 1][numObjectif[1]], numObjectif,]);
@@ -181,8 +181,8 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 		addLineDemonstration(arrayMsg, arrayIndent);
 		setSavedGame(tmp);
 		clearSelectionFromGameState(tmp);
-		let tmpVar = CreatTabObj(tmp);
-		setTabObjectif(tmpVar);
+		let tmpVar = buildObjectives(tmp);
+		setObjectives(tmpVar);
 	}
 
 	if (originel && bool)

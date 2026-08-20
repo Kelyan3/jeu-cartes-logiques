@@ -7,7 +7,7 @@ import { useClickOutsideMenu } from "../../hooks/useClickOutsideMenu";
  */
 const GameActionBar = ({
 	mode,
-	numero,
+	levelIndex,
 	isActionUnlocked,
 	addCardAnd,
 	addCardFuse,
@@ -47,7 +47,7 @@ const GameActionBar = ({
 							{isActionUnlocked("addAnd") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && numero === 0 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 0 ? "boutonSelection" : ""}
 									onClick={() => { setBasesMenuOpen(false); addCardAnd(); }}
 								>
 									[P ∧ Q] → [P] [Q]
@@ -56,7 +56,7 @@ const GameActionBar = ({
 							{isActionUnlocked("addImplique") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && numero === 1 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 1 ? "boutonSelection" : ""}
 									onClick={() => { setBasesMenuOpen(false); addCardFuse(); }}
 								>
 									[P] [P ⇒ Q] → [Q]
@@ -65,7 +65,7 @@ const GameActionBar = ({
 							{isActionUnlocked("fuseAnd") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && numero === 2 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 2 ? "boutonSelection" : ""}
 									onClick={() => { setBasesMenuOpen(false); fuseCardAnd(); }}
 								>
 									[P] [Q] → [P ∧ Q]
@@ -97,7 +97,7 @@ const GameActionBar = ({
 							{isActionUnlocked("addGoal_objectif") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && numero === 3 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 3 ? "boutonSelection" : ""}
 									onClick={() => { setObjectifMenuOpen(false); addObjectif("objectif"); }}
 								>
 									{"=> dans objectif"}

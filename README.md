@@ -101,7 +101,7 @@ src/
 │   ├── gameSolver.js               # Résolution automatique / indices
 │   ├── gameInput.js                # Parsing JSON, setup initial, messages tutoriel
 │   └── rules/                      # Une règle du jeu = une fonction pure par fichier
-│       ├── goals.js                # Gestion des objectifs/decks (delCard, CreatTabObj, deckContain, ...)
+│       ├── goals.js                # Gestion des objectifs/decks (delCard, buildObjectives, deckContain, ...)
 │       ├── addToGame.js
 │       ├── demonstration.js        # Construction du texte de démonstration
 │       ├── selection.js

@@ -114,15 +114,15 @@ export function checkSubObj(deck, card)
 }
 
 /**
- * Crée le tableau tabObjectif en fonction des objectifs présents dans tmp.
+ * Crée le tableau objectives en fonction des objectifs présents dans tmp.
  *
  * @param {Card[][]} tmp - tableau du jeu temporaire
  *
  * @returns {Array[]} le tableau des objectifs, sous la forme [numero objectif, indice de la carte, (numero != indice)]
  */
-export function CreatTabObj(tmp)
+export function buildObjectives(tmp)
 {
-	// Création du tableau que l'on va affecter à tabObjectif
+	// Création du tableau que l'on va affecter à objectives
 	let tmpObj = [];
 
 	// Push l'objectif principal

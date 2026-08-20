@@ -8,8 +8,8 @@ import { copyGameArray } from "../gameSolver";
 function addObjectifDepuisObjectif(deckI, cardI, deps)
 {
 	const {
-		game, mode, numero, tabObjectif,
-		setTabObjectif, setIndentationDemonstration, setSavedGame, setTutorialMessage,
+		game, mode, levelIndex, objectives,
+		setObjectives, setIndentationDemonstration, setSavedGame, setTutorialMessage,
 		saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState,
 	} = deps;
 
@@ -20,7 +20,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	saveGame();
 
 	// Message en mode tutoriel
-	if (mode === "Tutorial" && numero === 3)
+	if (mode === "Tutorial" && levelIndex === 3)
 	{
 		setTutorialMessage([
 			"Vous devez maintenant compléter l’objectif secondaire.",
@@ -45,13 +45,13 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	addToGame(tmp, tmp.length - 2, tmpCard);
 
 	// Copie du tableau objectif
-	let tmpObj = [...tabObjectif];
+	let updatedObjectives = [...objectives];
 
 	// Ajoute l'objectif secondaire dans le tableau objectif
-	tmpObj.push([tabObjectif.length, tmp[tmp.length - 1].length - 1, true,]);
+	updatedObjectives.push([objectives.length, tmp[tmp.length - 1].length - 1, true,]);
 
 	// Met à jour le tableau objectif
-	setTabObjectif(tmpObj);
+	setObjectives(updatedObjectives);
 	addLineDemonstration([["Supposons ", tmpCard.copy(), ". Montrons ", secondObjectif.copy(), ".",], ], [0]);
 	setIndentationDemonstration((prev) => prev + 1);
 

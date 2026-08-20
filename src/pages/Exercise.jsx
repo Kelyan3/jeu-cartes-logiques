@@ -44,12 +44,8 @@ const Exercise = () => {
 
 	useEffect(() => {
 		if (mode !== "Play" || !user)
-		{
-			setUnlockStatus("ok");
 			return;
-		}
 
-		setUnlockStatus("checking");
 		fetch(`${API}/api/chapters`, { credentials: "include" })
 			.then((response) => response.json())
 			.then((chapters) => {
@@ -66,12 +62,13 @@ const Exercise = () => {
 	 */
 	const num = tmpNum !== undefined ? Number(tmpNum) : NaN;
 	const isValidNum = Number.isInteger(num) && num >= 1;
-	const nbExo = manifest?.Play ?? defaultCounts.Play;
-	const nbTuto = manifest?.Tutorial ?? defaultCounts.Tutorial;
-	const isValidPlay = mode === "Play" && isValidNum && num <= nbExo;
-	const isValidTutorial = mode === "Tutorial" && isValidNum && num <= nbTuto;
+	const playLevelCount = manifest?.Play ?? defaultCounts.Play;
+	const tutorialLevelCount = manifest?.Tutorial ?? defaultCounts.Tutorial;
+	const isValidPlay = mode === "Play" && isValidNum && num <= playLevelCount;
+	const isValidTutorial = mode === "Tutorial" && isValidNum && num <= tutorialLevelCount;
 	const isValidCreate = mode === "Create" && tmpNum === undefined;
-	const nbExoConfondu = mode === "Play" ? nbExo : nbTuto;
+	const totalLevelCount = mode === "Play" ? playLevelCount : tutorialLevelCount;
+	const effectiveUnlockStatus = mode === "Play" && user ? unlockStatus : "ok";
 
 	useEffect(() => {
 		// On attend d'avoir le manifeste (ou son repli) avant de valider le niveau demandé.
@@ -104,17 +101,17 @@ const Exercise = () => {
 		<div className="home">
 			<Navigation />
 			
-			{unlockStatus === "locked" && (
+			{effectiveUnlockStatus === "locked" && (
 				<p className="levelLockedMessage">Vous n'avez pas encore débloqué ce niveau.</p>
 			)}
 
-			{unlockStatus === "ok" && ex !== undefined && (
+			{effectiveUnlockStatus === "ok" && ex !== undefined && (
 				<Game
 					key={exerciseKey}
 					mode={mode}
 					ex={ex}
-					numero={num - 1}
-					nbExo={nbExoConfondu}
+					levelIndex={num - 1}
+					totalLevelCount={totalLevelCount}
 				/>
 			)}
 			<PopupForms />

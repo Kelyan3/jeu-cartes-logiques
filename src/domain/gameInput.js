@@ -131,13 +131,13 @@ export function buildInitialGameSetup(ex, mode)
  * Renvoie le message tutoriel à afficher au chargement d'un niveau, selon son numéro
  * (indépendant du mode, comme dans le comportement d'origine).
  *
- * @param {number} numero
+ * @param {number} levelIndex
  *
  * @returns {string|string[]} "" si aucun message n'est associé à ce numéro.
  */
-export function buildInitialTutorialMessage(numero)
+export function buildInitialTutorialMessage(levelIndex)
 {
-	switch (numero)
+	switch (levelIndex)
 	{
 		case 0:
 			return [
@@ -199,7 +199,7 @@ export function buildInitialTutorialMessage(numero)
  * en cours et l'état de la sélection. Fonction pure : ne modifie rien, se contente de
  * décrire *quel* message afficher (ou aucun).
  *
- * @param {number} numero - numéro du niveau tutoriel en cours
+ * @param {number} levelIndex - index zéro-based du niveau tutoriel en cours
  * @param {number} selectedCardCount - nombre de cartes actuellement sélectionnées
  * @param {number} firstSelectedDeckIndex
  * @param {number} secondSelectedDeckIndex
@@ -207,9 +207,9 @@ export function buildInitialTutorialMessage(numero)
  *
  * @returns {string[]|null} le nouveau message tutoriel, ou null si rien ne doit changer.
  */
-export function buildSelectionTutorialMessage(numero, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, gameLength)
+export function buildSelectionTutorialMessage(levelIndex, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, gameLength)
 {
-	if (numero === 0)
+	if (levelIndex === 0)
 	{
 		return [
 			"Une fois une carte sélectionnée elle aura un contour noir et une surbrillance jaune.",
@@ -222,7 +222,7 @@ export function buildSelectionTutorialMessage(numero, selectedCardCount, firstSe
 		];
 	}
 
-	if (selectedCardCount === 2 && numero === 1)
+	if (selectedCardCount === 2 && levelIndex === 1)
 	{
 		return [
 			"Ce bouton a besoin de trois conditions :",
@@ -233,7 +233,7 @@ export function buildSelectionTutorialMessage(numero, selectedCardCount, firstSe
 		];
 	}
 
-	if (selectedCardCount === 2 && numero === 2)
+	if (selectedCardCount === 2 && levelIndex === 2)
 	{
 		return [
 			"Ce bouton a besoin de deux conditions :",
@@ -243,7 +243,7 @@ export function buildSelectionTutorialMessage(numero, selectedCardCount, firstSe
 		];
 	}
 
-	if (selectedCardCount === 1 && numero === 3 && Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex) === gameLength - 1)
+	if (selectedCardCount === 1 && levelIndex === 3 && Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex) === gameLength - 1)
 	{
 		return [
 			"Ce bouton a besoin de deux conditions :",

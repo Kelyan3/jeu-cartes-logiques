@@ -10,8 +10,8 @@ import { API_BASE_URL as API } from "../config/api";
  *
  * @param {Object} params
  * @param {"Play"|"Tutorial"|"Create"} params.mode
- * @param {number} params.numero
- * @param {number} params.nbExo
+ * @param {number} params.levelIndex - index zéro-based du niveau courant
+ * @param {number} params.totalLevelCount - nombre total de niveaux du mode courant
  * @param {Object|null} params.user - utilisateur connecté (depuis useAuth), ou null
  * @param {Function} params.setPopupWin
  * @param {Function} params.setSaveProgressFailed
@@ -22,7 +22,7 @@ import { API_BASE_URL as API } from "../config/api";
  * @returns {{incrementMoves: Function, saveProgress: Function, nextExercise: Function,
  *            startTimer: Function, displaySeconds: number, displayMoves: number}}
  */
-export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult })
+export function useProgressSave({ mode, levelIndex, totalLevelCount, user, setPopupWin, setSaveProgressFailed, setGameResult })
 {
 	const navigate = useNavigate();
 
@@ -99,7 +99,7 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 			credentials: "include",
 			body: JSON.stringify({
 				mode: mode,
-				num: numero + 1,
+				num: levelIndex + 1,
 				completed: true,
 				elapsed_seconds: elapsedSeconds,
 				moves: moves,
@@ -119,10 +119,10 @@ export function useProgressSave({ mode, numero, nbExo, user, setPopupWin, setSav
 	 */
 	const nextExercise = () => {
 		// S'il y a un prochain exercice
-		if (numero + 2 <= nbExo)
+		if (levelIndex + 2 <= totalLevelCount)
 		{
 			// url du prochain exercice
-			let url = "/exercise/" + mode + "/" + (numero + 2);
+			let url = "/exercise/" + mode + "/" + (levelIndex + 2);
 
 			// Redirige vers cet url
 			navigate(url);

@@ -9,8 +9,8 @@ import { formatTime } from "../../utils/formatTime";
 const GameWinPopup = ({
 	open,
 	mode,
-	numero,
-	nbExo,
+	levelIndex,
+	totalLevelCount,
 	saveProgressFailed,
 	gameResult,
 	demonstration,
@@ -60,7 +60,7 @@ const GameWinPopup = ({
 						<button className="popupSecondary" onClick={onClose}>
 							Revoir le niveau
 						</button>
-						{numero + 2 <= nbExo && (
+						{levelIndex + 2 <= totalLevelCount && (
 							<button className="popupPrimary" onClick={onNext}>
 								Niveau suivant
 							</button>

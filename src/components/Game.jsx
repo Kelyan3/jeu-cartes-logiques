@@ -24,7 +24,7 @@ import Card from "../domain/Card";
 import { computeNextMove, copyGameArray } from "../domain/gameSolver";
 import { buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, ensureDeckIds } from "../domain/gameInput";
 
-import { delCard, CreatTabObj, deckContain as deckContainCore } from "../domain/rules/goals";
+import { delCard, buildObjectives, deckContain as deckContainCore } from "../domain/rules/goals";
 import { getSingleSelectedCard as getSingleSelectedCardCore } from "../domain/rules/selection";
 import { addToGame as addToGameCore } from "../domain/rules/addToGame";
 import { constructDemonstration as constructDemonstrationCore, computeAddLineDemonstration } from "../domain/rules/demonstration";
@@ -38,7 +38,7 @@ import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard }
 import { formatTime } from "../utils/formatTime";
 
 
-const Game = ({ mode, ex, numero, nbExo }) => {
+const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const { user } = useAuth();
 
 	const { isActionUnlocked, actionsReady } = useUnlockedActions(mode, user);
@@ -92,7 +92,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	} = useGamePopups();
 
 	// Tableau de sauvegarde de copie de l'ancien tableau "game"
-	const [lastGame, setLastGame] = useState([]);
+	const [gameHistory, setGameHistory] = useState([]);
 
 	/**
 	 * Message à afficher en cas de coup illégal. Si le message est "" on affiche rien.
@@ -104,14 +104,14 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Attention c'est un tableau de strings.
 	 * Si le message est "" on affiche rien.
 	 */
-	const [tutorialMessage, setTutorialMessage] = useState(() => buildInitialTutorialMessage(numero));
+	const [tutorialMessage, setTutorialMessage] = useState(() => buildInitialTutorialMessage(levelIndex));
 
 	/**
 	 * Tableau des objectifs.
 	 * Sous cette forme : [numero objectif, indice de la carte dans le deck, (numero != indice)]
 	 * Il se peut qu'il y ait des cartes entre les sous-objectifs comme dans l'exercice 5.
 	 */
-	const [tabObjectif, setTabObjectif] = useState([[0, 0, false]]);
+	const [objectives, setObjectives] = useState([[0, 0, false]]);
 
 	const [demonstration, setDemonstration] = useState(initialSetup.demonstration);
 
@@ -135,7 +135,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const [gameResult, setGameResult] = useState(null);
 
 	const { incrementMoves, saveProgress, nextExercise, startTimer, displaySeconds, displayMoves } = useProgressSave({
-		mode, numero, nbExo, user, setPopupWin, setSaveProgressFailed, setGameResult,
+		mode, levelIndex, totalLevelCount, user, setPopupWin, setSaveProgressFailed, setGameResult,
 	});
 
 	/**
@@ -178,7 +178,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 			if (mode === "Tutorial")
 			{
-				const nextTutorialMessage = buildSelectionTutorialMessage(numero, nextSelectedCardCount, nextFirstSelectedDeckIndex, nextSecondSelectedDeckIndex, game.length);
+				const nextTutorialMessage = buildSelectionTutorialMessage(levelIndex, nextSelectedCardCount, nextFirstSelectedDeckIndex, nextSecondSelectedDeckIndex, game.length);
 				if (nextTutorialMessage !== null)
 					setTutorialMessage(nextTutorialMessage);
 			}
@@ -308,46 +308,46 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * garder inchangés tous les appels existants à `isWin(...)`.
 	 */
 	const isWin = (arrayMsg, arrayIndent, tmp, originel) => runIsWin(arrayMsg, arrayIndent, tmp, originel, {
-		addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setTabObjectif, setWin, setPopupWin, saveProgress,
+		addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setObjectives, setWin, setPopupWin, saveProgress,
 	});
 
 	/**
 	 * Fonction appelée après avoir appuyé sur le bouton "Retour arrière".
-	 * Prend le dernier élément du tableau {@link lastGame} et remplace la variable {@link game}.
+	 * Prend le dernier élément du tableau {@link gameHistory} et remplace la variable {@link game}.
 	 */
 	const retourEnArriere = () => {
 		if (navigation || win)
 			return;
 
 		// Vérifie s'il y a au moins une sauvegarde du jeu
-		if (lastGame.length > 0)
+		if (gameHistory.length > 0)
 		{
 			// Copie le tableau de sauvegarde
-			let tmpLastGame = [...lastGame];
+			let historyCopy = [...gameHistory];
 
 			// Prend le dernier tableau de jeu ajoutée
-			let tmpSavedGame = tmpLastGame[tmpLastGame.length - 1];
+			let savedGameState = historyCopy[historyCopy.length - 1];
 
 			// Initialise le futur tableau de jeu
 			let tmpFutureGame = [];
 
 			// Copie le dernier tableau de jeu sauvegardé dans le futur tableau
-			for (let i = 0; i < tmpSavedGame.length; i++)
+			for (let i = 0; i < savedGameState.length; i++)
 			{
 				tmpFutureGame[i] = [];
-				for (let j = 0; j < tmpSavedGame[i].length; j++)
-					tmpFutureGame[i].push(tmpSavedGame[i][j].copy());
+				for (let j = 0; j < savedGameState[i].length; j++)
+					tmpFutureGame[i].push(savedGameState[i][j].copy());
 			}
 
 			// Refait le tableau des objectifs au cas où on retourne en arrière sur une suppression d'objectif secondaire
-			setIndentationDemonstration(CreatTabObj(tmpFutureGame).length - 1);
+			setIndentationDemonstration(buildObjectives(tmpFutureGame).length - 1);
 
 			// Met à jour le jeu avec la dernière sauvegarde & désélectionne toutes les cartes
 			clearSelectionFromGameState(tmpFutureGame);
 			setSavedGame(tmpFutureGame);
 
 			// Tag des lignes ajoutées par l'action que l'on annule.
-			const tag = tmpLastGame.length - 1;
+			const tag = historyCopy.length - 1;
 
 			let demonstrationTmp = [...demonstration];
 			let tabIndentationTmp = [...tabIndentation];
@@ -365,11 +365,11 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			setTabIndentation(tabIndentationTmp);
 			setTabIndiceDemonstration(tabIndiceTmp);
 
-			tmpLastGame.pop();
-			setLastGame(tmpLastGame);
+			historyCopy.pop();
+			setGameHistory(historyCopy);
 
 			// Retour au tout début : restaurer la démonstration initiale.
-			if (tmpLastGame.length === 0)
+			if (historyCopy.length === 0)
 			{
 				setDemonstration(initialSetup.demonstration);
 				setTabIndentation([0]);
@@ -388,21 +388,21 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	/**
-	 * Sauvegarde une copie de l'état actuel du jeu dans l'historique ({@link lastGame}),
+	 * Sauvegarde une copie de l'état actuel du jeu dans l'historique ({@link gameHistory}),
 	 * pour permettre un retour en arrière ultérieur.
 	 */
 	const saveGame = () => {
 		// Copie du tableau de sauvegarde
-		let tmpLastGame = [...lastGame];
+		let historyCopy = [...gameHistory];
 
 		// Copie du jeu actuel
 		let saveGameTmp = copyGame();
 
 		// Ajoute le jeu actuel dans le tableau des sauvegardes
-		tmpLastGame.push(saveGameTmp);
+		historyCopy.push(saveGameTmp);
 
 		// Met à jour le tableau des sauvegardes
-		setLastGame(tmpLastGame);
+		setGameHistory(historyCopy);
 
 		// Comptabilise ce coup pour le calcul du score
 		incrementMoves();
@@ -446,8 +446,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * `addObjectif(variant)` (menu "+ Objectif").
 	 */
 	const addObjectif = (variant) => runAddObjectif(variant, {
-		game, mode, numero, tabObjectif, navigation, win,
-		setTabObjectif, setIndentationDemonstration, setSavedGame, setTutorialMessage,
+		game, mode, levelIndex, objectives, navigation, win,
+		setObjectives, setIndentationDemonstration, setSavedGame, setTutorialMessage,
 		saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState, error, deckContain, getSingleSelectedCard,
 	});
 
@@ -472,9 +472,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * l'état actuel de la démonstration, puis enregistre le résultat calculé via les
 	 * setters React. Garde inchangés tous les appels existants à `addLineDemonstration(...)`.
 	 */
-	const addLineDemonstration = (msgArray, indentationArray, num, reset) => {
+	const addLineDemonstration = (msgArray, indentationArray) => {
 		const result = computeAddLineDemonstration(
-			{ demonstration, tabIndentation, indentationDemonstration, tabIndiceDemonstration, lastGameLength: lastGame.length },
+			{ demonstration, tabIndentation, indentationDemonstration, tabIndiceDemonstration, lastGameLength: gameHistory.length },
 			msgArray,
 			indentationArray,
 		);
@@ -512,9 +512,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		// Ligne initiale de la consigne : état de départ.
 		if (indiceRetour === -1)
 		{
-			if (lastGame.length > 0)
+			if (gameHistory.length > 0)
 			{
-				const initialGameArray = lastGame[0];
+				const initialGameArray = gameHistory[0];
 				if (initialGameArray === undefined || initialGameArray === null)
 					return;
 
@@ -532,14 +532,14 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 		// État juste après l'action taguée indiceRetour.
 		const afterIndex = indiceRetour + 1;
-		if (afterIndex < lastGame.length)
+		if (afterIndex < gameHistory.length)
 		{
-			const tmpSavedGame = lastGame[afterIndex];
-			if (tmpSavedGame === undefined || tmpSavedGame === null)
+			const savedGameState = gameHistory[afterIndex];
+			if (savedGameState === undefined || savedGameState === null)
 				return;
 
 			setNavigation(true);
-			clearSelectionFromGameState(copyGameArray(tmpSavedGame));
+			clearSelectionFromGameState(copyGameArray(savedGameState));
 		}
 		else
 		{
@@ -626,7 +626,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	};
 
 	const getNextMove = () => {
-		const nextMove = computeNextMove(game, tabObjectif);
+		const nextMove = computeNextMove(game, objectives);
 		setCardHelp(nextMove.cardHelp);
 		setCardHelp2(nextMove.cardHelp2);
 	}
@@ -648,7 +648,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				</div>
 			)}
 
-			{win && numero + 2 <= nbExo && (
+			{win && levelIndex + 2 <= totalLevelCount && (
 				<button className="buttonWin" onClick={nextExercise}>
 					Niveau suivant
 				</button>
@@ -674,7 +674,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 				<GameActionBar
 					mode={mode}
-					numero={numero}
+					levelIndex={levelIndex}
 					isActionUnlocked={isActionUnlocked}
 					addCardAnd={addCardAnd}
 					addCardFuse={addCardFuse}
@@ -731,7 +731,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 							transformIntoNonCard={transformIntoNonCard}
 							nbDeck={game.length}
 							mode={mode}
-							objectif={tabObjectif}
+							objectif={objectives}
 							isWin={win}
 							affichageSimple={affichageSimple}
 							cardHelp={cardHelp}
@@ -773,8 +773,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			<GameWinPopup
 				open={popupWin}
 				mode={mode}
-				numero={numero}
-				nbExo={nbExo}
+				levelIndex={levelIndex}
+				totalLevelCount={totalLevelCount}
 				saveProgressFailed={saveProgressFailed}
 				gameResult={gameResult}
 				demonstration={demonstration}
