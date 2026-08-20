@@ -8,21 +8,21 @@ import { containCard } from "../gameSolver";
  * l'objectif), ou si sa profondeur dépasse 6.
  *
  * @param {Card[][]} tmp
- * @param {number} deckId
+ * @param {number} deckIndex
  * @param {Card} card
  * @param {Function} onError - callback(message: string) appelé en cas de refus (sauf si defaultEmitError=false)
  * @param {boolean} [defaultEmitError=true] - si false, refuse silencieusement sans appeler onError
  *
  * @returns {boolean} true si la carte a été ajoutée
  */
-export function addToGame(tmp, deckId, card, onError, defaultEmitError=true)
+export function addToGame(tmp, deckIndex, card, onError, defaultEmitError=true)
 {
-	if (containCard(tmp, deckId, card))
+	if (containCard(tmp, deckIndex, card))
 	{
 		if (!defaultEmitError)
 			return false;
 
-		let deckAffiche = deckId + 1;
+		let deckAffiche = deckIndex + 1;
 		if (deckAffiche === tmp.length)
 			deckAffiche = "des objectifs";
 
@@ -30,7 +30,7 @@ export function addToGame(tmp, deckId, card, onError, defaultEmitError=true)
 		return false;
 	}
 
-	if (deckId === tmp.length - 1 && containCard(tmp, 0, card))
+	if (deckIndex === tmp.length - 1 && containCard(tmp, 0, card))
 	{
 		if (!defaultEmitError)
 			return false;
@@ -48,9 +48,9 @@ export function addToGame(tmp, deckId, card, onError, defaultEmitError=true)
 		return false;
 	}
 
-	card.id = tmp[deckId].length;
+	card.id = tmp[deckIndex].length;
 	card.setOld(true);
-	tmp[deckId].push(card);
+	tmp[deckIndex].push(card);
 
 	return true;
 }

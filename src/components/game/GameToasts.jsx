@@ -1,19 +1,19 @@
 /**
  * Messages temporaires : tutoriel et erreurs de coup illégal.
  */
-const GameToasts = ({ mode, messageTutorial, messageErreur }) => {
+const GameToasts = ({ mode, tutorialMessage, errorMessage }) => {
 	return (
 		<>
-			{mode === "Tutorial" && messageTutorial !== "" && (
+			{mode === "Tutorial" && tutorialMessage !== "" && (
 				<div className="toast toastTutorial">
-					{messageTutorial.map((element, index) => (
+					{tutorialMessage.map((element, index) => (
 						<div key={index}>{element}</div>
 					))}
 				</div>
 			)}
 
-			{messageErreur !== "" && (
-				<div className="toast toastError">{messageErreur}</div>
+			{errorMessage !== "" && (
+				<div className="toast toastError">{errorMessage}</div>
 			)}
 		</>
 	);

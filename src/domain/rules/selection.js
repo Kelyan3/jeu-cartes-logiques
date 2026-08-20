@@ -4,25 +4,25 @@
  * un message d'erreur adapté est émis via `onError`).
  *
  * @param {Object} deps
- * @param {number} deps.selecCard1
- * @param {number} deps.selecCard2
- * @param {number} deps.selecDeck1
- * @param {number} deps.selecDeck2
- * @param {number} deps.nbSelec
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.secondSelectedCardIndex
+ * @param {number} deps.firstSelectedDeckIndex
+ * @param {number} deps.secondSelectedDeckIndex
+ * @param {number} deps.selectedCardCount
  * @param {Function} deps.onError - onError(message: string)
  *
  * @returns {[number, number]|null}
  */
-export function getSingleSelectedCard({ selecCard1, selecCard2, selecDeck1, selecDeck2, nbSelec, onError })
+export function getSingleSelectedCard({ firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, selectedCardCount, onError })
 {
 	// S'il n'y a qu'une carte de sélectionné
-	if ((selecCard1 !== -1 && selecCard2 === -1 && selecDeck1 !== -1 && selecDeck2 === -1) ||
-		(selecCard1 === -1 && selecCard2 !== -1 && selecDeck1 === -1 && selecDeck2 !== -1))
-		return [Math.max(selecDeck1, selecDeck2), Math.max(selecCard1, selecCard2)];
+	if ((firstSelectedCardIndex !== -1 && secondSelectedCardIndex === -1 && firstSelectedDeckIndex !== -1 && secondSelectedDeckIndex === -1) ||
+		(firstSelectedCardIndex === -1 && secondSelectedCardIndex !== -1 && firstSelectedDeckIndex === -1 && secondSelectedDeckIndex !== -1))
+		return [Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex), Math.max(firstSelectedCardIndex, secondSelectedCardIndex)];
 
-	if (nbSelec > 1)
+	if (selectedCardCount > 1)
 		onError("Vous devez sélectionner une seule carte !");
-	else if (nbSelec === 0)
+	else if (selectedCardCount === 0)
 		onError("Vous devez sélectionner une carte !");
 
 	return null;

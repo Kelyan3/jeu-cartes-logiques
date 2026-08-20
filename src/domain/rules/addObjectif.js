@@ -9,8 +9,8 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 {
 	const {
 		game, mode, numero, tabObjectif,
-		setTabObjectif, setIndentationDemonstration, setSavedGame, setMessageTutorial,
-		saveGame, addToGame, addLineDemonstration, allFalse,
+		setTabObjectif, setIndentationDemonstration, setSavedGame, setTutorialMessage,
+		saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState,
 	} = deps;
 
 	// Copie du jeu actuel
@@ -22,7 +22,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	// Message en mode tutoriel
 	if (mode === "Tutorial" && numero === 3)
 	{
-		setMessageTutorial([
+		setTutorialMessage([
 			"Vous devez maintenant compléter l’objectif secondaire.",
 			"Si vous complétez l’objectif secondaire cela créera la carte d’où il a été créé dans deck avant, dans notre cas dans le deck départ cela complétera l’objectif principal.",
 		]);
@@ -56,7 +56,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	setIndentationDemonstration((prev) => prev + 1);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	allFalse(tmp);
+	clearSelectionFromGameState(tmp);
 	setSavedGame(tmp);
 }
 
@@ -67,7 +67,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
  */
 function addObjectifDepuisLPU(deckI, cardI, deps)
 {
-	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, allFalse } = deps;
+	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState } = deps;
 
 	// Copie du jeu actuel
 	let tmp = copyGameArray(game);
@@ -85,7 +85,7 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
 	addLineDemonstration([["Montrons ", secondObjectif.copy(), ".", ], ], [0]);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	allFalse(tmp);
+	clearSelectionFromGameState(tmp);
 	setSavedGame(tmp);
 }
 
@@ -96,7 +96,7 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
  */
 function addObjectifEt(deckI, cardI, deps)
 {
-	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, allFalse } = deps;
+	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState } = deps;
 
 	let tmp = copyGameArray(game);
 
@@ -123,7 +123,7 @@ function addObjectifEt(deckI, cardI, deps)
 	addLineDemonstration([firstArrayDemo.concat(secondArrayDemo)], [0]);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	allFalse(tmp);
+	clearSelectionFromGameState(tmp);
 	setSavedGame(tmp);
 }
 

@@ -18,7 +18,7 @@ import { CreatTabObj, findObjectifRelative, checkSubObj, delCard, delDeck, delCa
  * @param {Function} deps.addToGame
  * @param {Function} deps.addLineDemonstration
  * @param {Function} deps.setSavedGame
- * @param {Function} deps.allFalse
+ * @param {Function} deps.clearSelectionFromGameState
  * @param {Function} deps.setTabObjectif
  * @param {Function} deps.setWin
  * @param {Function} deps.setPopupWin
@@ -31,7 +31,7 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 	if (originel === undefined)
 		originel = true;
 
-	const { addToGame, addLineDemonstration, setSavedGame, allFalse, setTabObjectif, setWin, setPopupWin, saveProgress } = deps;
+	const { addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setTabObjectif, setWin, setPopupWin, saveProgress } = deps;
 
 	let tmpTabObjectif = CreatTabObj(tmp);
 	const listObjectif = [];
@@ -180,7 +180,7 @@ export function runIsWin(arrayMsg, arrayIndent, tmp, originel, deps)
 	{
 		addLineDemonstration(arrayMsg, arrayIndent);
 		setSavedGame(tmp);
-		allFalse(tmp);
+		clearSelectionFromGameState(tmp);
 		let tmpVar = CreatTabObj(tmp);
 		setTabObjectif(tmpVar);
 	}

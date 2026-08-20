@@ -64,7 +64,7 @@ let deckIdCounter = 0;
  *
  * @returns {Card[][]} le même tableau (pour un usage en chaîne avec setGame)
  */
-export function tagDecks(game)
+export function ensureDeckIds(game)
 {
 	game.forEach((deck) => {
 		if (deck.__deckId === undefined)
@@ -92,10 +92,10 @@ export function tagDecks(game)
 export function buildInitialGameSetup(ex, mode)
 {
 	if (mode === "Create")
-		return { game: tagDecks([[], []]), demonstration: [] };
+		return { game: ensureDeckIds([[], []]), demonstration: [] };
 
 	if (ex === undefined)
-		return { game: tagDecks([[]]), demonstration: [] };
+		return { game: ensureDeckIds([[]]), demonstration: [] };
 
 	try
 	{
@@ -118,12 +118,12 @@ export function buildInitialGameSetup(ex, mode)
 		 * Équivalent à addLineDemonstration([res], [0], 0, true) : voir la fonction
 		 * addLineDemonstration pour le détail du format [indentation, message].
 		 */
-		return { game: tagDecks(tmp), demonstration: [[0, res]] };
+		return { game: ensureDeckIds(tmp), demonstration: [[0, res]] };
 	}
 	catch (error)
 	{
 		console.error("Erreur lors du chargement de l'exercice :", error);
-		return { game: tagDecks([[]]), demonstration: [] };
+		return { game: ensureDeckIds([[]]), demonstration: [] };
 	}
 }
 
@@ -200,14 +200,14 @@ export function buildInitialTutorialMessage(numero)
  * décrire *quel* message afficher (ou aucun).
  *
  * @param {number} numero - numéro du niveau tutoriel en cours
- * @param {number} nbSelec - nombre de cartes actuellement sélectionnées
- * @param {number} selecDeck1
- * @param {number} selecDeck2
+ * @param {number} selectedCardCount - nombre de cartes actuellement sélectionnées
+ * @param {number} firstSelectedDeckIndex
+ * @param {number} secondSelectedDeckIndex
  * @param {number} gameLength - nombre de decks dans le jeu (game.length)
  *
  * @returns {string[]|null} le nouveau message tutoriel, ou null si rien ne doit changer.
  */
-export function buildSelectionTutorialMessage(numero, nbSelec, selecDeck1, selecDeck2, gameLength)
+export function buildSelectionTutorialMessage(numero, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, gameLength)
 {
 	if (numero === 0)
 	{
@@ -222,7 +222,7 @@ export function buildSelectionTutorialMessage(numero, nbSelec, selecDeck1, selec
 		];
 	}
 
-	if (nbSelec === 2 && numero === 1)
+	if (selectedCardCount === 2 && numero === 1)
 	{
 		return [
 			"Ce bouton a besoin de trois conditions :",
@@ -233,7 +233,7 @@ export function buildSelectionTutorialMessage(numero, nbSelec, selecDeck1, selec
 		];
 	}
 
-	if (nbSelec === 2 && numero === 2)
+	if (selectedCardCount === 2 && numero === 2)
 	{
 		return [
 			"Ce bouton a besoin de deux conditions :",
@@ -243,7 +243,7 @@ export function buildSelectionTutorialMessage(numero, nbSelec, selecDeck1, selec
 		];
 	}
 
-	if (nbSelec === 1 && numero === 3 && Math.max(selecDeck1, selecDeck2) === gameLength - 1)
+	if (selectedCardCount === 1 && numero === 3 && Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex) === gameLength - 1)
 	{
 		return [
 			"Ce bouton a besoin de deux conditions :",

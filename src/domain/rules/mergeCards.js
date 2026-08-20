@@ -9,11 +9,11 @@ import { containCard, copyGameArray } from "../gameSolver";
  * @param {Object} deps
  * @param {boolean} deps.navigation
  * @param {boolean} deps.win
- * @param {number} deps.nbSelec
- * @param {number} deps.selecDeck1
- * @param {number} deps.selecDeck2
- * @param {number} deps.selecCard1
- * @param {number} deps.selecCard2
+ * @param {number} deps.selectedCardCount
+ * @param {number} deps.firstSelectedDeckIndex
+ * @param {number} deps.secondSelectedDeckIndex
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.secondSelectedCardIndex
  * @param {Card[][]} deps.game
  * @param {Function} deps.error - error(message: string)
  * @param {Function} deps.saveGame
@@ -22,20 +22,20 @@ import { containCard, copyGameArray } from "../gameSolver";
  */
 export function runAddCardAnd(deps)
 {
-	const { navigation, win, nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, saveGame, addToGame, isWin } = deps;
+	const { navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin } = deps;
 
 	if (navigation || win)
 		return;
 
 	// Si 2 cartes sont sélectionnées
-	if (nbSelec > 1)
+	if (selectedCardCount > 1)
 	{
 		error("Vous devez sélectionner une seule carte !");
 		return;
 	}
 
 	// Si aucune carte n'est sélectionnée
-	if (nbSelec === 0)
+	if (selectedCardCount === 0)
 	{
 		error("Vous devez sélectionner une carte !");
 		return;
@@ -45,8 +45,8 @@ export function runAddCardAnd(deps)
 	 * Prend la carte qui est sélectionnée.
 	 * Si elle n'est pas sélectionnée c'est -1 donc on prend la plus haute valeur.
 	 */
-	let deckI = Math.max(selecDeck1, selecDeck2);
-	let cardI = Math.max(selecCard1, selecCard2);
+	let deckI = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
+	let cardI = Math.max(firstSelectedCardIndex, secondSelectedCardIndex);
 
 	// La carte sélectionnée doit avoir la liaison principal "et"
 	if (game[deckI][cardI].link !== "et")
@@ -90,20 +90,20 @@ export function runAddCardAnd(deps)
  */
 export function runAddCardFuse(deps)
 {
-	const { navigation, win, nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, saveGame, addToGame, isWin } = deps;
+	const { navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin } = deps;
 
 	if (navigation || win)
 		return;
 
 	// S'il n'y a pas 2 cartes sélectionnées
-	if (nbSelec !== 2)
+	if (selectedCardCount !== 2)
 	{
 		error("Vous devez sélectionner deux cartes !");
 		return;
 	}
 
 	// Prend le deck le plus grand
-	let finalDeck = Math.max(selecDeck1, selecDeck2);
+	let finalDeck = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
 	if (finalDeck === game.length - 1)
 	{
 		error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
@@ -115,14 +115,14 @@ export function runAddCardFuse(deps)
 
 	// Vérifie si la 2ème carte a une liaison => et si sa partie gauche est égale à l'autre carte.
 	let bool =
-		tmp[selecDeck2][selecCard2].link === "=>" &&
-		tmp[selecDeck2][selecCard2].left.equals(tmp[selecDeck1][selecCard1]);
+		 tmp[secondSelectedDeckIndex][secondSelectedCardIndex].link === "=>" &&
+		 tmp[secondSelectedDeckIndex][secondSelectedCardIndex].left.equals(tmp[firstSelectedDeckIndex][firstSelectedCardIndex]);
 
 	// Une des 2 cartes doit avoir une liaison =>
 	if (bool ||
-		(tmp[selecDeck1][selecCard1].link === "=>" &&
-		tmp[selecDeck1][selecCard1].left.equals(
-		tmp[selecDeck2][selecCard2])))
+		(tmp[firstSelectedDeckIndex][firstSelectedCardIndex].link === "=>" &&
+		tmp[firstSelectedDeckIndex][firstSelectedCardIndex].left.equals(
+			tmp[secondSelectedDeckIndex][secondSelectedCardIndex])))
 	{
 		// Initialisation de la carte où la liaison => va être utilisée
 		let deckCarteComplex;
@@ -131,13 +131,13 @@ export function runAddCardFuse(deps)
 		// Détermine & affecte l'id de la carte => utilisée
 		if (bool)
 		{
-			deckCarteComplex = selecDeck2;
-			cardCarteComplex = selecCard2;
+			deckCarteComplex = secondSelectedDeckIndex;
+			cardCarteComplex = secondSelectedCardIndex;
 		}
 		else
 		{
-			deckCarteComplex = selecDeck1;
-			cardCarteComplex = selecCard1;
+			deckCarteComplex = firstSelectedDeckIndex;
+			cardCarteComplex = firstSelectedCardIndex;
 		}
 
 		if (containCard(game, finalDeck, tmp[deckCarteComplex][cardCarteComplex].right))
@@ -171,8 +171,8 @@ export function runAddCardFuse(deps)
 	else
 	{
 		// Si aucune des 2 cartes n'a de liaison =>
-		if (tmp[selecDeck2][selecCard2].link !== "=>" &&
-			tmp[selecDeck1][selecCard1].link !== "=>")
+		if (tmp[secondSelectedDeckIndex][secondSelectedCardIndex].link !== "=>" &&
+			tmp[firstSelectedDeckIndex][firstSelectedCardIndex].link !== "=>")
 		{
 			error('Une des deux cartes doit avoir une liaison principale de type "=>" !');
 		}
@@ -189,29 +189,29 @@ export function runAddCardFuse(deps)
  */
 export function runFuseCardAnd(deps)
 {
-	const { navigation, win, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, saveGame, addToGame, isWin } = deps;
+	const { navigation, win, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin } = deps;
 
 	if (!navigation && !win)
 	{
 		// Si 2 cartes sont sélectionnées
-		if (selecCard1 !== -1 && selecCard2 !== -1 &&
-			selecDeck1 !== -1 && selecDeck2 !== -1)
+		if (firstSelectedCardIndex !== -1 && secondSelectedCardIndex !== -1 &&
+			firstSelectedDeckIndex !== -1 && secondSelectedDeckIndex !== -1)
 		{
 			// Prend le deck le plus haut
-			let finalDeck = Math.max(selecDeck1, selecDeck2);
+			let finalDeck = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
 			if (finalDeck !== game.length - 1)
 			{
 				// Copie du jeu actuel
 				let tmp = copyGameArray(game);
 
-				if (!containCard(game, finalDeck, new Card(0, null, false, "et", tmp[selecDeck1][selecCard1], tmp[selecDeck2][selecCard2], true, false)))
+				if (!containCard(game, finalDeck, new Card(0, null, false, "et", tmp[firstSelectedDeckIndex][firstSelectedCardIndex], tmp[secondSelectedDeckIndex][secondSelectedCardIndex], true, false)))
 				{
 					// Sauvegarde du jeu actuel
 					saveGame();
 
 					// Copie les 2 cartes sélectionnées
-					let tmpCard1 = tmp[selecDeck1][selecCard1].copy();
-					let tmpCard2 = tmp[selecDeck2][selecCard2].copy();
+					let tmpCard1 = tmp[firstSelectedDeckIndex][firstSelectedCardIndex].copy();
+					let tmpCard2 = tmp[secondSelectedDeckIndex][secondSelectedCardIndex].copy();
 					tmpCard1.id = 0;
 					tmpCard2.id = 1;
 					tmpCard1.setOld(true);

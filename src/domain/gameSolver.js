@@ -3,14 +3,14 @@
  * carte passée en paramètre.
  *
  * @param {Card[][]} tmp - tableau du jeu (ou d'une copie temporaire)
- * @param {number} deckId - indice du deck dans lequel chercher
+ * @param {number} deckIndex - indice du deck dans lequel chercher
  * @param {Card} card - la carte à trouver
  *
  * @returns {boolean} true si une carte égale existe dans ce deck
  */
-export function containCard(tmp, deckId, card)
+export function containCard(tmp, deckIndex, card)
 {
-	return tmp[deckId].some((cardElement) => cardElement.equals(card));
+	return tmp[deckIndex].some((cardElement) => cardElement.equals(card));
 }
 
 /**
@@ -20,14 +20,14 @@ export function containCard(tmp, deckId, card)
  * Utilisée uniquement par la variante "symétrique" du bouton Transitivité.
  *
  * @param {Card[][]} tmp - tableau du jeu (ou d'une copie temporaire)
- * @param {number} deckId - indice du deck dans lequel chercher
+ * @param {number} deckIndex - indice du deck dans lequel chercher
  * @param {Card} card - la carte à trouver
  *
  * @returns {boolean} true si une carte égale (au sens large) existe dans ce deck
  */
-export function containCardSymmetric(tmp, deckId, card)
+export function containCardSymmetric(tmp, deckIndex, card)
 {
-	return tmp[deckId].some((cardElement) => cardElement.equalsSymmetric(card));
+	return tmp[deckIndex].some((cardElement) => cardElement.equalsSymmetric(card));
 }
 
 /**
@@ -35,14 +35,14 @@ export function containCardSymmetric(tmp, deckId, card)
  * carte passée en paramètre.
  *
  * @param {Card[][]} tmp - tableau du jeu (ou d'une copie temporaire)
- * @param {number} deckId - indice du deck dans lequel chercher
+ * @param {number} deckIndex - indice du deck dans lequel chercher
  * @param {Card} card - la carte à trouver
  *
  * @returns {number} -1 si la carte n'est pas dans le deck, sinon son indice
  */
-function getIndice(tmp, deckId, card) {
+function getIndice(tmp, deckIndex, card) {
 	let num = -1;
-	tmp[deckId].forEach((cardElement, index) => {
+	tmp[deckIndex].forEach((cardElement, index) => {
 		if (cardElement.equals(card))
 			num = index;
 	});
@@ -74,16 +74,16 @@ function getNumObjectif(tabObjectif, objectif)
  * objectif.
  *
  * @param {Card} card - la carte que l'on teste
- * @param {Card} cardObjectif - la carte que l'on veut obtenir
+ * @param {Card} targetCard - la carte que l'on veut obtenir
  *
  * @returns {boolean}
  */
-function isObtainableEt(card, cardObjectif)
+function isObtainableEt(card, targetCard)
 {
 	if (card.color !== null || card.link !== "et")
 		return false;
 
-	return card.left.equals(cardObjectif) || card.right.equals(cardObjectif);
+	return card.left.equals(targetCard) || card.right.equals(targetCard);
 }
 
 /**
@@ -91,19 +91,19 @@ function isObtainableEt(card, cardObjectif)
  * en descendant uniquement dans des chaînes d'implications (et éventuellement un "et" terminal).
  *
  * @param {Card} card - la carte que l'on teste
- * @param {Card} cardObjectif - la carte que l'on veut obtenir
+ * @param {Card} targetCard - la carte que l'on veut obtenir
  *
  * @returns {boolean}
  */
-function isObtainableImplique(card, cardObjectif)
+function isObtainableImplique(card, targetCard)
 {
 	if (card.color !== null || card.link !== "=>")
 		return false;
 
-	if (card.right.equals(cardObjectif))
+	if (card.right.equals(targetCard))
 		return true;
 
-	return isObtainableImplique(card.right, cardObjectif) || isObtainableEt(card.right, cardObjectif);
+	return isObtainableImplique(card.right, targetCard) || isObtainableEt(card.right, targetCard);
 }
 
 /**
@@ -112,25 +112,25 @@ function isObtainableImplique(card, cardObjectif)
  * cette carte pour exposer le sous-terme utile.
  *
  * @param {Card} card
- * @param {Card} cardObjectif
+ * @param {Card} targetCard
  *
  * @returns {boolean}
  */
-function isEtLeadingTo(card, cardObjectif)
+function isEtLeadingTo(card, targetCard)
 {
 	if (card.color !== null || card.link !== "et")
 		return false;
 
-	if (card.left.equals(cardObjectif) || card.right.equals(cardObjectif))
+	if (card.left.equals(targetCard) || card.right.equals(targetCard))
 		return true;
 
 	return (
-		isObtainableImplique(card.left, cardObjectif) ||
-		isObtainableImplique(card.right, cardObjectif) ||
-		isObtainableEt(card.left, cardObjectif) ||
-		isObtainableEt(card.right, cardObjectif) ||
-		isEtLeadingTo(card.left, cardObjectif) ||
-		isEtLeadingTo(card.right, cardObjectif)
+		isObtainableImplique(card.left, targetCard) ||
+		isObtainableImplique(card.right, targetCard) ||
+		isObtainableEt(card.left, targetCard) ||
+		isObtainableEt(card.right, targetCard) ||
+		isEtLeadingTo(card.left, targetCard) ||
+		isEtLeadingTo(card.right, targetCard)
 	);
 }
 
@@ -161,16 +161,16 @@ export function copyGameArray(game)
  * Regarde si la carte passée en paramètre existe dans le jeu reçu, en dehors du deck objectif.
  *
  * @param {Card[][]} game
- * @param {Card} cardTest - la carte que l'on cherche
+ * @param {Card} targetCard - la carte que l'on cherche
  *
  * @returns {boolean}
  */
-function cardExistsInGame(game, cardTest)
+function cardExistsInGame(game, targetCard)
 {
 	let result = false;
 	game.forEach((deck, index) => {
 		deck.forEach((card) => {
-			if (index !== game.length - 1 && card.equals(cardTest))
+			if (index !== game.length - 1 && card.equals(targetCard))
 				result = true;
 		});
 	});
@@ -182,17 +182,17 @@ function cardExistsInGame(game, cardTest)
  * Cherche la position [deck, carte] d'une carte égale à cardTest hors du deck objectif.
  *
  * @param {Card[][]} game
- * @param {Card} cardTest
+ * @param {Card} targetCard
  *
  * @returns {[number, number]|null}
  */
-function findCardPos(game, cardTest)
+function findCardPos(game, targetCard)
 {
 	for (let d = 0; d < game.length - 1; d++)
 	{
 		for (let c = 0; c < game[d].length; c++)
 		{
-			if (game[d][c].equals(cardTest))
+			if (game[d][c].equals(targetCard))
 				return [d, c];
 		}
 	}
@@ -206,55 +206,55 @@ function findCardPos(game, cardTest)
  * tomber sur une carte simple existante.
  *
  * @param {Card[][]} tmp - tableau du jeu temporaire (sera modifié pendant la recherche)
- * @param {Card} cardTest - la dernière carte trouvée pour aller à l'objectif
- * @param {number} deckId - indice du deck de la dernière carte trouvée pour aller à l'objectif
- * @param {number} deckObjectif - numéro de l'objectif
+ * @param {Card} targetCard - la dernière carte trouvée pour aller à l'objectif
+ * @param {number} deckIndex - indice du deck de la dernière carte trouvée pour aller à l'objectif
+ * @param {number} objectiveDeckIndex - numéro de l'objectif
  * @param {Array} chemin - le chemin de cartes actuel : [tableau des étapes, solution trouvée ou non]
  * @param {Array} tabObjectif - tableau des objectifs du jeu (voir Game.jsx)
  *
  * @returns {Array} le chemin mis à jour
  */
-function recursiveSoluce(tmp, cardTest, deckId, deckObjectif, chemin, tabObjectif)
+function solveRecursively(tmp, targetCard, deckIndex, objectiveDeckIndex, chemin, tabObjectif)
 {
 	chemin[1] = false;
 
 	let tmpChemin;
-	let deckIndex = 0;
+	let currentDeckIndex = 0;
 
-	if (cardTest.link === "et" && !containCard(tmp, deckObjectif, cardTest))
+	if (targetCard.link === "et" && !containCard(tmp, objectiveDeckIndex, targetCard))
 	{
-		if (containCard(tmp, deckId, cardTest))
-			chemin[0].push([deckId, tabObjectif[deckObjectif][1]]);
+		if (containCard(tmp, deckIndex, targetCard))
+			chemin[0].push([deckIndex, tabObjectif[objectiveDeckIndex][1]]);
 
-		tmpChemin = [...recursiveSoluce(tmp, cardTest.left, deckIndex, deckObjectif, chemin, tabObjectif),];
+			tmpChemin = [...solveRecursively(tmp, targetCard.left, currentDeckIndex, objectiveDeckIndex, chemin, tabObjectif),];
 		chemin = [...tmpChemin];
 
 		if (chemin[1])
 		{
 			tmp = copyGameArray(tmp);
-			tmpChemin = [...recursiveSoluce(tmp, cardTest.right, deckIndex, deckObjectif, chemin, tabObjectif),];
+			tmpChemin = [...solveRecursively(tmp, targetCard.right, currentDeckIndex, objectiveDeckIndex, chemin, tabObjectif),];
 			chemin = [...tmpChemin];
 		}
 	}
 
-	if (!chemin[1] && deckId === tmp.length - 1 && cardTest.link === "=>")
+	if (!chemin[1] && deckIndex === tmp.length - 1 && targetCard.link === "=>")
 	{
 		tmp.splice(tmp.length - 1, 0, []);
-		tmp[tmp.length - 2].push(cardTest.left.copy());
-		tmp[tmp.length - 1].push(cardTest.right.copy());
+		tmp[tmp.length - 2].push(targetCard.left.copy());
+		tmp[tmp.length - 1].push(targetCard.right.copy());
 		chemin[0].push([tmp.length - 1, tmp[tmp.length - 1].length - 1]);
-		tmpChemin = [...recursiveSoluce(
+		tmpChemin = [...solveRecursively(
 			tmp,
 			tmp[tmp.length - 1][tmp[tmp.length - 1].length - 1],
 			tmp.length - 1,
-			deckObjectif + 1,
+			objectiveDeckIndex + 1,
 			chemin,
 			tabObjectif
 		),];
 
 		chemin = [...tmpChemin];
 		if (chemin[1])
-			tmp[deckObjectif].push(cardTest.copy());
+			tmp[objectiveDeckIndex].push(targetCard.copy());
 	}
 
 	if (!chemin[1])
@@ -263,27 +263,27 @@ function recursiveSoluce(tmp, cardTest, deckId, deckObjectif, chemin, tabObjecti
 			.slice()
 			.reverse()
 			.forEach((deck, i) => {
-				deckIndex = tmp.length - 1 - i;
+				currentDeckIndex = tmp.length - 1 - i;
 				deck.forEach((card, cardIndex) => {
-					if (deckObjectif >= deckIndex)
+					if (objectiveDeckIndex >= currentDeckIndex)
 					{
-						if (!chemin[1] && deckIndex !== tmp.length - 1 && deckIndex <= deckObjectif && containCard(tmp, deckIndex, cardTest))
+						if (!chemin[1] && currentDeckIndex !== tmp.length - 1 && currentDeckIndex <= objectiveDeckIndex && containCard(tmp, currentDeckIndex, targetCard))
 						{
 							chemin[1] = true;
 							if (chemin[0].length === 0 ||
-								!tmp[chemin[0][chemin[0].length - 1][0]][chemin[0][chemin[0].length - 1][1]].equals(cardTest))
+								!tmp[chemin[0][chemin[0].length - 1][0]][chemin[0][chemin[0].length - 1][1]].equals(targetCard))
 							{
-								chemin[0].push([deckIndex, getIndice(tmp, deckIndex, cardTest)]);
+								chemin[0].push([currentDeckIndex, getIndice(tmp, currentDeckIndex, targetCard)]);
 							}
 						}
 
-						if (!chemin[1] && deckIndex !== tmp.length - 1 && isObtainableImplique(card, cardTest))
+						if (!chemin[1] && currentDeckIndex !== tmp.length - 1 && isObtainableImplique(card, targetCard))
 						{
 							if (card.right.color === null)
 							{
 								if (card.right.link === "=>")
 								{
-									tmpChemin = [...recursiveSoluce(tmp, card.right.left, deckIndex, deckObjectif, chemin, tabObjectif),];
+									tmpChemin = [...solveRecursively(tmp, card.right.left, currentDeckIndex, objectiveDeckIndex, chemin, tabObjectif),];
 									chemin = [...tmpChemin];
 								}
 							}
@@ -293,7 +293,7 @@ function recursiveSoluce(tmp, cardTest, deckId, deckObjectif, chemin, tabObjecti
 							if (chemin[1])
 							{
 								chemin[0].push([deckIndex, cardIndex]);
-								tmpChemin = [...recursiveSoluce(tmp, card.left, deckIndex, deckObjectif, chemin, tabObjectif),];
+								tmpChemin = [...solveRecursively(tmp, card.left, currentDeckIndex, objectiveDeckIndex, chemin, tabObjectif),];
 								chemin = [...tmpChemin];
 							}
 
@@ -302,39 +302,39 @@ function recursiveSoluce(tmp, cardTest, deckId, deckObjectif, chemin, tabObjecti
 								if (card.color === null && card.left && card.left.link === "=>")
 								{
 									tmp[tmp.length - 1].push(card.left.copy());
-									tmpChemin = [...recursiveSoluce(tmp, card.left, tmp.length - 1, deckObjectif, chemin, tabObjectif),];
+									tmpChemin = [...solveRecursively(tmp, card.left, tmp.length - 1, objectiveDeckIndex, chemin, tabObjectif),];
 									chemin = [...tmpChemin];
 								}
 							}
 						}
 
-						if (!chemin[1] && deckIndex !== tmp.length - 1 && isObtainableEt(card, cardTest))
+						if (!chemin[1] && currentDeckIndex !== tmp.length - 1 && isObtainableEt(card, targetCard))
 						{
 							chemin[0].push([deckIndex, cardIndex]);
 
-							if (!containCard(tmp, deckId, card.right))
-								tmp[deckId].push(card.right.copy());
+							if (!containCard(tmp, deckIndex, card.right))
+								tmp[deckIndex].push(card.right.copy());
 
-							if (!containCard(tmp, deckId, card.left))
-								tmp[deckId].push(card.left.copy());
+							if (!containCard(tmp, deckIndex, card.left))
+								tmp[deckIndex].push(card.left.copy());
 
-							tmpChemin = [...recursiveSoluce(tmp, cardTest, deckIndex, deckObjectif, chemin, tabObjectif),];
+							tmpChemin = [...solveRecursively(tmp, targetCard, currentDeckIndex, objectiveDeckIndex, chemin, tabObjectif),];
 							chemin = [...tmpChemin];
 						}
 
-						if (!chemin[1] && deckIndex !== tmp.length - 1 && isEtLeadingTo(card, cardTest))
+						if (!chemin[1] && currentDeckIndex !== tmp.length - 1 && isEtLeadingTo(card, targetCard))
 						{
 							const leftHelps =
-								card.left.equals(cardTest) ||
-								isObtainableImplique(card.left, cardTest) ||
-								isObtainableEt(card.left, cardTest) ||
-								isEtLeadingTo(card.left, cardTest);
+								card.left.equals(targetCard) ||
+								isObtainableImplique(card.left, targetCard) ||
+								isObtainableEt(card.left, targetCard) ||
+								isEtLeadingTo(card.left, targetCard);
 
 							const rightHelps =
-								card.right.equals(cardTest) ||
-								isObtainableImplique(card.right, cardTest) ||
-								isObtainableEt(card.right, cardTest) ||
-								isEtLeadingTo(card.right, cardTest);
+								card.right.equals(targetCard) ||
+								isObtainableImplique(card.right, targetCard) ||
+								isObtainableEt(card.right, targetCard) ||
+								isEtLeadingTo(card.right, targetCard);
 
 							const usefulAlreadyPresent =
 								(leftHelps && cardExistsInGame(tmp, card.left)) ||
@@ -351,7 +351,7 @@ function recursiveSoluce(tmp, cardTest, deckId, deckObjectif, chemin, tabObjecti
 								if (!containCard(tmp2, deckIndex, card.right))
 									tmp2[deckIndex].push(card.right.copy());
 
-								tmpChemin = [...recursiveSoluce(tmp2, cardTest, deckIndex, deckObjectif, chemin, tabObjectif),];
+								tmpChemin = [...solveRecursively(tmp2, targetCard, currentDeckIndex, objectiveDeckIndex, chemin, tabObjectif),];
 								chemin = [...tmpChemin];
 							}
 						}
@@ -377,22 +377,22 @@ export function computeNextMove(game, tabObjectif)
 {
 	const tmp = copyGameArray(game);
 	const chemin = [[], false];
-	const deckId = tmp.length - 1;
+	const objectiveDeckIndex = tmp.length - 1;
 	const cardId = tmp[tmp.length - 1].length - 1;
-	const objectif = tmp[deckId][cardId];
+	const objectif = tmp[objectiveDeckIndex][cardId];
  
 	// Rien à suggérer s'il n'y a pas (encore) d'objectif, par exemple en mode Création.
 	if (objectif === undefined)
 		return { cardHelp: null, cardHelp2: null };
 
-	const result = recursiveSoluce(tmp, objectif, deckId, getNumObjectif(tabObjectif, cardId), chemin, tabObjectif);
-	const affiche = [...result[0]].reverse();
+	const result = solveRecursively(tmp, objectif, objectiveDeckIndex, getNumObjectif(tabObjectif, cardId), chemin, tabObjectif);
+	const solutionPath = [...result[0]].reverse();
 
 	/**
 	 * Vérifie qu'une position [deck, carte] pointe bien vers une carte existante dans le jeu actuel
 	 * (le chemin trouvé porte sur la copie `tmp`, qui a pu évoluer différemment du jeu réel).
 	 */
-	const safePos = (pos) => {
+	const getValidPosition = (pos) => {
 		if (pos === undefined)
 			return undefined;
 
@@ -402,11 +402,11 @@ export function computeNextMove(game, tabObjectif)
 
 	// Cas où l'objectif "=>" vient tout juste d'obtenir son propre deck (rien à séparer avant).
 	if (objectif.link === "=>" && game.length === tabObjectif.length + 1)
-		return { cardHelp: [deckId, cardId], cardHelp2: null };
+		return { cardHelp: [objectiveDeckIndex, cardId], cardHelp2: null };
 
-	for (let i = 0; i < affiche.length; i++)
+	for (let i = 0; i < solutionPath.length; i++)
 	{
-		const pos = safePos(affiche[i]);
+		const pos = getValidPosition(solutionPath[i]);
 		if (pos === undefined)
 			continue;
 
@@ -434,8 +434,8 @@ export function computeNextMove(game, tabObjectif)
 	}
 
 	// Repli sur les deux premières positions valides du chemin (comportement historique).
-	const pos1 = safePos(affiche[0]);
-	const pos2 = safePos(affiche[1]);
+	const pos1 = getValidPosition(solutionPath[0]);
+	const pos2 = getValidPosition(solutionPath[1]);
 	const card1 = pos1 ? game[pos1[0]][pos1[1]] : undefined;
 	const card2 = pos2 ? game[pos2[0]][pos2[1]] : undefined;
 

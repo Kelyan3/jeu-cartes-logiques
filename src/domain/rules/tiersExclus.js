@@ -7,28 +7,28 @@ import { copyGameArray } from "../gameSolver";
  * @param {Object} deps
  * @param {boolean} deps.navigation
  * @param {boolean} deps.win
- * @param {number} deps.selecCard1
- * @param {number} deps.selecCard2
- * @param {number} deps.selecDeck1
- * @param {number} deps.selecDeck2
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.secondSelectedCardIndex
+ * @param {number} deps.firstSelectedDeckIndex
+ * @param {number} deps.secondSelectedDeckIndex
  * @param {Card[][]} deps.game
  * @param {Function} deps.transformIntoNonCard - appelée si la carte sélectionnée est dans le deck d'objectif
  * @param {Function} deps.error - error(message: string)
  * @param {Function} deps.addToGame - addToGame(tmp, deckId, card) => boolean
  * @param {Function} deps.isWin - isWin(msgArray, indentArray, tmp)
  */
-export function runTiersExclus({ navigation, win, selecCard1, selecCard2, selecDeck1, selecDeck2, game, transformIntoNonCard, error, addToGame, isWin })
+export function runTiersExclus({ navigation, win, firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, game, transformIntoNonCard, error, addToGame, isWin })
 {
 	if (navigation || win)
 		return;
 
 	// S'il n'y a qu'une carte de sélectionné
-	if ((selecCard1 !== -1 && selecCard2 === -1 && selecDeck1 !== -1 && selecDeck2 === -1) ||
-		(selecCard1 === -1 && selecCard2 !== -1 && selecDeck1 === -1 && selecDeck2 !== -1))
+	if ((firstSelectedCardIndex !== -1 && secondSelectedCardIndex === -1 && firstSelectedDeckIndex !== -1 && secondSelectedDeckIndex === -1) ||
+		(firstSelectedCardIndex === -1 && secondSelectedCardIndex !== -1 && firstSelectedDeckIndex === -1 && secondSelectedDeckIndex !== -1))
 	{
 		// Prend la carte sélectionnée
-		let deckI = Math.max(selecDeck1, selecDeck2);
-		let cardI = Math.max(selecCard1, selecCard2);
+		let deckI = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
+		let cardI = Math.max(firstSelectedCardIndex, secondSelectedCardIndex);
 		let tmp = copyGameArray(game);
 		let cardTmp = tmp[deckI][cardI];
 		if (deckI === tmp.length - 1)

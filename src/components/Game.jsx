@@ -22,7 +22,7 @@ import { useUnlockedActions } from "../hooks/useUnlockedActions";
 
 import Card from "../domain/Card";
 import { computeNextMove, copyGameArray } from "../domain/gameSolver";
-import { buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, tagDecks } from "../domain/gameInput";
+import { buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, ensureDeckIds } from "../domain/gameInput";
 
 import { delCard, CreatTabObj, deckContain as deckContainCore } from "../domain/rules/goals";
 import { getSingleSelectedCard as getSingleSelectedCardCore } from "../domain/rules/selection";
@@ -71,9 +71,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const { openFileJson, saveAsFile, openFile } = useGameFile(game, setGame);
 
 	const {
-		nbSelec,
-		selecDeck1, selecCard1,
-		selecDeck2, selecCard2,
+		selectedCardCount,
+		firstSelectedDeckIndex, firstSelectedCardIndex,
+		secondSelectedDeckIndex, secondSelectedCardIndex,
 		cardHelp, setCardHelp,
 		cardHelp2, setCardHelp2,
 		selectCard, resetSelection,
@@ -97,14 +97,14 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	/**
 	 * Message à afficher en cas de coup illégal. Si le message est "" on affiche rien.
 	 */
-	const [messageErreur, setMessageError] = useState("");
+	const [errorMessage, setErrorMessage] = useState("");
 
 	/**
 	 * Message tutoriel à afficher en mode tutoriel.
 	 * Attention c'est un tableau de strings.
 	 * Si le message est "" on affiche rien.
 	 */
-	const [messageTutorial, setMessageTutorial] = useState(() => buildInitialTutorialMessage(numero));
+	const [tutorialMessage, setTutorialMessage] = useState(() => buildInitialTutorialMessage(numero));
 
 	/**
 	 * Tableau des objectifs.
@@ -159,7 +159,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		if (!navigation && !win)
 		{
 			// Met le message d'erreur en "" ce qui ne l'affiche plus
-			setMessageError("");
+			setErrorMessage("");
 
 			/**
 			 * Copie du jeu dans tmp (copie aussi le deck concerné, pas seulement
@@ -169,18 +169,18 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 			setAllCardOld(tmp);
 
-			const { nbSelec: tmpNbselec, selecDeck1: tmpSelecDeck1, selecDeck2: tmpSelecDeck2 } = selectCard(i, j, tmp);
+			const { selectedCardCount: nextSelectedCardCount, firstSelectedDeckIndex: nextFirstSelectedDeckIndex, secondSelectedDeckIndex: nextSecondSelectedDeckIndex } = selectCard(i, j, tmp);
 
-			setGame(tagDecks(tmp));
+			setGame(ensureDeckIds(tmp));
 
-			if (tmpNbselec === 2 && mode === "Create")
+			if (nextSelectedCardCount === 2 && mode === "Create")
 				setPopupFusion(true);
 
 			if (mode === "Tutorial")
 			{
-				const tutorialMessage = buildSelectionTutorialMessage(numero, tmpNbselec, tmpSelecDeck1, tmpSelecDeck2, game.length);
-				if (tutorialMessage !== null)
-					setMessageTutorial(tutorialMessage);
+				const nextTutorialMessage = buildSelectionTutorialMessage(numero, nextSelectedCardCount, nextFirstSelectedDeckIndex, nextSecondSelectedDeckIndex, game.length);
+				if (nextTutorialMessage !== null)
+					setTutorialMessage(nextTutorialMessage);
 			}
 		}
 	};
@@ -203,7 +203,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 *
 	 * @param {Card[][]} tmp - tableau du jeu temporaire
 	 */
-	const allFalse = (tmp) => {
+	const clearSelectionFromGameState = (tmp) => {
 		resetSelection();
 
 		// On désélectionne toutes les cartes du jeu passé en paramètre
@@ -214,13 +214,13 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		});
 
 		// On actualise le jeu
-		setGame(tagDecks(tmp));
+		setGame(ensureDeckIds(tmp));
 	};
 
 	/**
 	 * Désélectionne toutes les cartes du jeu.
 	 */
-	const allFalseGame = () => {
+	const clearCurrentGameSelection = () => {
 		resetSelection();
 
 		// Copie du jeu actuel
@@ -234,7 +234,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		});
 
 		// On actualise le jeu
-		setGame(tagDecks(tmp));
+		setGame(ensureDeckIds(tmp));
 	};
 
 	/**
@@ -255,8 +255,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * Objet regroupant les dépendances communes aux actions du mode Création.
 	 */
 	const createModeDeps = () => ({
-		game, indiceDeckAddCard, selecDeck1, selecCard1, selecDeck2, selecCard2,
-		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, allFalse, allFalseGame, delCard,
+		game, indiceDeckAddCard, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex,
+		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, clearSelectionFromGameState, clearCurrentGameSelection, delCard,
 	});
 
 	const choixCouleur = (event) => runChoixCouleur(event, createModeDeps());
@@ -265,8 +265,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	const confirmDeleteCard = () => runConfirmDeleteCard(createModeDeps());
 
 	const returnNonCard = (tmp) => {
-		let deckI = Math.max(selecDeck1, selecDeck2);
-		let cardI = Math.max(selecCard1, selecCard2);
+		let deckI = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
+		let cardI = Math.max(firstSelectedCardIndex, secondSelectedCardIndex);
 		const futureCardNon = tmp[deckI][cardI].copy();
 
 		let cardToAdd = new Card(
@@ -288,19 +288,19 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * "carte => Faux" au deck), si une carte est bien sélectionnée.
 	 */
 	const transformIntoNonCard = () => {
-		if (!(selecCard1 !== -1 && selecDeck1 !== -1))
+		if (!(firstSelectedCardIndex !== -1 && firstSelectedDeckIndex !== -1))
 		{
-			allFalseGame();
+			clearCurrentGameSelection();
 			return;
 		}
 
 		saveGame();
 
 		const tmp = copyGameArray(game);
-		if (!addToGame(tmp, selecDeck1, returnNonCard(tmp)))
+		if (!addToGame(tmp, firstSelectedDeckIndex, returnNonCard(tmp)))
 			return;
 
-		allFalse(tmp);
+		clearSelectionFromGameState(tmp);
 	};
 
 	/**
@@ -308,7 +308,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * garder inchangés tous les appels existants à `isWin(...)`.
 	 */
 	const isWin = (arrayMsg, arrayIndent, tmp, originel) => runIsWin(arrayMsg, arrayIndent, tmp, originel, {
-		addToGame, addLineDemonstration, setSavedGame, allFalse, setTabObjectif, setWin, setPopupWin, saveProgress,
+		addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setTabObjectif, setWin, setPopupWin, saveProgress,
 	});
 
 	/**
@@ -343,7 +343,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 			setIndentationDemonstration(CreatTabObj(tmpFutureGame).length - 1);
 
 			// Met à jour le jeu avec la dernière sauvegarde & désélectionne toutes les cartes
-			allFalse(tmpFutureGame);
+			clearSelectionFromGameState(tmpFutureGame);
 			setSavedGame(tmpFutureGame);
 
 			// Tag des lignes ajoutées par l'action que l'on annule.
@@ -379,7 +379,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 		}
 		else
 		{
-			allFalseGame();
+			clearCurrentGameSelection();
 			setDemonstration(initialSetup.demonstration); // S'il n'y a plus d'historique, on force la démonstration initiale.
 			setTabIndentation([0]);
 			setTabIndiceDemonstration([-1]);
@@ -413,7 +413,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * `fuseCardAnd`, pour éviter de le reconstruire 3 fois.
 	 */
 	const cardActionDeps = () => ({
-		navigation, win, nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, saveGame, addToGame, isWin,
+		navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin,
 	});
 
 	/**
@@ -437,7 +437,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * existant à `getSingleSelectedCard()`.
 	 */
 	const getSingleSelectedCard = () => getSingleSelectedCardCore({
-		selecCard1, selecCard2, selecDeck1, selecDeck2, nbSelec, onError: error,
+		firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, selectedCardCount, onError: error,
 	});
 
 	/**
@@ -447,8 +447,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 */
 	const addObjectif = (variant) => runAddObjectif(variant, {
 		game, mode, numero, tabObjectif, navigation, win,
-		setTabObjectif, setIndentationDemonstration, setSavedGame, setMessageTutorial,
-		saveGame, addToGame, addLineDemonstration, allFalse, error, deckContain, getSingleSelectedCard,
+		setTabObjectif, setIndentationDemonstration, setSavedGame, setTutorialMessage,
+		saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState, error, deckContain, getSingleSelectedCard,
 	});
 
 	/**
@@ -457,7 +457,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * à `tiersExclus()` (bouton "Tiers Exclus").
 	 */
 	const tiersExclus = () => runTiersExclus({
-		navigation, win, selecCard1, selecCard2, selecDeck1, selecDeck2, game,
+		navigation, win, firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, game,
 		transformIntoNonCard, error, addToGame, isWin,
 	});
 
@@ -519,12 +519,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 					return;
 
 				setNavigation(true);
-				allFalse(copyGameArray(initialGameArray));
+				clearSelectionFromGameState(copyGameArray(initialGameArray));
 			}
 			else
 			{
 				setNavigation(false);
-				allFalse(savedGame);
+				clearSelectionFromGameState(savedGame);
 			}
 
 			return;
@@ -539,13 +539,13 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 				return;
 
 			setNavigation(true);
-			allFalse(copyGameArray(tmpSavedGame));
+			clearSelectionFromGameState(copyGameArray(tmpSavedGame));
 		}
 		else
 		{
 			// Dernière action (ou au-delà) : plateau courant.
 			setNavigation(false);
-			allFalse(savedGame);
+			clearSelectionFromGameState(savedGame);
 		}
 	};
 
@@ -556,12 +556,12 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * @param {boolean} [allFalseBool=true] - si false, n'annule pas la sélection de cartes en cours
 	 */
 	const error = (message, allFalseBool=true) => {
-		setMessageError(message);
+		setErrorMessage(message);
 
 		if (!allFalseBool)
 			return;
 
-		allFalseGame();
+		clearCurrentGameSelection();
 	};
 
 	/**
@@ -569,8 +569,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * lui fournit `error` comme callback d'erreur, pour garder inchangés tous les
 	 * appels existants à `addToGame(...)` dans ce composant.
 	 */
-	const addToGame = (tmp, deckId, card, defaultEmitError) =>
-		addToGameCore(tmp, deckId, card, (message) => error(message, false), defaultEmitError);
+	const addToGame = (tmp, deckIndex, card, defaultEmitError) =>
+		addToGameCore(tmp, deckIndex, card, (message) => error(message, false), defaultEmitError);
 
 	/**
 	 * Intercepte la copie de texte sélectionné dans la zone de démonstration : reconvertit
@@ -637,7 +637,7 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 	 * (menu "Transitivité").
 	 */
 	const transitivite = (variant) => runTransitivite(variant, {
-		navigation, win, nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error, addToGame, isWin,
+			navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, addToGame, isWin,
 	});
 
 	return (
@@ -715,8 +715,8 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 			<GameToasts
 				mode={mode}
-				messageTutorial={messageTutorial}
-				messageErreur={messageErreur}
+				tutorialMessage={tutorialMessage}
+				errorMessage={errorMessage}
 			/>
 
 			<GameTabProvider value={game}>
@@ -763,9 +763,9 @@ const Game = ({ mode, ex, numero, nbExo }) => {
 
 			<DeleteCardPopup
 				open={popupDeleteCard}
-				card={game[selecDeck1]?.[selecCard1]}
-				deckIndex={selecDeck1}
-				cardIndex={selecCard1}
+				card={game[firstSelectedDeckIndex]?.[firstSelectedCardIndex]}
+				deckIndex={firstSelectedDeckIndex}
+				cardIndex={firstSelectedCardIndex}
 				onConfirm={deleteCard}
 				onCancel={() => setPopupDeleteCard(false)}
 			/>

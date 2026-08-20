@@ -15,11 +15,11 @@ import { copyGameArray } from "../gameSolver";
  * @param {number} deps.indiceDeckAddCard
  * @param {Function} deps.saveGame
  * @param {Function} deps.addToGame
- * @param {Function} deps.allFalse
+ * @param {Function} deps.clearSelectionFromGameState
  */
 export function runChoixCouleur(event, deps)
 {
-	const { game, indiceDeckAddCard, saveGame, addToGame, allFalse } = deps;
+	const { game, indiceDeckAddCard, saveGame, addToGame, clearSelectionFromGameState } = deps;
 
 	// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
 	saveGame();
@@ -36,7 +36,7 @@ export function runChoixCouleur(event, deps)
 		return;
 
 	// Actualise le jeu et désélectionne tout
-	allFalse(tmp);
+	clearSelectionFromGameState(tmp);
 }
 
 /**
@@ -48,18 +48,18 @@ export function runChoixCouleur(event, deps)
  * @param {Event} event - reçoit la liaison cliquée (event.target.value)
  * @param {Object} deps
  * @param {Card[][]} deps.game
- * @param {number} deps.selecDeck1
- * @param {number} deps.selecCard1
- * @param {number} deps.selecDeck2
- * @param {number} deps.selecCard2
+ * @param {number} deps.firstSelectedDeckIndex
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.secondSelectedDeckIndex
+ * @param {number} deps.secondSelectedCardIndex
  * @param {Function} deps.setPopupFusion
  * @param {Function} deps.saveGame
  * @param {Function} deps.addToGame
- * @param {Function} deps.allFalse
+ * @param {Function} deps.clearSelectionFromGameState
  */
 export function runChoixLiaison(event, deps)
 {
-	const { game, selecDeck1, selecCard1, selecDeck2, selecCard2, setPopupFusion, saveGame, addToGame, allFalse } = deps;
+	const { game, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex, setPopupFusion, saveGame, addToGame, clearSelectionFromGameState } = deps;
 
 	// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
 	saveGame();
@@ -74,8 +74,8 @@ export function runChoixLiaison(event, deps)
 	const l = event.target.value;
 
 	// Copie les 2 cartes séléctionnées
-	let c1 = game[selecDeck1][selecCard1].copy();
-	let c2 = game[selecDeck2][selecCard2].copy();
+	let c1 = game[firstSelectedDeckIndex][firstSelectedCardIndex].copy();
+	let c2 = game[secondSelectedDeckIndex][secondSelectedCardIndex].copy();
 	c1.id = 0;
 	c2.id = 1;
 
@@ -83,7 +83,7 @@ export function runChoixLiaison(event, deps)
 	if (l === "<=>")
 	{
 		cardToAdd = new Card(
-			game[selecDeck1].length, // id
+			game[firstSelectedDeckIndex].length, // id
 			null, // color
 			false, // active
 			"et", // link
@@ -96,7 +96,7 @@ export function runChoixLiaison(event, deps)
 	else if (l === "ou")
 	{
 		cardToAdd = new Card(
-			game[selecDeck1].length, // id
+			game[firstSelectedDeckIndex].length, // id
 			null, // color
 			false, // active
 			"=>", // link
@@ -117,7 +117,7 @@ export function runChoixLiaison(event, deps)
 	{
 		// Ajoute la carte fusionnée dans le deck de la 1ère carte séléctionnée
 		cardToAdd = new Card(
-			game[selecDeck1].length, // id
+			game[firstSelectedDeckIndex].length, // id
 			null, // color
 			false, // active
 			l, // link
@@ -130,11 +130,11 @@ export function runChoixLiaison(event, deps)
 
 	// Enlève le popup
 	setPopupFusion(false);
-	if (!addToGame(tmp, selecDeck1, cardToAdd))
+	if (!addToGame(tmp, firstSelectedDeckIndex, cardToAdd))
 		return;
 
 	// Actualise le jeu et désélectionne tout
-	allFalse(tmp);
+	clearSelectionFromGameState(tmp);
 }
 
 /**
@@ -144,24 +144,24 @@ export function runChoixLiaison(event, deps)
  * ⚠️ Ne doit être appelée qu'en mode Create (ou pour des tests).
  *
  * @param {Object} deps
- * @param {number} deps.selecCard1
- * @param {number} deps.selecDeck1
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.firstSelectedDeckIndex
  * @param {Card[][]} deps.game
  * @param {Function} deps.setPopupDeleteCard
  * @param {Function} deps.saveGame
- * @param {Function} deps.allFalse
- * @param {Function} deps.allFalseGame
+ * @param {Function} deps.clearSelectionFromGameState
+ * @param {Function} deps.clearCurrentGameSelection
  * @param {Function} deps.delCard
  */
 export function runDeleteCard(deps)
 {
-	const { selecCard1, selecDeck1, game, setPopupDeleteCard, saveGame, allFalse, allFalseGame, delCard } = deps;
+	const { firstSelectedCardIndex, firstSelectedDeckIndex, game, setPopupDeleteCard, saveGame, clearSelectionFromGameState, clearCurrentGameSelection, delCard } = deps;
 
 	// Enlève le popup
 	setPopupDeleteCard(false);
 
 	// Si la carte sélectionnée n'est pas la carte 1 : tout désélectionner
-	if (!(selecCard1 === -1 && selecDeck1 === -1))
+	if (!(firstSelectedCardIndex === -1 && firstSelectedDeckIndex === -1))
 	{
 		// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
 		saveGame();
@@ -170,13 +170,13 @@ export function runDeleteCard(deps)
 		let tmp = copyGameArray(game);
 
 		// Supprime la carte
-		tmp[selecDeck1] = delCard(tmp[selecDeck1], selecCard1);
+		tmp[firstSelectedDeckIndex] = delCard(tmp[firstSelectedDeckIndex], firstSelectedCardIndex);
 
 		// Actualise le jeu et désélectionne tout
-		allFalse(tmp);
+		clearSelectionFromGameState(tmp);
 	}
 	else
-		allFalseGame();
+		clearCurrentGameSelection();
 }
 
 /**
@@ -184,18 +184,18 @@ export function runDeleteCard(deps)
  * Si aucune carte n'est sélectionnée, désélectionne simplement tout.
  *
  * @param {Object} deps
- * @param {number} deps.selecCard1
- * @param {number} deps.selecDeck1
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.firstSelectedDeckIndex
  * @param {Function} deps.setPopupDeleteCard
- * @param {Function} deps.allFalseGame
+ * @param {Function} deps.clearCurrentGameSelection
  */
 export function runConfirmDeleteCard(deps)
 {
-	const { selecCard1, selecDeck1, setPopupDeleteCard, allFalseGame } = deps;
+	const { firstSelectedCardIndex, firstSelectedDeckIndex, setPopupDeleteCard, clearCurrentGameSelection } = deps;
 
-	if (selecCard1 === -1 && selecDeck1 === -1)
+	if (firstSelectedCardIndex === -1 && firstSelectedDeckIndex === -1)
 	{
-		allFalseGame();
+		clearCurrentGameSelection();
 		return;
 	}
 

@@ -11,23 +11,23 @@ import { containCardSymmetric, copyGameArray } from "../gameSolver";
  */
 function getTransitiviteSelection(deps)
 {
-	const { nbSelec, selecDeck1, selecDeck2, selecCard1, selecCard2, game, error } = deps;
+	const { selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error } = deps;
 
-	if (nbSelec !== 2)
+	if (selectedCardCount !== 2)
 	{
 		error("Vous devez sélectionner deux cartes !");
 		return null;
 	}
 
 	// Prend le deck le plus grand
-	let finalDeck = Math.max(selecDeck1, selecDeck2);
+	let finalDeck = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
 	if (finalDeck === game.length - 1)
 	{
 		error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
 		return null;
 	}
 
-	return [finalDeck, game[selecDeck1][selecCard1], game[selecDeck2][selecCard2]];
+	return [finalDeck, game[firstSelectedDeckIndex][firstSelectedCardIndex], game[secondSelectedDeckIndex][secondSelectedCardIndex]];
 }
 
 /**
@@ -56,14 +56,13 @@ function finalizeTransitivite(finalDeck, cardToAdd, cardLeft, cardMiddle, cardRi
 				".",
 			],
 		],
-		[0],
+			[0],
 		tmp
 	);
 }
 
 /**
- * Variante "=>" : combine 2 cartes "A⇒B" et "B⇒C" (sélectionnées dans n'importe
- * quel ordre) pour en déduire "A⇒C".
+ * Applique la variante avec le connecteur "=>".
  */
 function transitiviteArrow(deps)
 {
@@ -183,11 +182,11 @@ function transitiviteEquiv(symmetric, deps)
  * @param {Object} deps
  * @param {boolean} deps.navigation
  * @param {boolean} deps.win
- * @param {number} deps.nbSelec
- * @param {number} deps.selecDeck1
- * @param {number} deps.selecDeck2
- * @param {number} deps.selecCard1
- * @param {number} deps.selecCard2
+ * @param {number} deps.selectedCardCount
+ * @param {number} deps.firstSelectedDeckIndex
+ * @param {number} deps.secondSelectedDeckIndex
+ * @param {number} deps.firstSelectedCardIndex
+ * @param {number} deps.secondSelectedCardIndex
  * @param {Card[][]} deps.game
  * @param {Function} deps.error
  * @param {Function} deps.addToGame

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { gameInput, tagDecks } from "../domain/gameInput";
+import { gameInput, ensureDeckIds } from "../domain/gameInput";
 
 
 /**
@@ -66,7 +66,7 @@ export function useGameFile(game, setGame)
 				try
 				{
 					let obj = JSON.parse(event.target.result);
-					setGame(tagDecks(gameInput(obj)));
+					setGame(ensureDeckIds(gameInput(obj)));
 				}
 				catch (error)
 				{

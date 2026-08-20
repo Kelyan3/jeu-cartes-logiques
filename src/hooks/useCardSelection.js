@@ -9,11 +9,11 @@ import { useState } from "react";
  */
 export function useCardSelection()
 {
-	const [nbSelec, setNbSelec] = useState(0);
-	const [selecDeck1, setSelecDeck1] = useState(-1);
-	const [selecCard1, setSelecCard1] = useState(-1);
-	const [selecDeck2, setSelecDeck2] = useState(-1);
-	const [selecCard2, setSelecCard2] = useState(-1);
+	const [selectedCardCount, setSelectedCardCount] = useState(0);
+	const [firstSelectedDeckIndex, setFirstSelectedDeckIndex] = useState(-1);
+	const [firstSelectedCardIndex, setFirstSelectedCardIndex] = useState(-1);
+	const [secondSelectedDeckIndex, setSecondSelectedDeckIndex] = useState(-1);
+	const [secondSelectedCardIndex, setSecondSelectedCardIndex] = useState(-1);
 	const [cardHelp, setCardHelp] = useState(null);
 	const [cardHelp2, setCardHelp2] = useState(null);
 
@@ -26,7 +26,7 @@ export function useCardSelection()
 	 * @param {number} j - indice de la carte dans le deck
 	 * @param {Card[][]} tmp - tableau du jeu temporaire (sera muté sur tmp[i][j])
 	 *
-	 * @returns {{nbSelec: number, selecDeck1: number, selecCard1: number, selecDeck2: number, selecCard2: number}}
+	 * @returns {{selectedCardCount: number, firstSelectedDeckIndex: number, firstSelectedCardIndex: number, secondSelectedDeckIndex: number, secondSelectedCardIndex: number}}
 	 *          le nouvel état de sélection (utile à l'appelant pour ses propres besoins, ex. tutoriel/popup)
 	 */
 	const selectCard = (i, j, tmp) => {
@@ -35,59 +35,59 @@ export function useCardSelection()
 
 		let currentCard = tmp[i][j];
 
-		let tmpNbselec = nbSelec;
-		let tmpSelecDeck1 = selecDeck1;
-		let tmpSelecCard1 = selecCard1;
-		let tmpSelecDeck2 = selecDeck2;
-		let tmpSelecCard2 = selecCard2;
+		let nextSelectedCardCount = selectedCardCount;
+		let nextFirstSelectedDeckIndex = firstSelectedDeckIndex;
+		let nextFirstSelectedCardIndex = firstSelectedCardIndex;
+		let nextSecondSelectedDeckIndex = secondSelectedDeckIndex;
+		let nextSecondSelectedCardIndex = secondSelectedCardIndex;
 
-		if (tmpSelecDeck1 === i && tmpSelecCard1 === j)
+		if (nextFirstSelectedDeckIndex === i && nextFirstSelectedCardIndex === j)
 		{
 			// Si la carte sélectionnée est déjà sélectionnée on la désélectionne (1ère carte)
-			tmpSelecCard1 = -1;
-			tmpSelecDeck1 = -1;
-			tmpNbselec--;
+			nextFirstSelectedCardIndex = -1;
+			nextFirstSelectedDeckIndex = -1;
+			nextSelectedCardCount--;
 			currentCard.select(!currentCard.active);
 		}
-		else if (tmpSelecDeck2 === i && tmpSelecCard2 === j)
+		else if (nextSecondSelectedDeckIndex === i && nextSecondSelectedCardIndex === j)
 		{
 			// Si la carte sélectionnée est déjà sélectionnée on la désélectionne (2ème carte)
-			tmpSelecCard2 = -1;
-			tmpSelecDeck2 = -1;
-			tmpNbselec--;
+			nextSecondSelectedCardIndex = -1;
+			nextSecondSelectedDeckIndex = -1;
+			nextSelectedCardCount--;
 			currentCard.select(!currentCard.active);
 		}
-		else if (tmpSelecDeck1 === -1 && tmpSelecCard1 === -1)
+		else if (nextFirstSelectedDeckIndex === -1 && nextFirstSelectedCardIndex === -1)
 		{
 			// Aucune carte n'est sélectionnée
-			tmpSelecDeck1 = i;
-			tmpSelecCard1 = j;
-			tmpNbselec++;
+			nextFirstSelectedDeckIndex = i;
+			nextFirstSelectedCardIndex = j;
+			nextSelectedCardCount++;
 			currentCard.select(!currentCard.active);
 		}
-		else if (tmpNbselec < 2)
+		else if (nextSelectedCardCount < 2)
 		{
 			// Une seule & unique carte est sélectionnée
-			tmpSelecDeck2 = i;
-			tmpSelecCard2 = j;
-			tmpNbselec++;
+			nextSecondSelectedDeckIndex = i;
+			nextSecondSelectedCardIndex = j;
+			nextSelectedCardCount++;
 			currentCard.select(!currentCard.active);
 		}
 
-		setNbSelec(tmpNbselec);
-		setSelecCard1(tmpSelecCard1);
-		setSelecCard2(tmpSelecCard2);
-		setSelecDeck1(tmpSelecDeck1);
-		setSelecDeck2(tmpSelecDeck2);
+		setSelectedCardCount(nextSelectedCardCount);
+		setFirstSelectedCardIndex(nextFirstSelectedCardIndex);
+		setSecondSelectedCardIndex(nextSecondSelectedCardIndex);
+		setFirstSelectedDeckIndex(nextFirstSelectedDeckIndex);
+		setSecondSelectedDeckIndex(nextSecondSelectedDeckIndex);
 
 		tmp[i][j] = currentCard;
 
 		return {
-			nbSelec: tmpNbselec,
-			selecDeck1: tmpSelecDeck1,
-			selecCard1: tmpSelecCard1,
-			selecDeck2: tmpSelecDeck2,
-			selecCard2: tmpSelecCard2,
+			selectedCardCount: nextSelectedCardCount,
+			firstSelectedDeckIndex: nextFirstSelectedDeckIndex,
+			firstSelectedCardIndex: nextFirstSelectedCardIndex,
+			secondSelectedDeckIndex: nextSecondSelectedDeckIndex,
+			secondSelectedCardIndex: nextSecondSelectedCardIndex,
 		};
 	};
 
@@ -97,15 +97,16 @@ export function useCardSelection()
 	 * visuellement les cartes et d'appeler setGame.
 	 */
 	const resetSelection = () => {
-		setNbSelec(0);
-		setSelecCard1(-1);
-		setSelecDeck1(-1);
-		setSelecCard2(-1);
-		setSelecDeck2(-1);
+		setSelectedCardCount(0);
+		setFirstSelectedCardIndex(-1);
+		setFirstSelectedDeckIndex(-1);
+		setSecondSelectedCardIndex(-1);
+		setSecondSelectedDeckIndex(-1);
 	};
 
 	return {
-		nbSelec, selecDeck1, selecCard1, selecDeck2, selecCard2,
+		selectedCardCount, firstSelectedDeckIndex, firstSelectedCardIndex,
+		secondSelectedDeckIndex, secondSelectedCardIndex,
 		cardHelp, setCardHelp, cardHelp2, setCardHelp2,
 		selectCard, resetSelection,
 	};
