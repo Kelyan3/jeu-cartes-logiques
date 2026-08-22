@@ -201,6 +201,234 @@ function findCardPos(game, targetCard)
 }
 
 /**
+ * Représente l'état de la recherche d'un chemin de solution.
+ *
+ * @typedef {Object} SolutionPath
+ *
+ * @property {Array<[number, number]>} steps - Positions [indiceDeck, indiceCarte] du chemin trouvé
+ *                                              jusqu'ici, dans l'ordre de découverte (à inverser pour
+ *                                              obtenir l'ordre de jeu, voir computeNextMove).
+ * @property {boolean} found - true si un chemin a été trouvé (ou complété) lors du dernier appel.
+ */
+
+/**
+ * Cas "Séparation" : si targetCard est une carte "et" pas encore dans l'objectif, cherche
+ * séparément un chemin pour sa partie gauche puis sa partie droite (copie le jeu de travail
+ * avant de chercher la partie droite).
+ *
+ * @returns {{workingGame: Card[][], solutionPath: SolutionPath}}
+ */
+function trySeparationCase(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives)
+{
+	if (targetCard.link !== "et" || containCard(workingGame, objectiveDeckIndex, targetCard))
+		return { workingGame, solutionPath };
+
+	if (containCard(workingGame, deckIndex, targetCard))
+		solutionPath.steps.push([deckIndex, objectives[objectiveDeckIndex][1]]);
+
+	solutionPath = solveRecursively(workingGame, targetCard.left, 0, objectiveDeckIndex, solutionPath, objectives);
+
+	if (solutionPath.found)
+	{
+		workingGame = copyGameArray(workingGame);
+		solutionPath = solveRecursively(workingGame, targetCard.right, 0, objectiveDeckIndex, solutionPath, objectives);
+	}
+
+	return { workingGame, solutionPath };
+}
+
+/**
+ * Cas "Nouvel objectif" : si targetCard est une carte "=>" tout juste posée dans le dernier deck
+ * (deckIndex pointe sur le deck objectif), crée un nouveau deck intermédiaire pour sa partie
+ * gauche et cherche un chemin pour sa partie droite dans ce nouveau deck.
+ *
+ * @returns {SolutionPath}
+ */
+function tryNewObjectiveDeckCase(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives)
+{
+	if (solutionPath.found || deckIndex !== workingGame.length - 1 || targetCard.link !== "=>")
+		return solutionPath;
+
+	workingGame.splice(workingGame.length - 1, 0, []);
+	workingGame[workingGame.length - 2].push(targetCard.left.copy());
+	workingGame[workingGame.length - 1].push(targetCard.right.copy());
+	solutionPath.steps.push([workingGame.length - 1, workingGame[workingGame.length - 1].length - 1]);
+
+	solutionPath = solveRecursively(
+		workingGame,
+		workingGame[workingGame.length - 1][workingGame[workingGame.length - 1].length - 1],
+		workingGame.length - 1,
+		objectiveDeckIndex + 1,
+		solutionPath,
+		objectives
+	);
+
+	if (solutionPath.found)
+		workingGame[objectiveDeckIndex].push(targetCard.copy());
+
+	return solutionPath;
+}
+
+/**
+ * Cas "Correspondance directe" : targetCard existe déjà telle quelle dans un deck valide
+ * (pas le deck objectif, pas au-delà de objectiveDeckIndex).
+ *
+ * @returns {SolutionPath}
+ */
+function tryDirectMatchCase(workingGame, targetCard, currentDeckIndex, objectiveDeckIndex, solutionPath)
+{
+	if (solutionPath.found || currentDeckIndex === workingGame.length - 1 || currentDeckIndex > objectiveDeckIndex)
+		return solutionPath;
+
+	if (!containCard(workingGame, currentDeckIndex, targetCard))
+		return solutionPath;
+
+	solutionPath.found = true;
+
+	const lastStep = solutionPath.steps[solutionPath.steps.length - 1];
+	if (!lastStep || !workingGame[lastStep[0]][lastStep[1]].equals(targetCard))
+		solutionPath.steps.push([currentDeckIndex, findCardIndex(workingGame, currentDeckIndex, targetCard)]);
+
+	return solutionPath;
+}
+
+/**
+ * Cas "Implication" : card permet d'obtenir targetCard via une chaîne d'implications "=>"
+ * (voir {@link isObtainableImplique}). Cherche récursivement un chemin vers card.right puis
+ * card.left ; si aucun des deux n'aboutit, tente de poser card.left dans le deck objectif.
+ *
+ * @returns {SolutionPath}
+ */
+function tryImplicationCase(workingGame, targetCard, deckIndex, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives, card, cardIndex)
+{
+	if (solutionPath.found || currentDeckIndex === workingGame.length - 1 || !isObtainableImplique(card, targetCard))
+		return solutionPath;
+
+	if (card.right.color === null)
+	{
+		if (card.right.link === "=>")
+			solutionPath = solveRecursively(workingGame, card.right.left, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives);
+	}
+	else
+		solutionPath.found = true;
+
+	if (solutionPath.found)
+	{
+		solutionPath.steps.push([currentDeckIndex, cardIndex]);
+		solutionPath = solveRecursively(workingGame, card.left, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives);
+	}
+
+	if (!solutionPath.found && card.color === null && card.left && card.left.link === "=>")
+	{
+		workingGame[workingGame.length - 1].push(card.left.copy());
+		solutionPath = solveRecursively(workingGame, card.left, workingGame.length - 1, objectiveDeckIndex, solutionPath, objectives);
+	}
+
+	return solutionPath;
+}
+
+/**
+ * Cas "Et" : card permet d'obtenir targetCard en la séparant (voir {@link isObtainableEt}).
+ * Ajoute les deux parties de card au deck courant puis recherche à nouveau targetCard.
+ *
+ * @returns {SolutionPath}
+ */
+function tryEtCase(workingGame, targetCard, deckIndex, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives, card, cardIndex)
+{
+	if (solutionPath.found || currentDeckIndex === workingGame.length - 1 || !isObtainableEt(card, targetCard))
+		return solutionPath;
+
+	solutionPath.steps.push([currentDeckIndex, cardIndex]);
+
+	if (!containCard(workingGame, deckIndex, card.right))
+		workingGame[deckIndex].push(card.right.copy());
+
+	if (!containCard(workingGame, deckIndex, card.left))
+		workingGame[deckIndex].push(card.left.copy());
+
+	solutionPath = solveRecursively(workingGame, targetCard, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives);
+
+	return solutionPath;
+}
+
+/**
+ * Cas "Et menant à l'objectif" : card est une carte "et" dont un des côtés mène (directement
+ * ou indirectement) à targetCard (voir {@link isEtLeadingTo}). Si ce côté utile n'est pas déjà
+ * présent ailleurs dans le jeu, sépare card sur une copie du jeu et recherche à nouveau.
+ *
+ * @returns {SolutionPath}
+ */
+function tryEtLeadingToCase(workingGame, targetCard, deckIndex, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives, card, cardIndex)
+{
+	if (solutionPath.found || currentDeckIndex === workingGame.length - 1 || !isEtLeadingTo(card, targetCard))
+		return solutionPath;
+
+	const leftHelps =
+		card.left.equals(targetCard) ||
+		isObtainableImplique(card.left, targetCard) ||
+		isObtainableEt(card.left, targetCard) ||
+		isEtLeadingTo(card.left, targetCard);
+
+	const rightHelps =
+		card.right.equals(targetCard) ||
+		isObtainableImplique(card.right, targetCard) ||
+		isObtainableEt(card.right, targetCard) ||
+		isEtLeadingTo(card.right, targetCard);
+
+	const usefulAlreadyPresent =
+		(leftHelps && cardExistsInGame(workingGame, card.left)) ||
+		(rightHelps && cardExistsInGame(workingGame, card.right));
+
+	if (usefulAlreadyPresent)
+		return solutionPath;
+
+	solutionPath.steps.push([currentDeckIndex, cardIndex]);
+	const copiedGame = copyGameArray(workingGame);
+
+	if (!containCard(copiedGame, deckIndex, card.left))
+		copiedGame[deckIndex].push(card.left.copy());
+
+	if (!containCard(copiedGame, deckIndex, card.right))
+		copiedGame[deckIndex].push(card.right.copy());
+
+	solutionPath = solveRecursively(copiedGame, targetCard, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives);
+
+	return solutionPath;
+}
+
+/**
+ * Cas "Recherche dans les decks" : parcourt tous les decks (du dernier au premier) à la
+ * recherche d'une carte permettant d'avancer vers targetCard, en essayant les 4 cas ci-dessus
+ * dans l'ordre (une carte est ignorée si elle appartient à un deck situé après objectiveDeckIndex).
+ *
+ * @returns {SolutionPath}
+ */
+function trySearchDecksCase(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives)
+{
+	if (solutionPath.found)
+		return solutionPath;
+
+	workingGame
+		.slice()
+		.reverse()
+		.forEach((deck, i) => {
+			const currentDeckIndex = workingGame.length - 1 - i;
+
+			deck.forEach((card, cardIndex) => {
+				if (objectiveDeckIndex < currentDeckIndex)
+					return;
+
+				solutionPath = tryDirectMatchCase(workingGame, targetCard, currentDeckIndex, objectiveDeckIndex, solutionPath);
+				solutionPath = tryImplicationCase(workingGame, targetCard, deckIndex, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives, card, cardIndex);
+				solutionPath = tryEtCase(workingGame, targetCard, deckIndex, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives, card, cardIndex);
+				solutionPath = tryEtLeadingToCase(workingGame, targetCard, deckIndex, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives, card, cardIndex);
+			});
+		});
+
+	return solutionPath;
+}
+
+/**
  * Cherche de manière récursive un chemin pour créer la carte objectif : elle cherche à trouver un moyen de
  * créer cardTest avec une autre carte, s'il y a un moyen elle va chercher à créer cette autre carte jusqu'à
  * tomber sur une carte simple existante.
@@ -209,156 +437,22 @@ function findCardPos(game, targetCard)
  * @param {Card} targetCard - la dernière carte trouvée pour aller à l'objectif
  * @param {number} deckIndex - indice du deck de la dernière carte trouvée pour aller à l'objectif
  * @param {number} objectiveDeckIndex - numéro de l'objectif
- * @param {Array} solutionPath - le chemin de cartes actuel : [tableau des étapes, solution trouvée ou non]
+ * @param {SolutionPath} solutionPath - le chemin de cartes actuel
  * @param {Array} objectives - tableau des objectifs du jeu (voir Game.jsx)
  *
- * @returns {Array} le chemin mis à jour
+ * @returns {SolutionPath} le chemin mis à jour
  */
 function solveRecursively(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives)
 {
-	solutionPath[1] = false;
+	solutionPath.found = false;
 
-	let nextSolutionPath;
-	let currentDeckIndex = 0;
+	const separationResult = trySeparationCase(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives);
+	workingGame = separationResult.workingGame;
+	solutionPath = separationResult.solutionPath;
 
-	if (targetCard.link === "et" && !containCard(workingGame, objectiveDeckIndex, targetCard))
-	{
-		if (containCard(workingGame, deckIndex, targetCard))
-			solutionPath[0].push([deckIndex, objectives[objectiveDeckIndex][1]]);
+	solutionPath = tryNewObjectiveDeckCase(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives);
 
-			nextSolutionPath = [...solveRecursively(workingGame, targetCard.left, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives),];
-		solutionPath = [...nextSolutionPath];
-
-		if (solutionPath[1])
-		{
-			workingGame = copyGameArray(workingGame);
-			nextSolutionPath = [...solveRecursively(workingGame, targetCard.right, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives),];
-			solutionPath = [...nextSolutionPath];
-		}
-	}
-
-	if (!solutionPath[1] && deckIndex === workingGame.length - 1 && targetCard.link === "=>")
-	{
-		workingGame.splice(workingGame.length - 1, 0, []);
-		workingGame[workingGame.length - 2].push(targetCard.left.copy());
-		workingGame[workingGame.length - 1].push(targetCard.right.copy());
-		solutionPath[0].push([workingGame.length - 1, workingGame[workingGame.length - 1].length - 1]);
-		nextSolutionPath = [...solveRecursively(
-			workingGame,
-			workingGame[workingGame.length - 1][workingGame[workingGame.length - 1].length - 1],
-			workingGame.length - 1,
-			objectiveDeckIndex + 1,
-			solutionPath,
-			objectives
-		),];
-
-		solutionPath = [...nextSolutionPath];
-		if (solutionPath[1])
-			workingGame[objectiveDeckIndex].push(targetCard.copy());
-	}
-
-	if (!solutionPath[1])
-	{
-		workingGame
-			.slice()
-			.reverse()
-			.forEach((deck, i) => {
-				currentDeckIndex = workingGame.length - 1 - i;
-				deck.forEach((card, cardIndex) => {
-					if (objectiveDeckIndex >= currentDeckIndex)
-					{
-						if (!solutionPath[1] && currentDeckIndex !== workingGame.length - 1 && currentDeckIndex <= objectiveDeckIndex && containCard(workingGame, currentDeckIndex, targetCard))
-						{
-							solutionPath[1] = true;
-							if (solutionPath[0].length === 0 ||
-								!workingGame[solutionPath[0][solutionPath[0].length - 1][0]][solutionPath[0][solutionPath[0].length - 1][1]].equals(targetCard))
-							{
-								solutionPath[0].push([currentDeckIndex, findCardIndex(workingGame, currentDeckIndex, targetCard)]);
-							}
-						}
-
-						if (!solutionPath[1] && currentDeckIndex !== workingGame.length - 1 && isObtainableImplique(card, targetCard))
-						{
-							if (card.right.color === null)
-							{
-								if (card.right.link === "=>")
-								{
-									nextSolutionPath = [...solveRecursively(workingGame, card.right.left, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives),];
-									solutionPath = [...nextSolutionPath];
-								}
-							}
-							else
-								solutionPath[1] = true;
-
-							if (solutionPath[1])
-							{
-								solutionPath[0].push([deckIndex, cardIndex]);
-								nextSolutionPath = [...solveRecursively(workingGame, card.left, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives),];
-								solutionPath = [...nextSolutionPath];
-							}
-
-							if (!solutionPath[1])
-							{
-								if (card.color === null && card.left && card.left.link === "=>")
-								{
-									workingGame[workingGame.length - 1].push(card.left.copy());
-									nextSolutionPath = [...solveRecursively(workingGame, card.left, workingGame.length - 1, objectiveDeckIndex, solutionPath, objectives),];
-									solutionPath = [...nextSolutionPath];
-								}
-							}
-						}
-
-						if (!solutionPath[1] && currentDeckIndex !== workingGame.length - 1 && isObtainableEt(card, targetCard))
-						{
-							solutionPath[0].push([deckIndex, cardIndex]);
-
-							if (!containCard(workingGame, deckIndex, card.right))
-								workingGame[deckIndex].push(card.right.copy());
-
-							if (!containCard(workingGame, deckIndex, card.left))
-								workingGame[deckIndex].push(card.left.copy());
-
-								nextSolutionPath = [...solveRecursively(workingGame, targetCard, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives),];
-							solutionPath = [...nextSolutionPath];
-						}
-
-						if (!solutionPath[1] && currentDeckIndex !== workingGame.length - 1 && isEtLeadingTo(card, targetCard))
-						{
-							const leftHelps =
-								card.left.equals(targetCard) ||
-								isObtainableImplique(card.left, targetCard) ||
-								isObtainableEt(card.left, targetCard) ||
-								isEtLeadingTo(card.left, targetCard);
-
-							const rightHelps =
-								card.right.equals(targetCard) ||
-								isObtainableImplique(card.right, targetCard) ||
-								isObtainableEt(card.right, targetCard) ||
-								isEtLeadingTo(card.right, targetCard);
-
-							const usefulAlreadyPresent =
-								(leftHelps && cardExistsInGame(workingGame, card.left)) ||
-								(rightHelps && cardExistsInGame(workingGame, card.right));
-
-							if (!usefulAlreadyPresent)
-							{
-								solutionPath[0].push([deckIndex, cardIndex]);
-								const copiedGame = copyGameArray(workingGame);
-
-								if (!containCard(copiedGame, deckIndex, card.left))
-									copiedGame[deckIndex].push(card.left.copy());
-
-								if (!containCard(copiedGame, deckIndex, card.right))
-									copiedGame[deckIndex].push(card.right.copy());
-
-								nextSolutionPath = [...solveRecursively(copiedGame, targetCard, currentDeckIndex, objectiveDeckIndex, solutionPath, objectives),];
-								solutionPath = [...nextSolutionPath];
-							}
-						}
-					}
-				});
-			});
-	}
+	solutionPath = trySearchDecksCase(workingGame, targetCard, deckIndex, objectiveDeckIndex, solutionPath, objectives);
 
 	return solutionPath;
 }
@@ -376,7 +470,7 @@ function solveRecursively(workingGame, targetCard, deckIndex, objectiveDeckIndex
 export function computeNextMove(game, objectives)
 {
 	const workingGame = copyGameArray(game);
-	const searchPath = [[], false];
+	const searchPath = { steps: [], found: false };
 	const objectiveDeckIndex = workingGame.length - 1;
 	const cardId = workingGame[workingGame.length - 1].length - 1;
 	const objectif = workingGame[objectiveDeckIndex][cardId];
@@ -385,8 +479,7 @@ export function computeNextMove(game, objectives)
 	if (objectif === undefined)
 		return { cardHelp: null, cardHelp2: null };
 
-	const result = solveRecursively(workingGame, objectif, objectiveDeckIndex, getObjectiveNumber(objectives, cardId), searchPath, objectives);
-	const solutionPath = [...result[0]].reverse();
+	const solutionPath = [...solveRecursively(workingGame, objectif, objectiveDeckIndex, getObjectiveNumber(objectives, cardId), searchPath, objectives).steps].reverse();
 
 	/**
 	 * Vérifie qu'une position [deck, carte] pointe bien vers une carte existante dans le jeu actuel

@@ -34,9 +34,10 @@ import { runAddCardAnd, runAddCardFuse, runFuseCardAnd } from "../domain/rules/m
 import { runIsWin } from "../domain/rules/isWin";
 import { runTransitivite } from "../domain/rules/transitivite";
 import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard } from "../domain/rules/createMode";
+import { computeRetourEnArriere } from "../domain/rules/history";
 
 import { formatTime } from "../utils/formatTime";
-
+import { formatCopiedDemonstrationText } from "../utils/clipboardFormat";
 
 const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const { user } = useAuth();
@@ -80,7 +81,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	} = useCardSelection();
 
 	// Bouton "Aide" désactivé temporairement.
-	const HELP_BUTTON_ENABLED = false;
+	const HELP_BUTTON_ENABLED = true;
 
 	const {
 		popupAddCard, setPopupAddCard,
@@ -313,78 +314,29 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	/**
 	 * Fonction appelée après avoir appuyé sur le bouton "Retour arrière".
-	 * Prend le dernier élément du tableau {@link gameHistory} et remplace la variable {@link game}.
 	 */
 	const retourEnArriere = () => {
 		if (navigation || win)
 			return;
 
-		// Vérifie s'il y a au moins une sauvegarde du jeu
-		if (gameHistory.length > 0)
+		const result = computeRetourEnArriere({
+			gameHistory, demonstration, tabIndentation, tabIndiceDemonstration,
+			initialDemonstration: initialSetup.demonstration,
+		});
+
+		if (result.hasHistory)
 		{
-			// Copie le tableau de sauvegarde
-			let historyCopy = [...gameHistory];
-
-			// Prend le dernier tableau de jeu ajoutée
-			let savedGameState = historyCopy[historyCopy.length - 1];
-
-			// Initialise le futur tableau de jeu
-			let tmpFutureGame = [];
-
-			// Copie le dernier tableau de jeu sauvegardé dans le futur tableau
-			for (let i = 0; i < savedGameState.length; i++)
-			{
-				tmpFutureGame[i] = [];
-				for (let j = 0; j < savedGameState[i].length; j++)
-					tmpFutureGame[i].push(savedGameState[i][j].copy());
-			}
-
-			// Refait le tableau des objectifs au cas où on retourne en arrière sur une suppression d'objectif secondaire
-			setIndentationDemonstration(buildObjectives(tmpFutureGame).length - 1);
-
-			// Met à jour le jeu avec la dernière sauvegarde & désélectionne toutes les cartes
-			clearSelectionFromGameState(tmpFutureGame);
-			setSavedGame(tmpFutureGame);
-
-			// Tag des lignes ajoutées par l'action que l'on annule.
-			const tag = historyCopy.length - 1;
-
-			let demonstrationTmp = [...demonstration];
-			let tabIndentationTmp = [...tabIndentation];
-			let tabIndiceTmp = [...tabIndiceDemonstration];
-
-			// Retire toutes les lignes de démonstration associées à cette action.
-			while (tabIndiceTmp.length > 0 && tabIndiceTmp[tabIndiceTmp.length - 1] === tag)
-			{
-				demonstrationTmp.pop();
-				tabIndentationTmp.pop();
-				tabIndiceTmp.pop();
-			}
-
-			setDemonstration(demonstrationTmp);
-			setTabIndentation(tabIndentationTmp);
-			setTabIndiceDemonstration(tabIndiceTmp);
-
-			historyCopy.pop();
-			setGameHistory(historyCopy);
-
-			// Retour au tout début : restaurer la démonstration initiale.
-			if (historyCopy.length === 0)
-			{
-				setDemonstration(initialSetup.demonstration);
-				setTabIndentation([0]);
-				setTabIndiceDemonstration([-1]);
-				setIndentationDemonstration(0);
-			}
+			clearSelectionFromGameState(result.futureGame);
+			setSavedGame(result.futureGame);
+			setGameHistory(result.gameHistory);
 		}
 		else
-		{
 			clearCurrentGameSelection();
-			setDemonstration(initialSetup.demonstration); // S'il n'y a plus d'historique, on force la démonstration initiale.
-			setTabIndentation([0]);
-			setTabIndiceDemonstration([-1]);
-			setIndentationDemonstration(0);
-		}
+
+		setIndentationDemonstration(result.indentationDemonstration);
+		setDemonstration(result.demonstration);
+		setTabIndentation(result.tabIndentation);
+		setTabIndiceDemonstration(result.tabIndiceDemonstration);
 	};
 
 	/**
@@ -573,45 +525,11 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		addToGameCore(gameState, deckIndex, card, (message) => error(message, false), defaultEmitError);
 
 	/**
-	 * Intercepte la copie de texte sélectionné dans la zone de démonstration : reconvertit
-	 * les symboles logiques affichés (∧, ⇒, ⇔, ¬) en notation ASCII (^, =>, <=>, non),
-	 * nettoie les espaces insécables, et déduplique les segments répétés avant de placer
-	 * le résultat dans le presse-papier.
+	 * Copie le texte actuellement sélectionné dans la zone de démonstration vers le
+	 * presse-papier, reformaté en notation ASCII (voir formatCopiedDemonstrationText).
 	 */
 	const copyHandler = () => {
-		let str = window.getSelection().toString();
-		str = str.replaceAll("∧", "^");
-		str = str.replaceAll("⇔", "<=>");
-		str = str.replaceAll("⇒", "=>");
-		str = str.replaceAll("¬", "non");
-
-		let espaceInsec = new RegExp(String.fromCharCode(160), "g");
-		str = str.replaceAll(espaceInsec, " ");
-		str = str.replaceAll("  ", " ");
-		str = str.replaceAll(" .", ".");
-
-		let arrayLine = str.split("\n");
-		let futurArrayLine = [];
-		arrayLine.forEach((line) => {
-			let arrayElement = line.split(", ");
-			let futurArrayElement = [];
-			arrayElement.forEach((elementComa) => {
-				let arrayPoint = elementComa.split(". ");
-				let futurArrayPoint = [];
-				arrayPoint.forEach((element) => {
-					if (!futurArrayPoint.includes(element))
-						futurArrayPoint.push(element);
-				});
-
-				let normalizedPoint = futurArrayPoint.join(". ");
-				if (!futurArrayElement.includes(normalizedPoint))
-					futurArrayElement.push(normalizedPoint);
-			});
-
-			futurArrayLine.push(futurArrayElement.join(", "));
-		});
-
-		str = futurArrayLine.join("\n");
+		const str = formatCopiedDemonstrationText(window.getSelection().toString());
 		navigator.clipboard.writeText(str);
 	};
 
