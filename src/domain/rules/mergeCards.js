@@ -191,47 +191,50 @@ export function runFuseCardAnd(deps)
 {
 	const { navigation, win, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin } = deps;
 
-	if (!navigation && !win)
+	if (navigation || win)
+		return;
+
+	// S'il n'y a pas 2 cartes sélectionnées.
+	if (firstSelectedCardIndex === -1 || secondSelectedCardIndex === -1 ||
+		firstSelectedDeckIndex === -1 || secondSelectedDeckIndex === -1)
 	{
-		// Si 2 cartes sont sélectionnées
-		if (firstSelectedCardIndex !== -1 && secondSelectedCardIndex !== -1 &&
-			firstSelectedDeckIndex !== -1 && secondSelectedDeckIndex !== -1)
-		{
-			// Prend le deck le plus haut
-			let finalDeck = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
-			if (finalDeck !== game.length - 1)
-			{
-				// Copie du jeu actuel
-				let workingGame = copyGameArray(game);
-
-				if (!containCard(game, finalDeck, new Card(0, null, false, "et", workingGame[firstSelectedDeckIndex][firstSelectedCardIndex], workingGame[secondSelectedDeckIndex][secondSelectedCardIndex], true, false)))
-				{
-					// Sauvegarde du jeu actuel
-					saveGame();
-
-					// Copie les 2 cartes sélectionnées
-					let tmpCard1 = workingGame[firstSelectedDeckIndex][firstSelectedCardIndex].copy();
-					let tmpCard2 = workingGame[secondSelectedDeckIndex][secondSelectedCardIndex].copy();
-					tmpCard1.id = 0;
-					tmpCard2.id = 1;
-					tmpCard1.setOld(true);
-					tmpCard2.setOld(true);
-
-					// Ajoute la nouvelle carte dans le deck le plus haut avec les 2 autres cartes & une liaison "et"
-					let cardToAdd = new Card(workingGame[finalDeck].length, null, false, "et", tmpCard1, tmpCard2, true, false);
-					if (!addToGame(workingGame, finalDeck, cardToAdd))
-						return;
-
-					// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
-					isWin([["On a ", tmpCard1.copy(), "^", tmpCard2.copy(), ".",], ], [0], workingGame);
-				}
-				else
-					error("La carte que vous voulez ajouter existe déjà !");
-			}
-			else
-				error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
-		}
-		else
-			error("Vous devez sélectionner deux cartes !");
+		error("Vous devez sélectionner deux cartes !");
+		return;
 	}
+
+	// Prend le deck le plus haut.
+	let finalDeck = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
+	if (finalDeck === game.length - 1)
+	{
+		error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
+		return;
+	}
+
+	// Copie du jeu actuel.
+	let workingGame = copyGameArray(game);
+
+	if (containCard(game, finalDeck, new Card(0, null, false, "et", workingGame[firstSelectedDeckIndex][firstSelectedCardIndex], workingGame[secondSelectedDeckIndex][secondSelectedCardIndex], true, false)))
+	{
+		error("La carte que vous voulez ajouter existe déjà !");
+		return;
+	}
+
+	// Sauvegarde du jeu actuel
+	saveGame();
+
+	// Copie les 2 cartes sélectionnées
+	let tmpCard1 = workingGame[firstSelectedDeckIndex][firstSelectedCardIndex].copy();
+	let tmpCard2 = workingGame[secondSelectedDeckIndex][secondSelectedCardIndex].copy();
+	tmpCard1.id = 0;
+	tmpCard2.id = 1;
+	tmpCard1.setNew(true);
+	tmpCard2.setNew(true);
+
+	// Ajoute la nouvelle carte dans le deck le plus haut avec les 2 autres cartes & une liaison "et"
+	let cardToAdd = new Card(workingGame[finalDeck].length, null, false, "et", tmpCard1, tmpCard2, true, false);
+	if (!addToGame(workingGame, finalDeck, cardToAdd))
+		return;
+
+	// Vérifie si l'exercice est résolu, si oui affiche le popup de victoire
+	isWin([["On a ", tmpCard1.copy(), "^", tmpCard2.copy(), ".",], ], [0], workingGame);
 }

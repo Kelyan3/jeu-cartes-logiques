@@ -49,7 +49,7 @@ export function addToGame(gameState, deckIndex, card, onError, defaultEmitError=
 	}
 
 	card.id = gameState[deckIndex].length;
-	card.setOld(true);
+	card.setNew(true);
 	gameState[deckIndex].push(card);
 
 	return true;

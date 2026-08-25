@@ -33,8 +33,8 @@ import { runAddObjectif } from "../domain/rules/addObjectif";
 import { runAddCardAnd, runAddCardFuse, runFuseCardAnd } from "../domain/rules/mergeCards";
 import { runIsWin } from "../domain/rules/isWin";
 import { runTransitivite } from "../domain/rules/transitivite";
-import { runChoixCouleur, runChoixLiaison, runDeleteCard, runConfirmDeleteCard } from "../domain/rules/createMode";
-import { computeRetourEnArriere } from "../domain/rules/history";
+import { runChooseColor, runChooseConnector, runDeleteCard, runConfirmDeleteCard } from "../domain/rules/createMode";
+import { computeUndo } from "../domain/rules/history";
 
 import { formatTime } from "../utils/formatTime";
 import { formatCopiedDemonstrationText } from "../utils/clipboardFormat";
@@ -80,7 +80,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		selectCard, resetSelection,
 	} = useCardSelection();
 
-	// Bouton "Aide" désactivé temporairement.
+	// Interrupteur pour activer/désactiver le bouton "Aide" (actuellement activé).
 	const HELP_BUTTON_ENABLED = true;
 
 	const {
@@ -194,7 +194,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const setAllCardOld = (gameState) => {
 		gameState.forEach((deck) => {
 			deck.forEach((card) => {
-				card.setOld(false);
+				card.setNew(false);
 			});
 		});
 	};
@@ -260,8 +260,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, clearSelectionFromGameState, clearCurrentGameSelection, delCard,
 	});
 
-	const choixCouleur = (event) => runChoixCouleur(event, createModeDeps());
-	const choixLiaison = (event) => runChoixLiaison(event, createModeDeps());
+	const chooseColor = (event) => runChooseColor(event, createModeDeps());
+	const chooseConnector = (event) => runChooseConnector(event, createModeDeps());
 	const deleteCard = () => runDeleteCard(createModeDeps());
 	const confirmDeleteCard = () => runConfirmDeleteCard(createModeDeps());
 
@@ -315,11 +315,11 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	/**
 	 * Fonction appelée après avoir appuyé sur le bouton "Retour arrière".
 	 */
-	const retourEnArriere = () => {
+	const undo = () => {
 		if (navigation || win)
 			return;
 
-		const result = computeRetourEnArriere({
+		const result = computeUndo({
 			gameHistory, demonstration, tabIndentation, tabIndiceDemonstration,
 			initialDemonstration: initialSetup.demonstration,
 		});
@@ -575,7 +575,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			<div className="bouton">
 				{/* Revient à la partie avant l'ajout d'une carte */}
 				<div>
-					<button id="back" className="buttonAction " onClick={retourEnArriere}>
+					<button id="back" className="buttonAction " onClick={undo}>
 						<span className="buttonFormula">↶</span>
 						<span className="tooltiptext">Retour arrière</span>
 					</button>
@@ -669,13 +669,13 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 			<AddCardPopup
 				open={popupAddCard}
-				onChooseColor={choixCouleur}
+				onChooseColor={chooseColor}
 				onClose={() => setPopupAddCard(false)}
 			/>
 
 			<FusionPopup
 				open={popupFusion}
-				onChooseConnector={choixLiaison}
+				onChooseConnector={chooseConnector}
 				onClose={() => setPopupFusion(false)}
 			/>
 

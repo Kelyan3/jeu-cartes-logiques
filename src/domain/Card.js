@@ -12,16 +12,17 @@ export default class Card
 	 *                                               "<=>" = liaison "⟺"
 	 * @param {Card|null} left
 	 * @param {Card|null} right
+	 * @param {boolean} isNew - true si la carte doit être affichée avec l'animation d'apparition.
 	 */
-	constructor(id, color, active, link, left, right, nouveau, suppr) {
+	constructor(id, color, active, link, left, right, isNew)
+	{
 		this.id = id;
 		this.color = color;
 		this.active = active;
 		this.link = link;
 		this.left = left;
 		this.right = right;
-		this.nouveau = nouveau;
-		this.suppr = suppr;
+		this.isNew = isNew;
 	}
 
 	/**
@@ -154,7 +155,7 @@ export default class Card
 		if (this.right !== null)
 			r = this.right.copy();
 
-		return new Card(this.id, this.color, this.active, this.link, l, r, this.nouveau, this.suppr);
+		return new Card(this.id, this.color, this.active, this.link, l, r, this.isNew);
 	}
 
 	/**
@@ -178,27 +179,14 @@ export default class Card
 	 * @param {boolean} state Booléen qui définit si la carte doit être considérée comme "nouvelle"
 	 *                           (affecte l'animation d'apparition sur le plateau).
 	 */
-	setOld(state)
+	setNew(state)
 	{
-		this.nouveau = state;
+		this.isNew = state;
 
 		if (this.left != null)
-			this.left.setOld(state);
+			this.left.setNew(state);
 		if (this.right != null)
-			this.right.setOld(state);
-	}
-
-	/**
-	 * @param {boolean} state Booléen qui définit si la carte est en cours de suppression
-	 *                            (affecte son affichage/animation avant retrait définitif).
-	 */
-	setDel(state)
-	{
-		this.suppr = state;
-		if (this.left != null)
-			this.left.setDel(state);
-		if (this.right != null)
-			this.right.setDel(state);
+			this.right.setNew(state);
 	}
 
 	/**
@@ -350,7 +338,7 @@ export default class Card
 		if (!this.isDoubleArrow())
 			return this;
 
-		return new Card(this.id, null, this.active, "<=>", this.left.left, this.left.right, this.nouveau, this.suppr);
+		return new Card(this.id, null, this.active, "<=>", this.left.left, this.left.right, this.isNew);
 	}
 
 	/**
@@ -405,8 +393,7 @@ export default class Card
 			"non",
 			new Card(0, "transparent", this.active, "", null, null),
 			this.left,
-			this.nouveau,
-			this.suppr
+			this.isNew
 		);
 	}
 
@@ -438,7 +425,7 @@ export default class Card
 		if (!this.isOuCard())
 			return this;
 
-		return new Card(this.id, null, this.active, "ou", this.left.left, this.right, this.nouveau, this.suppr);
+		return new Card(this.id, null, this.active, "ou", this.left.left, this.right, this.isNew);
 	}
 
 	/**
@@ -468,6 +455,6 @@ export default class Card
 
 		let temp = this.displayGoodCard();
 
-		return new Card(temp.id, temp.color, temp.active, temp.link, temp.left.displayGoodCardRecur(), temp.right.displayGoodCardRecur(), this.nouveau, this.suppr);
+		return new Card(temp.id, temp.color, temp.active, temp.link, temp.left.displayGoodCardRecur(), temp.right.displayGoodCardRecur(), this.isNew);
 	}
 }

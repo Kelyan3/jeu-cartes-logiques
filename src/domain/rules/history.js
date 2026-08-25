@@ -21,7 +21,7 @@ import { buildObjectives } from "./goals";
  *   gameHistory: Card[][][],
  * }}
  */
-export function computeRetourEnArriere(state)
+export function computeUndo(state)
 {
 	const { gameHistory, demonstration, tabIndentation, tabIndiceDemonstration, initialDemonstration } = state;
 

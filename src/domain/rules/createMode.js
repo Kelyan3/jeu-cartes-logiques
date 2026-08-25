@@ -17,7 +17,7 @@ import { copyGameArray } from "../gameSolver";
  * @param {Function} deps.addToGame
  * @param {Function} deps.clearSelectionFromGameState
  */
-export function runChoixCouleur(event, deps)
+export function runChooseColor(event, deps)
 {
 	const { game, indiceDeckAddCard, saveGame, addToGame, clearSelectionFromGameState } = deps;
 
@@ -57,7 +57,7 @@ export function runChoixCouleur(event, deps)
  * @param {Function} deps.addToGame
  * @param {Function} deps.clearSelectionFromGameState
  */
-export function runChoixLiaison(event, deps)
+export function runChooseConnector(event, deps)
 {
 	const { game, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex, setPopupFusion, saveGame, addToGame, clearSelectionFromGameState } = deps;
 

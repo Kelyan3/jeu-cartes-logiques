@@ -34,9 +34,7 @@ export function useGameFile(game, setGame)
 	 * Télécharge l'état actuel du jeu au format JSON sur l'ordinateur de l'utilisateur.
 	 */
 	const saveAsFile = () => {
-		let fileData;
-
-		fileData = gameOutput();
+		const fileData = gameOutput();
 		const blob = new Blob([JSON.stringify(fileData)], { type: "text/json;charset=utf-8;", });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");

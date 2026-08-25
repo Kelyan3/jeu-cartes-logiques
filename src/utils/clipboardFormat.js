@@ -10,37 +10,40 @@
  */
 export function formatCopiedDemonstrationText(rawText)
 {
-	let str = rawText;
-	str = str.replaceAll("∧", "^");
-	str = str.replaceAll("⇔", "<=>");
-	str = str.replaceAll("⇒", "=>");
-	str = str.replaceAll("¬", "non");
+	let text = rawText;
+	text = text.replaceAll("∧", "^");
+	text = text.replaceAll("⇔", "<=>");
+	text = text.replaceAll("⇒", "=>");
+	text = text.replaceAll("¬", "non");
 
-	let espaceInsec = new RegExp(String.fromCharCode(160), "g");
-	str = str.replaceAll(espaceInsec, " ");
-	str = str.replaceAll("  ", " ");
-	str = str.replaceAll(" .", ".");
+	let nonBreakingSpace = new RegExp(String.fromCharCode(160), "g");
+	text = text.replaceAll(nonBreakingSpace, " ");
+	text = text.replaceAll("  ", " ");
+	text = text.replaceAll(" .", ".");
 
-	let arrayLine = str.split("\n");
-	let futurArrayLine = [];
-	arrayLine.forEach((line) => {
-		let arrayElement = line.split(", ");
-		let futurArrayElement = [];
-		arrayElement.forEach((elementComa) => {
-			let arrayPoint = elementComa.split(". ");
-			let futurArrayPoint = [];
-			arrayPoint.forEach((element) => {
-				if (!futurArrayPoint.includes(element))
-					futurArrayPoint.push(element);
+	let lines = text.split("\n");
+	let dedupedLines = [];
+
+	lines.forEach((line) => {
+		let commaSegments = line.split(", ");
+		let dedupedCommaSegments = [];
+
+		commaSegments.forEach((commaSegment) => {
+			let dotSegments = commaSegment.split(". ");
+			let dedupedDotSegments = [];
+
+			dotSegments.forEach((segment) => {
+				if (!dedupedDotSegments.includes(segment))
+					dedupedDotSegments.push(segment);
 			});
 
-			let normalizedPoint = futurArrayPoint.join(". ");
-			if (!futurArrayElement.includes(normalizedPoint))
-				futurArrayElement.push(normalizedPoint);
+			let normalizedSegment = dedupedDotSegments.join(". ");
+			if (!dedupedCommaSegments.includes(normalizedSegment))
+				dedupedCommaSegments.push(normalizedSegment);
 		});
 
-		futurArrayLine.push(futurArrayElement.join(", "));
+		dedupedLines.push(dedupedCommaSegments.join(", "));
 	});
 
-	return futurArrayLine.join("\n");
+	return dedupedLines.join("\n");
 }
