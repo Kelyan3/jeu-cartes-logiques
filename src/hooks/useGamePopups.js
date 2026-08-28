@@ -27,7 +27,7 @@ export function useGamePopups()
 	 * Indice du deck dans lequel sera ajouté la carte en mode création avec le bouton "Ajout carte"
 	 * ou en sélectionnant deux cartes en choisissant la liaison.
 	 */
-	const [indiceDeckAddCard, setIndiceDeckAddCard] = useState(0);
+	const [addCardDeckIndex, setAddCardDeckIndex] = useState(0);
 
 	/**
 	 * Popup en mode création pour choisir la liaison quand deux cartes sont sélectionnées.
@@ -48,7 +48,7 @@ export function useGamePopups()
 	return {
 		popupAddCard, setPopupAddCard,
 		popupDeleteCard, setPopupDeleteCard,
-		indiceDeckAddCard, setIndiceDeckAddCard,
+		addCardDeckIndex, setAddCardDeckIndex,
 		popupFusion, setPopupFusion,
 		popupWin, setPopupWin,
 		saveProgressFailed, setSaveProgressFailed,

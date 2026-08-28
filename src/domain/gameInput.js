@@ -14,10 +14,10 @@ import Card from "../domain/Card";
 export const toClass = (obj, i) => {
 	// Si c'est une carte complexe
 	if (obj.color === undefined)
-		return new Card(i, null, false, obj.link, toClass(obj.left, 0), toClass(obj.right, 1), true, false );
+		return new Card(i, null, false, obj.link, toClass(obj.left, 0), toClass(obj.right, 1), true);
 
-    // Si c'est une carte simple
-	return new Card(i, obj.color, false, "", null, null, true, false);
+	// Si c'est une carte simple
+	return new Card(i, obj.color, false, "", null, null, true);
 };
 
 /**
@@ -38,7 +38,7 @@ export const gameInput = (data) => {
 		i++;
 	});
 
-    // Création du deck objectif
+	// Création du deck objectif
 	i = 0;
 	data[1].forEach((element) => {
 		result[1].push(toClass(element, i));

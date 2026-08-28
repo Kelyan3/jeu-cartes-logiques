@@ -12,8 +12,8 @@ const Deck = ({
 	objectif,
 	isWin,
 	affichageSimple,
-	cardHelp,
-	cardHelp2,
+	helpCardPos,
+	helpCardPos2,
 }) => {
 
 	/**
@@ -77,8 +77,8 @@ const Deck = ({
 
 	const isCardHelp = (index) => {
 		return (
-			(cardHelp !== null && cardHelp[0] === indice && cardHelp[1] === index) ||
-			(cardHelp2 !== null && cardHelp2[0] === indice && cardHelp2[1] === index)
+			(helpCardPos !== null && helpCardPos[0] === indice && helpCardPos[1] === index) ||
+			(helpCardPos2 !== null && helpCardPos2[0] === indice && helpCardPos2[1] === index)
 		);
 	}
 

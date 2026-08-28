@@ -10,7 +10,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	const {
 		game, mode, levelIndex, objectives,
 		setObjectives, setIndentationDemonstration, setSavedGame, setTutorialMessage,
-		saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState,
+		saveGame, addToGame, addLineDemonstration, clearSelection,
 	} = deps;
 
 	// Copie du jeu actuel
@@ -56,7 +56,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
 	setIndentationDemonstration((prev) => prev + 1);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	clearSelectionFromGameState(workingGame);
+	clearSelection(workingGame);
 	setSavedGame(workingGame);
 }
 
@@ -67,7 +67,7 @@ function addObjectifDepuisObjectif(deckI, cardI, deps)
  */
 function addObjectifDepuisLPU(deckI, cardI, deps)
 {
-	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState } = deps;
+	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelection } = deps;
 
 	// Copie du jeu actuel
 	let workingGame = copyGameArray(game);
@@ -85,7 +85,7 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
 	addLineDemonstration([["Montrons ", secondObjectif.copy(), ".", ], ], [0]);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	clearSelectionFromGameState(workingGame);
+	clearSelection(workingGame);
 	setSavedGame(workingGame);
 }
 
@@ -96,7 +96,7 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
  */
 function addObjectifEt(deckI, cardI, deps)
 {
-	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState } = deps;
+	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelection } = deps;
 
 	let workingGame = copyGameArray(game);
 
@@ -123,7 +123,7 @@ function addObjectifEt(deckI, cardI, deps)
 	addLineDemonstration([firstArrayDemo.concat(secondArrayDemo)], [0]);
 
 	// Met à jour le jeu & désélectionne toutes les cartes
-	clearSelectionFromGameState(workingGame);
+	clearSelection(workingGame);
 	setSavedGame(workingGame);
 }
 

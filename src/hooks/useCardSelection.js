@@ -14,8 +14,8 @@ export function useCardSelection()
 	const [firstSelectedCardIndex, setFirstSelectedCardIndex] = useState(-1);
 	const [secondSelectedDeckIndex, setSecondSelectedDeckIndex] = useState(-1);
 	const [secondSelectedCardIndex, setSecondSelectedCardIndex] = useState(-1);
-	const [cardHelp, setCardHelp] = useState(null);
-	const [cardHelp2, setCardHelp2] = useState(null);
+	const [helpCardPos, setHelpCardPos] = useState(null);
+	const [helpCardPos2, setHelpCardPos2] = useState(null);
 
 	/**
 	 * Sélectionne ou désélectionne la carte [i][j] du jeu temporaire `tmp` reçu
@@ -30,8 +30,8 @@ export function useCardSelection()
 	 *          le nouvel état de sélection (utile à l'appelant pour ses propres besoins, ex. tutoriel/popup)
 	 */
 	const selectCard = (i, j, tmp) => {
-		setCardHelp(null);
-		setCardHelp2(null);
+		setHelpCardPos(null);
+		setHelpCardPos2(null);
 
 		let currentCard = tmp[i][j];
 
@@ -105,9 +105,11 @@ export function useCardSelection()
 	};
 
 	return {
-		selectedCardCount, firstSelectedDeckIndex, firstSelectedCardIndex,
+		selectedCardCount,
+		firstSelectedDeckIndex, firstSelectedCardIndex,
 		secondSelectedDeckIndex, secondSelectedCardIndex,
-		cardHelp, setCardHelp, cardHelp2, setCardHelp2,
+		helpCardPos, setHelpCardPos,
+		helpCardPos2, setHelpCardPos2,
 		selectCard, resetSelection,
 	};
 }

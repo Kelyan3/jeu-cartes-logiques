@@ -24,7 +24,7 @@ import Card from "../domain/Card";
 import { computeNextMove, copyGameArray } from "../domain/gameSolver";
 import { buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, ensureDeckIds } from "../domain/gameInput";
 
-import { delCard, buildObjectives, deckContain as deckContainCore } from "../domain/rules/goals";
+import { delCard, deckContain as deckContainCore } from "../domain/rules/goals";
 import { getSingleSelectedCard as getSingleSelectedCardCore } from "../domain/rules/selection";
 import { addToGame as addToGameCore } from "../domain/rules/addToGame";
 import { constructDemonstration as constructDemonstrationCore, computeAddLineDemonstration } from "../domain/rules/demonstration";
@@ -75,18 +75,15 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		selectedCardCount,
 		firstSelectedDeckIndex, firstSelectedCardIndex,
 		secondSelectedDeckIndex, secondSelectedCardIndex,
-		cardHelp, setCardHelp,
-		cardHelp2, setCardHelp2,
+		helpCardPos, setHelpCardPos,
+		helpCardPos2, setHelpCardPos2,
 		selectCard, resetSelection,
 	} = useCardSelection();
-
-	// Interrupteur pour activer/désactiver le bouton "Aide" (actuellement activé).
-	const HELP_BUTTON_ENABLED = true;
 
 	const {
 		popupAddCard, setPopupAddCard,
 		popupDeleteCard, setPopupDeleteCard,
-		indiceDeckAddCard, setIndiceDeckAddCard,
+		addCardDeckIndex, setAddCardDeckIndex,
 		popupFusion, setPopupFusion,
 		popupWin, setPopupWin,
 		saveProgressFailed, setSaveProgressFailed,
@@ -120,9 +117,9 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	const [tabIndiceDemonstration, setTabIndiceDemonstration] = useState([-1]);
 
-	const [navigation, setNavigation] = useState();
+	const [navigation, setNavigation] = useState(false);
 
-	const [win, setWin] = useState();
+	const [win, setWin] = useState(false);
 
 	const [savedGame, setSavedGame] = useState(initialSetup.game);
 
@@ -200,42 +197,24 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	};
 
 	/**
-	 * Désélectionne toutes les cartes dans le tableau reçu et devient le jeu.
+	 * Désélectionne toutes les cartes, puis met à jour le state `game`.
+	 * Si `gameState` est fourni, on l'utilise (déjà une copie de travail) ;
+	 * sinon on part d'une copie du jeu courant.
 	 *
-	 * @param {Card[][]} gameState - tableau du jeu temporaire
+	 * @param {Card[][]} [gameState]
 	 */
-	const clearSelectionFromGameState = (gameState) => {
+	const clearSelection = (gameState) => {
 		resetSelection();
 
-		// On désélectionne toutes les cartes du jeu passé en paramètre
-		gameState.forEach((deck) => {
+		const nextGame = gameState ?? copyGameArray(game);
+
+		nextGame.forEach((deck) => {
 			deck.forEach((card) => {
 				card.select(false);
 			});
 		});
 
-		// On actualise le jeu
-		setGame(ensureDeckIds(gameState));
-	};
-
-	/**
-	 * Désélectionne toutes les cartes du jeu.
-	 */
-	const clearCurrentGameSelection = () => {
-		resetSelection();
-
-		// Copie du jeu actuel
-		const gameState = copyGameArray(game);
-
-		// On désélectionne toutes les cartes du jeu actuel
-		gameState.forEach((deck) => {
-			deck.forEach((card) => {
-				card.select(false);
-			});
-		});
-
-		// On actualise le jeu
-		setGame(ensureDeckIds(gameState));
+		setGame(ensureDeckIds(nextGame));
 	};
 
 	/**
@@ -246,7 +225,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 */
 	const addCard = (deckIndex) => {
 		// Indique dans quel deck on veut ajouter une carte
-		setIndiceDeckAddCard(deckIndex);
+		setAddCardDeckIndex(deckIndex);
 
 		// Affiche le popup pour ajouter une carte simple
 		setPopupAddCard(true);
@@ -256,8 +235,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * Objet regroupant les dépendances communes aux actions du mode Création.
 	 */
 	const createModeDeps = () => ({
-		game, indiceDeckAddCard, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex,
-		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, clearSelectionFromGameState, clearCurrentGameSelection, delCard,
+		game, addCardDeckIndex, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex,
+		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, clearSelection, delCard,
 	});
 
 	const chooseColor = (event) => runChooseColor(event, createModeDeps());
@@ -276,9 +255,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			false,
 			"=>",
 			futureCardNon,
-			new Card(1, "white", false, null, null, null, true, false),
-			true,
-			false
+			new Card(1, "white", false, "", null, null, true),
+			true
 		);
 
 		return cardToAdd;
@@ -291,7 +269,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const transformIntoNonCard = () => {
 		if (!(firstSelectedCardIndex !== -1 && firstSelectedDeckIndex !== -1))
 		{
-			clearCurrentGameSelection();
+			clearSelection();
 			return;
 		}
 
@@ -301,7 +279,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		if (!addToGame(gameState, firstSelectedDeckIndex, returnNonCard(gameState)))
 			return;
 
-		clearSelectionFromGameState(gameState);
+		clearSelection(gameState);
 	};
 
 	/**
@@ -309,7 +287,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * garder inchangés tous les appels existants à `isWin(...)`.
 	 */
 	const isWin = (arrayMsg, arrayIndent, gameState, originel) => runIsWin(arrayMsg, arrayIndent, gameState, originel, {
-		addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setObjectives, setWin, setPopupWin, saveProgress,
+		addToGame, addLineDemonstration, setSavedGame, clearSelection, setObjectives, setWin, setPopupWin, saveProgress,
 	});
 
 	/**
@@ -326,12 +304,12 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 		if (result.hasHistory)
 		{
-			clearSelectionFromGameState(result.futureGame);
+			clearSelection(result.futureGame);
 			setSavedGame(result.futureGame);
 			setGameHistory(result.gameHistory);
 		}
 		else
-			clearCurrentGameSelection();
+			clearSelection();
 
 		setIndentationDemonstration(result.indentationDemonstration);
 		setDemonstration(result.demonstration);
@@ -400,7 +378,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const addObjectif = (variant) => runAddObjectif(variant, {
 		game, mode, levelIndex, objectives, navigation, win,
 		setObjectives, setIndentationDemonstration, setSavedGame, setTutorialMessage,
-		saveGame, addToGame, addLineDemonstration, clearSelectionFromGameState, error, deckContain, getSingleSelectedCard,
+		saveGame, addToGame, addLineDemonstration, clearSelection, error, deckContain, getSingleSelectedCard,
 	});
 
 	/**
@@ -471,12 +449,12 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					return;
 
 				setNavigation(true);
-				clearSelectionFromGameState(copyGameArray(initialGameArray));
+				clearSelection(copyGameArray(initialGameArray));
 			}
 			else
 			{
 				setNavigation(false);
-				clearSelectionFromGameState(savedGame);
+				clearSelection(savedGame);
 			}
 
 			return;
@@ -491,13 +469,13 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 				return;
 
 			setNavigation(true);
-			clearSelectionFromGameState(copyGameArray(savedGameState));
+			clearSelection(copyGameArray(savedGameState));
 		}
 		else
 		{
 			// Dernière action (ou au-delà) : plateau courant.
 			setNavigation(false);
-			clearSelectionFromGameState(savedGame);
+			clearSelection(savedGame);
 		}
 	};
 
@@ -513,7 +491,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		if (!allFalseBool)
 			return;
 
-		clearCurrentGameSelection();
+		clearSelection();
 	};
 
 	/**
@@ -545,8 +523,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	const getNextMove = () => {
 		const nextMove = computeNextMove(game, objectives);
-		setCardHelp(nextMove.cardHelp);
-		setCardHelp2(nextMove.cardHelp2);
+		setHelpCardPos(nextMove.helpCardPos);
+		setHelpCardPos2(nextMove.helpCardPos2);
 	}
 
 	/**
@@ -581,7 +559,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					</button>
 				</div>
 
-				{HELP_BUTTON_ENABLED && mode !== "Create" && (
+				{mode !== "Create" && (
 					<div>
 						<button id="aide" className="buttonAction " onClick={getNextMove}>
 							<span className="buttonFormula">?</span>
@@ -652,8 +630,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 							objectif={objectives}
 							isWin={win}
 							affichageSimple={affichageSimple}
-							cardHelp={cardHelp}
-							cardHelp2={cardHelp2}
+							helpCardPos={helpCardPos}
+							helpCardPos2={helpCardPos2}
 							key={deck.__deckId ?? index}
 						></Deck>
 					))}

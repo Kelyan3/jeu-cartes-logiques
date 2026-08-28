@@ -18,7 +18,7 @@ import { buildObjectives, findObjectifRelative, checkSubObj, delCard, delDeck, d
  * @param {Function} deps.addToGame
  * @param {Function} deps.addLineDemonstration
  * @param {Function} deps.setSavedGame
- * @param {Function} deps.clearSelectionFromGameState
+ * @param {Function} deps.clearSelection
  * @param {Function} deps.setObjectives
  * @param {Function} deps.setWin
  * @param {Function} deps.setPopupWin
@@ -31,7 +31,7 @@ export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
 	if (originel === undefined)
 		originel = true;
 
-	const { addToGame, addLineDemonstration, setSavedGame, clearSelectionFromGameState, setObjectives, setWin, setPopupWin, saveProgress } = deps;
+	const { addToGame, addLineDemonstration, setSavedGame, clearSelection, setObjectives, setWin, setPopupWin, saveProgress } = deps;
 
 	let currentObjectives = buildObjectives(gameState);
 	const listObjectif = [];
@@ -180,7 +180,7 @@ export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
 	{
 		addLineDemonstration(arrayMsg, arrayIndent);
 		setSavedGame(gameState);
-		clearSelectionFromGameState(gameState);
+		clearSelection(gameState);
 		currentObjectives = buildObjectives(gameState);
 		setObjectives(currentObjectives);
 	}

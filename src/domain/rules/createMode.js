@@ -4,7 +4,7 @@ import { copyGameArray } from "../gameSolver";
 
 /**
  * Mode Création : ajoute une carte simple de la couleur choisie dans le popup
- * "Choisir une couleur", au deck indiqué par `indiceDeckAddCard`.
+ * "Choisir une couleur", au deck indiqué par `addCardDeckIndex`.
  *
  * ⚠️ Ne doit être appelée qu'en mode Create (ou pour des tests).
  *
@@ -12,14 +12,14 @@ import { copyGameArray } from "../gameSolver";
  *                        `checked` à false pour pouvoir choisir plusieurs fois la même couleur.
  * @param {Object} deps
  * @param {Card[][]} deps.game
- * @param {number} deps.indiceDeckAddCard
+ * @param {number} deps.addCardDeckIndex
  * @param {Function} deps.saveGame
  * @param {Function} deps.addToGame
- * @param {Function} deps.clearSelectionFromGameState
+ * @param {Function} deps.clearSelection
  */
 export function runChooseColor(event, deps)
 {
-	const { game, indiceDeckAddCard, saveGame, addToGame, clearSelectionFromGameState } = deps;
+	const { game, addCardDeckIndex, saveGame, addToGame, clearSelection } = deps;
 
 	// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
 	saveGame();
@@ -30,13 +30,13 @@ export function runChooseColor(event, deps)
 	// Dé-check le bouton radio
 	event.target.checked = false;
 
-	// Ajoute la carte dans le deck (indiceDeckAddCard est affecté avant de rentrer dans la fonction)
-	let cardToAdd = new Card(game[indiceDeckAddCard].length, event.target.value, false, "", null, null, true, false);
-	if (!addToGame(workingGame, indiceDeckAddCard, cardToAdd))
+	// Ajoute la carte dans le deck (addCardDeckIndex est affecté avant de rentrer dans la fonction)
+	let cardToAdd = new Card(game[addCardDeckIndex].length, event.target.value, false, "", null, null, true);
+	if (!addToGame(workingGame, addCardDeckIndex, cardToAdd))
 		return;
 
 	// Actualise le jeu et désélectionne tout
-	clearSelectionFromGameState(workingGame);
+	clearSelection(workingGame);
 }
 
 /**
@@ -55,11 +55,11 @@ export function runChooseColor(event, deps)
  * @param {Function} deps.setPopupFusion
  * @param {Function} deps.saveGame
  * @param {Function} deps.addToGame
- * @param {Function} deps.clearSelectionFromGameState
+ * @param {Function} deps.clearSelection
  */
 export function runChooseConnector(event, deps)
 {
-	const { game, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex, setPopupFusion, saveGame, addToGame, clearSelectionFromGameState } = deps;
+	const { game, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex, setPopupFusion, saveGame, addToGame, clearSelection } = deps;
 
 	// Sauvegarde le jeu (utilisé pour pouvoir faire des retours en arrière)
 	saveGame();
@@ -89,8 +89,7 @@ export function runChooseConnector(event, deps)
 			"et", // link
 			new Card(0, null, false, "=>", c1.copy(), c2.copy()), // left
 			new Card(0, null, false, "=>", c2.copy(), c1.copy()), // right
-			true,
-			false
+			true
 		);
 	}
 	else if (l === "ou")
@@ -106,11 +105,10 @@ export function runChooseConnector(event, deps)
 				false,
 				"=>",
 				c1,
-				new Card(1, "white", false, null, null, null, true, false)
+				new Card(1, "white", false, "", null, null, true)
 			), // left
 			c2, // right
-			true,
-			false
+			true
 		);
 	}
 	else
@@ -123,8 +121,7 @@ export function runChooseConnector(event, deps)
 			l, // link
 			c1, // left
 			c2, // right
-			true,
-			false
+			true
 		);
 	}
 
@@ -134,7 +131,7 @@ export function runChooseConnector(event, deps)
 		return;
 
 	// Actualise le jeu et désélectionne tout
-	clearSelectionFromGameState(workingGame);
+	clearSelection(workingGame);
 }
 
 /**
@@ -149,13 +146,12 @@ export function runChooseConnector(event, deps)
  * @param {Card[][]} deps.game
  * @param {Function} deps.setPopupDeleteCard
  * @param {Function} deps.saveGame
- * @param {Function} deps.clearSelectionFromGameState
- * @param {Function} deps.clearCurrentGameSelection
+ * @param {Function} deps.clearSelection
  * @param {Function} deps.delCard
  */
 export function runDeleteCard(deps)
 {
-	const { firstSelectedCardIndex, firstSelectedDeckIndex, game, setPopupDeleteCard, saveGame, clearSelectionFromGameState, clearCurrentGameSelection, delCard } = deps;
+	const { firstSelectedCardIndex, firstSelectedDeckIndex, game, setPopupDeleteCard, saveGame, clearSelection, delCard } = deps;
 
 	// Enlève le popup
 	setPopupDeleteCard(false);
@@ -173,10 +169,10 @@ export function runDeleteCard(deps)
 		workingGame[firstSelectedDeckIndex] = delCard(workingGame[firstSelectedDeckIndex], firstSelectedCardIndex);
 
 		// Actualise le jeu et désélectionne tout
-		clearSelectionFromGameState(workingGame);
+		clearSelection(workingGame);
 	}
 	else
-		clearCurrentGameSelection();
+		clearSelection();
 }
 
 /**
@@ -187,15 +183,15 @@ export function runDeleteCard(deps)
  * @param {number} deps.firstSelectedCardIndex
  * @param {number} deps.firstSelectedDeckIndex
  * @param {Function} deps.setPopupDeleteCard
- * @param {Function} deps.clearCurrentGameSelection
+ * @param {Function} deps.clearSelection
  */
 export function runConfirmDeleteCard(deps)
 {
-	const { firstSelectedCardIndex, firstSelectedDeckIndex, setPopupDeleteCard, clearCurrentGameSelection } = deps;
+	const { firstSelectedCardIndex, firstSelectedDeckIndex, setPopupDeleteCard, clearSelection } = deps;
 
 	if (firstSelectedCardIndex === -1 && firstSelectedDeckIndex === -1)
 	{
-		clearCurrentGameSelection();
+		clearSelection();
 		return;
 	}
 

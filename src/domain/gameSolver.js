@@ -463,7 +463,7 @@ function solveRecursively(workingGame, targetCard, deckIndex, objectiveDeckIndex
  * @param {Card[][]} game - le jeu actuel (state `game` de Game.jsx)
  * @param {Array} objectives - le tableau des objectifs actuel (state `objectives` de Game.jsx)
  *
- * @returns {{cardHelp: [number, number]|null, cardHelp2: [number, number]|null}}
+ * @returns {{helpCardPos: [number, number]|null, helpCardPos2: [number, number]|null}}
  *          Position(s) [indiceDeck, indiceCarte] de la ou des cartes à mettre en surbrillance,
  *          ou null si aucune suggestion n'a pu être trouvée pour l'une d'entre elles.
  */
@@ -477,7 +477,7 @@ export function computeNextMove(game, objectives)
  
 	// Rien à suggérer s'il n'y a pas (encore) d'objectif, par exemple en mode Création.
 	if (objectif === undefined)
-		return { cardHelp: null, cardHelp2: null };
+		return { helpCardPos: null, helpCardPos2: null };
 
 	const solutionPath = [...solveRecursively(workingGame, objectif, objectiveDeckIndex, getObjectiveNumber(objectives, cardId), searchPath, objectives).steps].reverse();
 
@@ -495,7 +495,7 @@ export function computeNextMove(game, objectives)
 
 	// Cas où l'objectif "=>" vient tout juste d'obtenir son propre deck (rien à séparer avant).
 	if (objectif.link === "=>" && game.length === objectives.length + 1)
-		return { cardHelp: [objectiveDeckIndex, cardId], cardHelp2: null };
+		return { helpCardPos: [objectiveDeckIndex, cardId], helpCardPos2: null };
 
 	for (let i = 0; i < solutionPath.length; i++)
 	{
@@ -510,7 +510,7 @@ export function computeNextMove(game, objectives)
 			const leftPresent = cardExistsInGame(game, card.left);
 			const rightPresent = cardExistsInGame(game, card.right);
 			if (!leftPresent || !rightPresent)
-				return { cardHelp: pos, cardHelp2: null };
+				return { helpCardPos: pos, helpCardPos2: null };
 
 			// Déjà séparée : on passe à l'étape suivante du chemin.
 			continue;
@@ -522,7 +522,7 @@ export function computeNextMove(game, objectives)
 		{
 			const leftPos = findCardPos(game, card.left);
 			if (leftPos !== null)
-				return { cardHelp: leftPos, cardHelp2: pos };
+				return { helpCardPos: leftPos, helpCardPos2: pos };
 		}
 	}
 
@@ -540,7 +540,7 @@ export function computeNextMove(game, objectives)
 		pos2[0] < game.length - 1;
 
 	if (bothExist)
-		return { cardHelp: pos1, cardHelp2: pos2 };
+		return { helpCardPos: pos1, helpCardPos2: pos2 };
 
 	/**
 	 * Repli : aucune des deux cartes trouvées n'existe déjà dans le jeu, c'est qu'il doit y avoir un
@@ -562,5 +562,5 @@ export function computeNextMove(game, objectives)
 		});
 	});
 
-	return { cardHelp: fallback, cardHelp2: null };
+	return { helpCardPos: fallback, helpCardPos2: null };
 }

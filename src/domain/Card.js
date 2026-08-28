@@ -26,13 +26,13 @@ export default class Card
 	}
 
 	/**
-	 * Traduit la couleur de la carte, de base en anglais, en français afin de l'afficher dans le texte.
+	 * Traduit la couleur de la carte (anglais) en français pour l'affichage textuel.
 	 *
 	 * @param {string} color - La couleur de la carte.
 	 *
 	 * @returns {string} La traduction de la couleur.
 	 */
-	getColor = (color) => {
+	getColor(color) {
 		switch (color) {
 			case "red": return "Rouge";
 			case "yellow": return "Jaune";
@@ -146,16 +146,12 @@ export default class Card
 	 *
 	 * @returns {Card} une nouvelle instance d'une même carte.
 	 */
-	copy() {
-		let l = null;
-		let r = null;
+	copy()
+	{
+		const leftCopy = this.left !== null ? this.left.copy() : null;
+		const rightCopy = this.right !== null ? this.right.copy() : null;
 
-		if (this.left !== null)
-			l = this.left.copy();
-		if (this.right !== null)
-			r = this.right.copy();
-
-		return new Card(this.id, this.color, this.active, this.link, l, r, this.isNew);
+		return new Card(this.id, this.color, this.active, this.link, leftCopy, rightCopy, this.isNew);
 	}
 
 	/**
@@ -169,9 +165,9 @@ export default class Card
 	{
 		this.active = state;
 
-		if (this.left != null)
+		if (this.left !== null)
 			this.left.select(state);
-		if (this.right != null)
+		if (this.right !== null)
 			this.right.select(state);
 	}
 
@@ -183,9 +179,9 @@ export default class Card
 	{
 		this.isNew = state;
 
-		if (this.left != null)
+		if (this.left !== null)
 			this.left.setNew(state);
-		if (this.right != null)
+		if (this.right !== null)
 			this.right.setNew(state);
 	}
 
@@ -200,32 +196,21 @@ export default class Card
 	{
 		if (this.color !== null && card.color !== null)
 			return this.color === card.color;
-		else
-		{
-			let bool = true;
-			if ((this.left === null && card.left !== null) ||
-				(this.left !== null && card.left === null))
-			{
-				return false;
-			}
 
-			if ((this.right === null && card.right !== null) ||
-				(this.right !== null && card.right === null))
-			{
-				return false;
-			}
+		if ((this.left === null) !== (card.left === null))
+			return false;
+		if ((this.right === null) !== (card.right === null))
+			return false;
+		if (this.link !== card.link)
+			return false;
 
-			if (this.link !== card.link)
-				return false;
+		let areEqual = true;
+		if (this.left !== null && card.left !== null)
+			areEqual = this.left.equals(card.left);
+		if (this.right !== null && card.right !== null)
+			areEqual = areEqual && this.right.equals(card.right);
 
-			if (this.left !== null && card.left !== null)
-				bool = this.left.equals(card.left);
-
-			if (this.right !== null && card.right !== null)
-				bool = bool && this.right.equals(card.right);
-
-			return bool;
-		}
+		return areEqual;
 	}
 
 	/**
@@ -255,16 +240,12 @@ export default class Card
 	 */
 	getProfondeur()
 	{
-		let cardDepth = 1;
 		if (this.color !== null)
-			return cardDepth;
+			return 1;
 
-		const temp1 = this.left.getProfondeur();
-		const temp2 = this.right.getProfondeur();
-		const finalTemp = Math.max(temp1, temp2);
-		cardDepth += finalTemp;
-
-		return cardDepth;
+		const leftDepth = this.left.getProfondeur();
+		const rightDepth = this.right.getProfondeur();
+		return 1 + Math.max(leftDepth, rightDepth);
 	}
 
 	/**
