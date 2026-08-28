@@ -7,6 +7,7 @@ import PopupForms from "../components/PopupForms";
 
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
+import { DEFAULT_LEVEL_COUNTS } from "../config/levels";
 
 
 /**
@@ -39,7 +40,7 @@ const Exercise = () => {
 				return response.json();
 			})
 			.then((data) => setManifest(data))
-			.catch(() => setManifest(defaultCounts));
+			.catch(() => setManifest(DEFAULT_LEVEL_COUNTS));
 	}, []);
 
 	useEffect(() => {
@@ -62,8 +63,8 @@ const Exercise = () => {
 	 */
 	const num = tmpNum !== undefined ? Number(tmpNum) : NaN;
 	const isValidNum = Number.isInteger(num) && num >= 1;
-	const playLevelCount = manifest?.Play ?? defaultCounts.Play;
-	const tutorialLevelCount = manifest?.Tutorial ?? defaultCounts.Tutorial;
+	const playLevelCount = manifest?.Play ?? DEFAULT_LEVEL_COUNTS.Play;
+	const tutorialLevelCount = manifest?.Tutorial ?? DEFAULT_LEVEL_COUNTS.Tutorial;
 	const isValidPlay = mode === "Play" && isValidNum && num <= playLevelCount;
 	const isValidTutorial = mode === "Tutorial" && isValidNum && num <= tutorialLevelCount;
 	const isValidCreate = mode === "Create" && tmpNum === undefined;

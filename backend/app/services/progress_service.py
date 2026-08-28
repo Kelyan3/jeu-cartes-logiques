@@ -42,22 +42,29 @@ def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=Non
 
 	Le score n'est calculé que pour le mode "Play" complété, à partir du temps
 	écoulé et du nombre de coups fournis par le client, combinés aux paramètres
-	de score globaux (voir compute_score() et get_global_scoring_params() dans
-	admin.py). Le mode "Tutorial" n'a pas de notion de score : il reste
+	de score globaux (voir compute_score() dans ce fichier et get_global_scoring_params()
+	dans admin_service.py). Le mode "Tutorial" n'a pas de notion de score : il reste
 	toujours à 0, comme avant.
 
 	Si ce niveau complète entièrement son chapitre (mode "Play"), les quêtes
 	rattachées à ce chapitre sont automatiquement débloquées pour l'utilisateur.
+
+	En mode "Play", un niveau non encore débloqué
+	ne peut pas être marqué complété ni recevoir de score, même si le client
+	envoie completed=True
 	"""
+	# Valider le droit de compléter (avant tout calcul de score).
 	if mode == "Play" and completed and not _is_level_unlocked(user_id, num):
 		completed = False
 
+	# Calculer le score uniquement si la complétion est acceptée.
 	score = 0
 	best_time_seconds = None
 	if mode == "Play" and completed and elapsed_seconds is not None and moves is not None:
 		score = compute_score(elapsed_seconds, moves, get_global_scoring_params())
 		best_time_seconds = elapsed_seconds
 
+	# Persister puis éventuellement débloquer les quêtes du chapitre.
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
 			cur.execute(

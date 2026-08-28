@@ -22,6 +22,7 @@ from app.services.admin_service import (
 	update_category,
 	delete_category,
 )
+from app.services.feedback_service import get_feedback_list, delete_feedback
 from app.utils.decorators import admin_required, audit_log
 from app.utils.helpers import get_json_body
 
@@ -290,4 +291,21 @@ def admin_update_category(id_category):
 @audit_log("delete_category")
 def admin_delete_category(id_category):
 	delete_category(id_category)
+	return jsonify({"ok": True})
+
+#============================================================================
+# Feedback (avis utilisateurs)
+#============================================================================
+
+@admin_bp.route("/feedback", methods=["GET"])
+@admin_required
+def admin_feedback_list():
+	return jsonify(get_feedback_list())
+
+
+@admin_bp.route("/feedback/<int:id_feedback>", methods=["DELETE"])
+@admin_required
+@audit_log("delete_feedback")
+def admin_feedback_delete(id_feedback):
+	delete_feedback(id_feedback)
 	return jsonify({"ok": True})

@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
+import { DEFAULT_LEVEL_COUNTS, TUTORIAL_DIFFICULTY } from "../config/levels";
 import { formatTime } from "../utils/formatTime";
 
 
 const Choice = ({ mode }) => {
 	/**
 	 * Configuration par défaut du mode Tutorial (basée sur le manifeste de
-	 * fichiers exN.json), seul mode qui n'utilise pas encore le système de
+	 * fichiers tutoN.json), seul mode qui n'utilise pas encore le système de
 	 * chapitres en base de données. Le mode "Play" est entièrement piloté
 	 * par /api/chapters (voir plus bas).
 	 */
@@ -19,8 +20,10 @@ const Choice = ({ mode }) => {
 		},
 	};
 
-	const [jsonCount, setJsonCount] = useState(defaultConfig.Tutorial?.jsonCount ?? 0);
-	const [difficulty, setDifficulty] = useState(defaultConfig.Tutorial?.difficulty ?? []);
+	const [jsonCount, setJsonCount] = useState(DEFAULT_LEVEL_COUNTS.Tutorial);
+	const [difficulty, setDifficulty] = useState(() =>
+		TUTORIAL_DIFFICULTY.map((cat) => [...cat])
+	);
 
 	const navigate = useNavigate();
 	const { user } = useAuth();

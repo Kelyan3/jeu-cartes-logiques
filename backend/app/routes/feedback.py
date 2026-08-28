@@ -4,10 +4,7 @@ from flask_login import current_user
 from app.services.feedback_service import (
 	VALID_DEVICES,
 	create_feedback,
-	get_feedback_list,
-	delete_feedback,
 )
-from app.utils.decorators import admin_required, audit_log
 from app.utils.helpers import get_json_body
 
 feedback_bp = Blueprint("feedback", __name__, url_prefix="/api")
@@ -64,18 +61,4 @@ def feedback_submit():
 		design_rating, design_comment or None,
 		remarks or None,
 	)
-	return jsonify({"ok": True})
-
-
-@feedback_bp.route("/admin/feedback", methods=["GET"])
-@admin_required
-def admin_feedback_list():
-	return jsonify(get_feedback_list())
-
-
-@feedback_bp.route("/admin/feedback/<int:id_feedback>", methods=["DELETE"])
-@admin_required
-@audit_log("delete_feedback")
-def admin_feedback_delete(id_feedback):
-	delete_feedback(id_feedback)
 	return jsonify({"ok": True})
