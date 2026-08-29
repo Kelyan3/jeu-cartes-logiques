@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, Download, FileJson, Hash, Lightbulb, Undo2 } from "lucide-react";
+import { Clock, Download, FileJson, Hash, Lightbulb, Play, Square, Undo2 } from "lucide-react";
 
 import Deck from "./Deck";
 
@@ -129,6 +129,9 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	const [affichageSimple, setAffichageSimple] = useState(true);
 
+	const [isTestingMode, setIsTestingMode] = useState(false);
+	const [preTestState, setPreTestState] = useState(null);
+
 	/**
 	 * Résultat de la partie gagnée, affiché dans le popup de victoire.
 	 */
@@ -151,13 +154,14 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * sur le plateau en mode "Create" (LPU -> "On a ...", Objectif -> "Montrons ...").
 	 */
 	useEffect(() => {
-		if (mode === "Create")
+		if (mode === "Create" && !isTestingMode)
 		{
 			let demonstrationLines = [];
 			
 			if (game[0])
 			{
-				game[0].forEach((element) => {
+				game[0].forEach((element) =>
+				{
 					demonstrationLines.push("On a ");
 					demonstrationLines.push(element.copy());
 					demonstrationLines.push(". ");
@@ -176,7 +180,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			else
 				setDemonstration([]);
 		}
-	}, [game, mode]);
+	}, [game, mode, isTestingMode]);
 
 	/**
 	 * La carte qui est déjà sélectionnée & celle qui est passée en paramètre utilisent la fonction {@link Card.select()}
@@ -205,7 +209,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 			setGame(ensureDeckIds(nextGameState));
 
-			if (nextSelectedCardCount === 2 && mode === "Create")
+			if (nextSelectedCardCount === 2 && mode === "Create" && !isTestingMode)
 				setPopupFusion(true);
 
 			if (mode === "Tutorial")
@@ -466,6 +470,9 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * @param {Event} event - on utilise event.target.id
 	 */
 	const demonstrationClickHandler = (event) => {
+		if (mode === "Create" && !isTestingMode)
+			return;
+
 		let id = event.currentTarget.id.substring(4, 20);
 		let indiceRecu = parseInt(id, 10);
 		let indiceRetour = tabIndiceDemonstration[indiceRecu];
@@ -600,7 +607,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					)}
 
 					<GameActionBar
-						mode={mode}
+						mode={mode === "Create" && isTestingMode ? "Play" : mode}
 						levelIndex={levelIndex}
 						isActionUnlocked={isActionUnlocked}
 						addCardAnd={addCardAnd}
@@ -615,7 +622,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					{mode === "Create" && (
 						<label className="fileButton">
 							<FileJson size={18} />
-							<span style={{marginLeft: "6px"}}>{openFileJson !== "" ? openFileJson : "JSON"}</span>
+							<span style={{marginLeft: "6px"}}>{openFileJson !== "" ? openFileJson : "Importer un niveau"}</span>
 							<input type="file" accept="application/json" onChange={openFile}></input>
 						</label>
 					)}
@@ -623,7 +630,50 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					{/* Copie du jeu actuel en format JSON dans le presse-papier */}
 					{mode === "Create" && (
 						<button className="fileDownload" onClick={saveAsFile}>
-							<Download size={18} />
+							<Download size={18} />Télécharger le niveau
+						</button>
+					)}
+
+					{/* Bouton pour tester le niveau en mode Create */}
+					{mode === "Create" && (
+						<button 
+							className="fileDownload" 
+							style={{ padding: "0 12px", display: "flex", gap: "6px", width: "auto" }}
+							onClick={() => {
+								if (isTestingMode)
+								{
+									// Sortie du mode test
+									setIsTestingMode(false);
+									if (preTestState)
+									{
+										setGame(preTestState.game);
+										setDemonstration(preTestState.demonstration);
+										setGameHistory([]);
+										setIndentationDemonstration(preTestState.indentationDemonstration);
+										setTabIndiceDemonstration(preTestState.tabIndiceDemonstration);
+										setSavedGame(preTestState.game);
+										setTabIndentation(preTestState.tabIndentation);
+										setObjectives([[0, 0, false]]);
+										setWin(false);
+										setPreTestState(null);
+									}
+								}
+								else
+								{
+									// Entrée en mode test
+									setPreTestState({
+										game: game.map(d => d.map(c => c.copy())),
+										demonstration: demonstration.map(row => [row[0], [...row[1]]]),
+										indentationDemonstration,
+										tabIndiceDemonstration: [...tabIndiceDemonstration],
+										tabIndentation: [...tabIndentation]
+									});
+									setIsTestingMode(true);
+								}
+							}}
+						>
+							{isTestingMode ? <Square size={16} /> : <Play size={16} />}
+							<span>{isTestingMode ? "Arrêter le test" : "Tester le niveau"}</span>
 						</button>
 					)}
 
