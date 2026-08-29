@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
 import { DEFAULT_LEVEL_COUNTS, TUTORIAL_DIFFICULTY } from "../config/levels";
+import { CheckCircle, Lock } from "lucide-react";
 import { formatTime } from "../utils/formatTime";
 
 
@@ -139,83 +140,6 @@ const Choice = ({ mode }) => {
 	}
 
 	/**
-	 * Crée une ligne de niveaux à afficher (mode Tutorial).
-	 * 
-	 * @param {number} start - Le premier niveau de la ligne.
-	 * @param {number} end - Le dernier niveau de la ligne.
-	 * 
-	 * @returns {JSX.Element} La ligne.
-	 */
-	const createRow = (start, end) => {
-		let row = [];
-		for (let index = start; index < end; index++)
-		{
-			if (index < jsonCount)
-			{
-				const isCompleted = visibleCompletedLevels.includes(index + 1);
-				row.push(
-					<td
-						key={index}
-						onClick={goToExo}
-						data-url={"/exercise/" + mode + "/" + (index + 1)}
-						className={isCompleted ? "levelCompleted" : ""}
-					>
-						<p>Niveau {index + 1} {isCompleted && "✓"}</p>
-					</td>
-				);
-			}
-			else
-			{
-				row.push(
-					<td key={index} className="tdVoid">
-						<p>Niveau XX</p>
-					</td>
-				);
-			}
-		}
-
-		return <tr key={start + "-" + end}>{row}</tr>;
-	}
-
-	/**
-	 * Crée une ligne de niveaux à afficher pour un chapitre donné (par lots de 5),
-	 * en tenant compte du verrouillage individuel de chaque niveau.
-	 *
-	 * @param {Array} levels - sous-ensemble de niveaux du chapitre (avec num/unlocked/completed).
-	 * @param {number} rowKey - clé React de la ligne.
-	 *
-	 * @returns {JSX.Element} La ligne.
-	 */
-	const createChapterRow = (levels, rowKey) => {
-		const row = levels.map((level) => {
-			const locked = !level.unlocked;
-			const label = locked ? "🔒" : `Niveau ${level.num} ${level.completed ? "✓" : ""}`;
-
-			return (
-				<td
-					key={level.num}
-					onClick={goToExo}
-					data-url={"/exercise/" + mode + "/" + level.num}
-					data-locked={locked ? "true" : "false"}
-					className={
-						(level.completed ? "levelCompleted " : "") +
-						(locked ? "levelLocked" : "")
-					}
-				>
-					<p>{label}</p>
-					{level.completed && (
-						<p className="levelScore">
-							{formatTime(level.best_time_seconds)} | {level.score} pts
-						</p>
-					)}
-				</td>
-			);
-		});
-
-		return <tr key={rowKey}>{row}</tr>;
-	};
-
-	/**
 	 * Renvoie la liste de choix des niveaux, regroupés par chapitre réel
 	 * (avec déblocage séquentiel), pour le mode "Play".
 	 *
@@ -223,26 +147,38 @@ const Choice = ({ mode }) => {
 	 */
 	function afficheChapters()
 	{
-		const chapterSections = [];
-		chapters.forEach((chapter, chapterIndex) => {
-			chapterSections.push(
-				<h2 key={"h-" + chapter.id_chapter}>
-					{chapter.name} {!chapter.unlocked && "🔒"}
-				</h2>
-			);
-
-			const rows = [];
-			for (let i = 0; i < chapter.levels.length; i += 5)
-				rows.push(createChapterRow(chapter.levels.slice(i, i + 5), chapterIndex + "-" + i));
-
-			chapterSections.push(
-				<table key={chapter.id_chapter}>
-					<tbody>{rows}</tbody>
-				</table>
-			);
-		});
-
-		return chapterSections;
+		return chapters.map((chapter) => (
+			<div key={chapter.id_chapter} className="levelCategory">
+				<div className="categoryHeader">
+					<h2>{chapter.name}</h2>
+					{!chapter.unlocked && <Lock size={20} className="categoryLockedIcon" />}
+				</div>
+				<div className="levelsGrid">
+					{chapter.levels.map((level) => {
+						const locked = !level.unlocked;
+						return (
+							<div
+								key={level.num}
+								onClick={goToExo}
+								data-url={"/exercise/" + mode + "/" + level.num}
+								data-locked={locked ? "true" : "false"}
+								className={`levelCard ${level.completed ? "levelCompleted" : ""} ${locked ? "levelLocked" : ""}`}
+							>
+								<div className="levelCardTop">
+									<span className="levelTitle">Niveau {level.num}</span>
+									{locked ? <Lock size={16} className="levelIcon lockedIcon" /> : level.completed ? <CheckCircle size={16} className="levelIcon completedIcon" /> : null}
+								</div>
+								{level.completed && (
+									<div className="levelScore">
+										{formatTime(level.best_time_seconds)} <span className="separator">|</span> {level.score} pts
+									</div>
+								)}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		));
 	}
 
 	/**
@@ -253,36 +189,43 @@ const Choice = ({ mode }) => {
 	 */
 	function afficheChoice()
 	{
-		const difficultySections = [];
-		difficulty.forEach((category, index) => {
-			let table = [];
-			let y = 1;
-			difficultySections.push(<h2 key={"h-" + index}>{category[2]}</h2>);
-
-			for (let i = category[0] - 1; i <= category[1] - 1; i++)
-			{
-				if (i + 5 >= category[1] && y === 1)
-				{
-					table.push(createRow(i, category[1]));
-					y = 5;
-				}
-				else if (i < category[1] && y === 1)
-				{
-					table.push(createRow(i, i + 5));
-					y = 5;
-				}
-				else
-					y--;
+		return difficulty.map((category) => {
+			const startIdx = category[0] - 1;
+			const endIdx = category[1];
+			
+			// Si on dépasse le nombre de niveaux existants, on s'arrête
+			const limit = Math.min(endIdx, jsonCount);
+			const levels = [];
+			
+			for (let i = startIdx; i < limit; i++) {
+				const num = i + 1;
+				const isCompleted = visibleCompletedLevels.includes(num);
+				levels.push(
+					<div
+						key={num}
+						onClick={goToExo}
+						data-url={"/exercise/" + mode + "/" + num}
+						className={`levelCard ${isCompleted ? "levelCompleted" : ""}`}
+					>
+						<div className="levelCardTop">
+							<span className="levelTitle">Niveau {num}</span>
+							{isCompleted && <CheckCircle size={16} className="levelIcon completedIcon" />}
+						</div>
+					</div>
+				);
 			}
 
-			difficultySections.push(
-				<table key={category[2]}>
-					<tbody>{table}</tbody>
-				</table>
+			return (
+				<div key={category[2]} className="levelCategory">
+					<div className="categoryHeader">
+						<h2>{category[2]}</h2>
+					</div>
+					<div className="levelsGrid">
+						{levels}
+					</div>
+				</div>
 			);
 		});
-
-		return difficultySections;
 	}
 
 	/**
