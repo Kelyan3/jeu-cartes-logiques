@@ -17,7 +17,7 @@ import { containCard, copyGameArray } from "../gameSolver";
  * @param {Card[][]} deps.game
  * @param {Function} deps.error - error(message: string)
  * @param {Function} deps.saveGame
- * @param {Function} deps.addToGame - addToGame(gameState, deckIndex, card, defaultEmitError) => boolean
+ * @param {Function} deps.addToGame - addToGame(gameState, deckIndex, card, onError, defaultEmitError=true) => boolean
  * @param {Function} deps.isWin - isWin(msgArray, indentArray, gameState)
  */
 export function runAddCardAnd(deps)

@@ -1,16 +1,16 @@
-.card_simple {
+.cardSimple {
 	border: 2px solid var(--border-subtle);
 	border-radius: 8px;
 }
 
-.carte_container_horizon {
+.cardContainerHorizontal {
 	display: inline-grid;
 	grid-gap: 1px;
 	grid-template-columns: 1fr 0px 1fr;
 	grid-template-rows: 1fr;
 }
 
-.carte_container_vertical {
+.cardContainerVertical {
 	display: inline-grid;
 	grid-gap: 1px;
 	grid-template-columns: 1fr;
@@ -37,12 +37,12 @@
 	z-index: 2;
 }
 
-.link_vertical {
+.linkVertical {
 	transform: rotate(90deg);
 	left: 25px;
 }
 
-.link_vertical2 {
+.linkVertical2 {
 	transform: rotate(90deg);
 	left: 87px;
 }
@@ -58,19 +58,17 @@
 	margin-right: 12px;
 }
 
-.nouveau {
+.new {
 	animation-duration: .6s;
 	animation-name: slidein;
 
 	@keyframes slidein {
 		from {
 			opacity: 0;
-			transform: translateY(-24px);
 		}
 
 		to {
 			opacity: 1;
-			transform: translateY(0);
 		}
 	}
 }
@@ -84,7 +82,7 @@
 	transform: scale(1.06);
 }
 
-.selectionner {
+.selected {
 	border: 2px solid var(--accent-cyan);
 	border-radius: 8px;
 	box-shadow: var(--shadow-soft);
@@ -92,13 +90,13 @@
 	outline-offset: 2px;
 }
 
-.aide {
+.help {
 	border-radius: 8px;
 	animation-duration: 1.4s;
-	animation-name: aide-pulse;
+	animation-name: helpPulse;
 	animation-iteration-count: infinite;
 
-	@keyframes aide-pulse {
+	@keyframes helpPulse {
 		0%, 100% {
 			box-shadow: 0 0 0 2px var(--accent-amber);
 		}

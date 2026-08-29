@@ -10,12 +10,14 @@ import { containCard } from "../gameSolver";
  * @param {Card[][]} gameState
  * @param {number} deckIndex
  * @param {Card} card
- * @param {Function} onError - callback(message: string) appelé en cas de refus (sauf si defaultEmitError=false)
+ * @param {Function} [onError] - callback(message: string) appelé en cas de refus (sauf si defaultEmitError=false).
+ *                               Par défaut ne fait rien : un appelant qui omet ce paramètre ne provoque
+ *                               plus de plantage, il échoue simplement silencieusement.
  * @param {boolean} [defaultEmitError=true] - si false, refuse silencieusement sans appeler onError
  *
  * @returns {boolean} true si la carte a été ajoutée
  */
-export function addToGame(gameState, deckIndex, card, onError, defaultEmitError=true)
+export function addToGame(gameState, deckIndex, card, onError=() => {}, defaultEmitError=true)
 {
 	if (containCard(gameState, deckIndex, card))
 	{

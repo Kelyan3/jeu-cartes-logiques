@@ -4,7 +4,7 @@ from app.database import CONN_PARAMS
 from app.services.admin_service import get_global_scoring_params
 
 
-def get_progress(user_id):
+def get_progress(id_user):
 	"""
 	Récupère toute la progression d'un utilisateur.
 	Renvoie une liste de dicts : [{"mode": "Play", "num": 3, "completed": True, "score": 10}, ...]
@@ -14,7 +14,7 @@ def get_progress(user_id):
 			cur.execute(
 				"SELECT mode, num, completed, score FROM progression "
 				"WHERE id_user = %s",
-				(user_id,),
+				(id_user,),
 			)
 			rows = cur.fetchall()
 
@@ -23,21 +23,21 @@ def get_progress(user_id):
 				for mode, num, completed, score in rows
 			]
 
-def _is_level_unlocked(user_id, num):
+def _is_level_unlocked(id_user, num):
 	"""
-	True si le niveau num (mode "Play") est débloqué pour user_id, False sinon (y compris
+	True si le niveau num (mode "Play") est débloqué pour id_user, False sinon (y compris
 	si le niveau n'existe pas).
 	"""
-	for chapter in get_chapters(user_id):
+	for chapter in get_chapters(id_user):
 		for level in chapter["levels"]:
 			if level["num"] == num:
 				return level["unlocked"]
 	return False
 
-def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=None):
+def save_progress(id_user, mode, num, completed, elapsed_seconds=None, moves=None):
 	"""
 	Enregistre ou met à jour la progression d'un utilisateur sur un niveau.
-	Si une ligne existe déjà pour (user_id, mode, num), elle est mise à jour
+	Si une ligne existe déjà pour (id_user, mode, num), elle est mise à jour
 	uniquement si le nouveau score est meilleur (ou si le niveau vient d'être complété).
 
 	Le score n'est calculé que pour le mode "Play" complété, à partir du temps
@@ -54,7 +54,7 @@ def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=Non
 	envoie completed=True
 	"""
 	# Valider le droit de compléter (avant tout calcul de score).
-	if mode == "Play" and completed and not _is_level_unlocked(user_id, num):
+	if mode == "Play" and completed and not _is_level_unlocked(id_user, num):
 		completed = False
 
 	# Calculer le score uniquement si la complétion est acceptée.
@@ -81,17 +81,17 @@ def save_progress(user_id, mode, num, completed, elapsed_seconds=None, moves=Non
 					),
 					updated_at = NOW()
 				""",
-				(user_id, mode, num, completed, score, best_time_seconds),
+				(id_user, mode, num, completed, score, best_time_seconds),
 			)
 
 			if mode == "Play" and completed:
-				_unlock_quests_if_chapter_completed(cur, user_id, num)
+				_unlock_quests_if_chapter_completed(cur, id_user, num)
 
 			conn.commit()
 
 	return score
 
-def _unlock_quests_if_chapter_completed(cur, user_id, num):
+def _unlock_quests_if_chapter_completed(cur, id_user, num):
 	"""
 	Si le niveau "num" appartient à un chapitre désormais entièrement complété
 	par l'utilisateur, insère une ligne user_quests pour chaque quête qui
@@ -114,7 +114,7 @@ def _unlock_quests_if_chapter_completed(cur, user_id, num):
 			WHERE id_user = %s AND mode = 'Play' AND completed = TRUE
 		)
 		""",
-		(id_chapter, user_id),
+		(id_chapter, id_user),
 	)
 	remaining = cur.fetchone()[0]
 	if remaining > 0:
@@ -125,15 +125,15 @@ def _unlock_quests_if_chapter_completed(cur, user_id, num):
 	for id_quest in quest_ids:
 		cur.execute(
 			"INSERT INTO user_quests (id_user, id_quest) VALUES (%s, %s) ON CONFLICT DO NOTHING",
-			(user_id, id_quest),
+			(id_user, id_quest),
 		)
 
-def reset_progress(user_id):
+def reset_progress(id_user):
 	"""Supprime toute la progression d'un utilisateur."""
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
-			cur.execute("DELETE FROM progression WHERE id_user = %s", (user_id,))
-			cur.execute("DELETE FROM user_quests WHERE id_user = %s", (user_id,))
+			cur.execute("DELETE FROM progression WHERE id_user = %s", (id_user,))
+			cur.execute("DELETE FROM user_quests WHERE id_user = %s", (id_user,))
 			conn.commit()
 
 def compute_score(elapsed_seconds, moves, params):
@@ -146,10 +146,10 @@ def compute_score(elapsed_seconds, moves, params):
 	score = params["score_max"] - penalite_temps - penalite_coups
 	return max(params["score_min"], score)
 
-def get_chapters(user_id):
+def get_chapters(id_user):
 	"""
 	Récupère les chapitres "Play" et leurs niveaux, avec le statut de chacun pour
-	l'utilisateur donné (user_id=None pour un visiteur non connecté).
+	l'utilisateur donné (id_user=None pour un visiteur non connecté).
 
 	Règle de déblocage : le premier niveau du premier chapitre est toujours
 	débloqué ; un niveau est débloqué seulement si le niveau qui le précède
@@ -173,11 +173,11 @@ def get_chapters(user_id):
 			levels_rows = cur.fetchall()
 
 			progress_by_num = {}
-			if user_id is not None:
+			if id_user is not None:
 				cur.execute(
 					"SELECT num, score, best_time_seconds FROM progression "
 					"WHERE id_user = %s AND mode = 'Play' AND completed = TRUE",
-					(user_id,),
+					(id_user,),
 				)
 				progress_by_num = {
 					num: {"score": score, "best_time_seconds": best_time_seconds}
@@ -218,7 +218,7 @@ def get_chapters(user_id):
 
 	return chapters
 
-def get_unlocked_keys(user_id):
+def get_unlocked_keys(id_user):
 	"""
 	Récupère, pour l'utilisateur donné (None pour un visiteur), la liste des
 	"unlocks_key" débloquées, regroupées par menu.
@@ -241,7 +241,7 @@ def get_unlocked_keys(user_id):
 					ON uq.id_quest = q.id_quest AND uq.id_user = %s
 				ORDER BY q.menu, q.position
 				""",
-				(user_id,),
+				(id_user,),
 			)
 			rows = cur.fetchall()
 

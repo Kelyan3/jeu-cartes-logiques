@@ -147,11 +147,11 @@ export function runChooseConnector(event, deps)
  * @param {Function} deps.setPopupDeleteCard
  * @param {Function} deps.saveGame
  * @param {Function} deps.clearSelection
- * @param {Function} deps.delCard
+ * @param {Function} deps.removeCard
  */
 export function runDeleteCard(deps)
 {
-	const { firstSelectedCardIndex, firstSelectedDeckIndex, game, setPopupDeleteCard, saveGame, clearSelection, delCard } = deps;
+	const { firstSelectedCardIndex, firstSelectedDeckIndex, game, setPopupDeleteCard, saveGame, clearSelection, removeCard } = deps;
 
 	// Enlève le popup
 	setPopupDeleteCard(false);
@@ -166,7 +166,7 @@ export function runDeleteCard(deps)
 		let workingGame = copyGameArray(game);
 
 		// Supprime la carte
-		workingGame[firstSelectedDeckIndex] = delCard(workingGame[firstSelectedDeckIndex], firstSelectedCardIndex);
+		workingGame[firstSelectedDeckIndex] = removeCard(workingGame[firstSelectedDeckIndex], firstSelectedCardIndex);
 
 		// Actualise le jeu et désélectionne tout
 		clearSelection(workingGame);

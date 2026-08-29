@@ -24,7 +24,7 @@ import Card from "../domain/Card";
 import { computeNextMove, copyGameArray } from "../domain/gameSolver";
 import { buildInitialGameSetup, buildInitialTutorialMessage, buildSelectionTutorialMessage, ensureDeckIds } from "../domain/gameInput";
 
-import { delCard, deckContain as deckContainCore } from "../domain/rules/goals";
+import { removeCard, deckContain as deckContainCore } from "../domain/rules/goals";
 import { getSingleSelectedCard as getSingleSelectedCardCore } from "../domain/rules/selection";
 import { addToGame as addToGameCore } from "../domain/rules/addToGame";
 import { constructDemonstration as constructDemonstrationCore, computeAddLineDemonstration } from "../domain/rules/demonstration";
@@ -236,7 +236,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 */
 	const createModeDeps = () => ({
 		game, addCardDeckIndex, firstSelectedDeckIndex, firstSelectedCardIndex, secondSelectedDeckIndex, secondSelectedCardIndex,
-		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, clearSelection, delCard,
+		setPopupFusion, setPopupDeleteCard, saveGame, addToGame, clearSelection, removeCard,
 	});
 
 	const chooseColor = (event) => runChooseColor(event, createModeDeps());

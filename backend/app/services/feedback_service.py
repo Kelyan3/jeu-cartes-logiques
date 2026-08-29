@@ -9,7 +9,7 @@ RATING_FIELDS = ("rules_rating", "features_rating", "design_rating")
 
 
 def create_feedback(
-	user_id,
+	id_user,
 	device, device_other,
 	rules_rating, rules_comment,
 	features_rating, features_comment,
@@ -30,7 +30,7 @@ def create_feedback(
 				"remarks"
 				") VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
 				(
-					user_id,
+					id_user,
 					device, device_other,
 					rules_rating, rules_comment,
 					features_rating, features_comment,

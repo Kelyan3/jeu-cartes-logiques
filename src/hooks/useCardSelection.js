@@ -93,7 +93,7 @@ export function useCardSelection()
 
 	/**
 	 * Désélectionne toutes les cartes (remet les indices de sélection à -1/0).
-	 * Ne touche pas au tableau `game` lui-même — c'est à l'appelant de désélectionner
+	 * Ne touche pas au tableau `game` lui-même, c'est à l'appelant de désélectionner
 	 * visuellement les cartes et d'appeler setGame.
 	 */
 	const resetSelection = () => {

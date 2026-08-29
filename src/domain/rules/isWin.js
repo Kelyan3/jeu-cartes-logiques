@@ -1,6 +1,5 @@
 import { containCard } from "../gameSolver";
-import { buildObjectives, findObjectifRelative, checkSubObj, delCard, delDeck, delCardWithEquals } from "./goals";
-
+import { buildObjectives, findObjectifRelative, checkSubObj, removeCard, removeDeck, removeCardWithEquals } from "./goals";
 
 /**
  * Vérifie si l'exercice est résolu (objectif principal atteint) et fait progresser
@@ -96,18 +95,18 @@ export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
 			const objectiveCard = gameState[gameState.length - 1][findObj].copy();
 
 			// Remonte "A ⇒ B" dans le deck juste au-dessus de la LPU
-			if (!addToGame(gameState, intermediaireDeck - 1, objectiveCard))
+			if (!addToGame(gameState, intermediaireDeck - 1, objectiveCard, undefined, false))
 				return;
 
 			// Retire B des objectifs.
-			gameState[gameState.length - 1] = delCardWithEquals(gameState[gameState.length - 1], cardObj);
+			gameState[gameState.length - 1] = removeCardWithEquals(gameState[gameState.length - 1], cardObj);
 
 			// Retire "A ⇒ B" du deck objectif s'il était lié.
 			if (findObj !== 0 && isLinked)
-				gameState[gameState.length - 1] = delCard(gameState[gameState.length - 1], findObj);
+				gameState[gameState.length - 1] = removeCard(gameState[gameState.length - 1], findObj);
 
-			// Supprime la LPU intermédiaire trouvée (plus delDeck(gameState, numObj))
-			gameState = delDeck(gameState, intermediaireDeck);
+			// Supprime la LPU intermédiaire trouvée (plus removeDeck(gameState, numObj))
+			gameState = removeDeck(gameState, intermediaireDeck);
 
 			arrayMsg.push(["On a ", objectiveCard.copy(), "."]);
 			arrayIndent.push(-1);
@@ -154,7 +153,7 @@ export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
 
 			if (foundInLPU)
 			{
-				gameState[objDeckIndex] = delCardWithEquals(gameState[objDeckIndex], goalCard);
+				gameState[objDeckIndex] = removeCardWithEquals(gameState[objDeckIndex], goalCard);
 				arrayMsg.push(["On a ", goalCard.copy(), "."]);
 				arrayIndent.push(0);
 				modif = true;

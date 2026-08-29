@@ -7,19 +7,6 @@ import { formatTime } from "../utils/formatTime";
 
 
 const Choice = ({ mode }) => {
-	/**
-	 * Configuration par défaut du mode Tutorial (basée sur le manifeste de
-	 * fichiers tutoN.json), seul mode qui n'utilise pas encore le système de
-	 * chapitres en base de données. Le mode "Play" est entièrement piloté
-	 * par /api/chapters (voir plus bas).
-	 */
-	const defaultConfig = {
-		Tutorial: {
-			jsonCount: 7,
-			difficulty: [[1, 7, "Tutoriels"]],
-		},
-	};
-
 	const [jsonCount, setJsonCount] = useState(DEFAULT_LEVEL_COUNTS.Tutorial);
 	const [difficulty, setDifficulty] = useState(() =>
 		TUTORIAL_DIFFICULTY.map((cat) => [...cat])

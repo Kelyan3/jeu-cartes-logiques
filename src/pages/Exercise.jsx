@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Game from "../components/Game";
 import Navigation from "../components/Navigation";
 import PopupForms from "../components/PopupForms";
@@ -8,13 +7,6 @@ import PopupForms from "../components/PopupForms";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
 import { DEFAULT_LEVEL_COUNTS } from "../config/levels";
-
-
-/**
- * Nombre de niveaux par défaut, utilisé en repli si le manifeste
- * n'a pas encore été chargé ou est indisponible.
- */
-const defaultCounts = { Play: 50, Tutorial: 7 };
 
 
 const Exercise = () => {

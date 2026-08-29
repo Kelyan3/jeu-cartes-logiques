@@ -7,7 +7,7 @@
  *
  * @returns {Card[]} le nouveau deck (sans la carte supprimée)
  */
-export function delCard(deck, indiceCard)
+export function removeCard(deck, indiceCard)
 {
 	// Le deck que l'on va retourner
 	let finalDeck = [];
@@ -42,7 +42,7 @@ export function delCard(deck, indiceCard)
  *
  * @returns {Card[][]} le nouveau tableau de jeu (sans le deck supprimé)
  */
-export function delDeck(currentGame, indiceDeck)
+export function removeDeck(currentGame, indiceDeck)
 {
 	// Le tableau du jeu que l'on va retourner
 	let finalGame = [];
@@ -69,7 +69,7 @@ export function delDeck(currentGame, indiceDeck)
  *
  * @returns {Card[]} le nouveau deck
  */
-export function delCardWithEquals(deck, cardToDelete)
+export function removeCardWithEquals(deck, cardToDelete)
 {
 	// Le deck que l'on va retourner
 	let finalDeck = [];

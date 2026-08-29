@@ -1,5 +1,6 @@
 import { useGameTab } from "../context/GameTabContext";
-import LogicText from  "./LogicText";
+import LogicText from "./LogicText";
+
 
 const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) => {
 	/**
@@ -8,7 +9,7 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 	 */
 	const handleClick = () => {
 		update(cardIndex);
-	}
+	};
 
 	/**
 	 * Convertit les liaisons en symboles unicode affichés sur les cartes.
@@ -34,7 +35,7 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 	 *
 	 * @param {Card} currentCard - La carte sur laquelle on est actuellement
 	 * @param {number} count
-	 * @param {true|false} selec - true si la carte est sélectionnée, sinon false
+	 * @param {boolean} selec - true si la carte est sélectionnée, sinon false
 	 * @param {number} originalCount
 	 * @param {string} path - chemin ("L"/"R" empilés) jusqu'à cette sous-carte depuis la racine,
 	 *                        utilisé comme clé React unique.
@@ -51,7 +52,7 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 			return (
 				<span
 					key={path}
-					className={`card_simple ` + (selec && currentCard.color !== "transparent" ? "selectionner " : "")}
+					className={`cardSimple ` + (selec && currentCard.color !== "transparent" ? "selected " : "")}
 					style={style}
 				></span>
 			);
@@ -60,17 +61,17 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 		if (affichageSimple)
 			currentCard = currentCard.displayGoodCard();
 
-		let className = "carte_container_vertical";
-		let link = "link_vertical";
+		let className = "cardContainerVertical";
+		let link = "linkVertical";
 
 		if (count % 2 !== 0 || (originalCount === 2 && count === 2))
 		{
-			className = "carte_container_horizon";
+			className = "cardContainerHorizontal";
 			link = "";
 		}
 
 		if (count % 4 === 0)
-			link = "link_vertical2";
+			link = "linkVertical2";
 
 		return (
 			<span className={className} key={path}>
@@ -164,8 +165,8 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 			className={
 				"card " +
 				(isWin ? "" : "hoverable ") +
-				(game[deckIndex][cardIndex].isNew ? "nouveau " : "") +
-				(isHelp ? "aide" : "")}
+				(game[deckIndex][cardIndex].isNew ? "new " : "") +
+				(isHelp ? "help" : "")}
 			style={calcSizeCard(game[deckIndex][cardIndex])}
 		>
 			{renderCard(game[deckIndex][cardIndex], game[deckIndex][cardIndex].active)}

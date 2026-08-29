@@ -14,11 +14,13 @@ import { copyGameArray } from "../gameSolver";
  * @param {Card[][]} deps.game
  * @param {Function} deps.transformIntoNonCard - appelée si la carte sélectionnée est dans le deck d'objectif
  * @param {Function} deps.error - error(message: string)
- * @param {Function} deps.addToGame - addToGame(gameState, deckIndex, card) => boolean
+ * @param {Function} deps.addToGame - addToGame(gameState, deckIndex, card, onError, defaultEmitError=true) => boolean
  * @param {Function} deps.isWin - isWin(msgArray, indentArray, gameState)
  */
-export function runTiersExclus({ navigation, win, firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, game, transformIntoNonCard, error, addToGame, isWin })
+export function runTiersExclus(deps)
 {
+	const { navigation, win, firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, game, transformIntoNonCard, error, addToGame, isWin } = deps;
+
 	if (navigation || win)
 		return;
 

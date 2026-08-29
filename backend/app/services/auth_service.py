@@ -77,7 +77,7 @@ def get_categories():
 			cur.execute("SELECT id_category, name FROM categories ORDER BY id_category")
 			return [{"id_category": id_category, "name": name} for id_category, name in cur.fetchall()]
 
-def set_user_category(user_id, id_category):
+def set_user_category(id_user, id_category):
 	"""
 	Assigne une catégorie à l'utilisateur (choisie une fois l'inscription terminée).
 	Ne vérifie pas que id_category existe : la contrainte REFERENCES de la table
@@ -87,6 +87,6 @@ def set_user_category(user_id, id_category):
 		with conn.cursor() as cur:
 			cur.execute(
 				"UPDATE users SET id_category = %s WHERE id_user = %s",
-				(id_category, user_id),
+				(id_category, id_user),
 			)
 			conn.commit()
