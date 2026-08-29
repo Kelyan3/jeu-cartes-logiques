@@ -2,6 +2,7 @@ import { useState } from "react";
 import Navigation from "../components/Navigation";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
+import { Send, CheckCircle2 } from "lucide-react";
 
 
 const RATING_LABELS = [
@@ -105,10 +106,14 @@ const Forms = () => {
 			<Navigation />
 			<div id="forms">
 				<span className="eyebrow">Votre avis</span>
-				<h2>Votre avis sur le Jeu des Cartes Logiques</h2>
+				<h2>Donnez votre avis</h2>
 
 				{sent ? (
-					<p className="formSuccess">Merci, votre avis a bien été envoyé !</p>
+					<div className="formSuccessState">
+						<CheckCircle2 size={48} className="successIcon" />
+						<h3>Merci beaucoup !</h3>
+						<p>Votre avis a bien été envoyé. Il nous aidera à améliorer le Jeu des Cartes Logiques.</p>
+					</div>
 				) : (
 					<form onSubmit={handleSubmit} className="authForm feedbackForm">
 						<div className="field">
@@ -188,7 +193,7 @@ const Forms = () => {
 										checked={anonymous}
 										onChange={(e) => setAnonymous(e.target.checked)}
 									/>
-									Envoyer anonymement (votre nom d'utilisateur ne sera pas associé à cet avis)
+									Envoyer anonymement (votre pseudo ne sera pas associé)
 								</label>
 							</div>
 						)}
@@ -196,7 +201,8 @@ const Forms = () => {
 						{error && <p className="formError">{error}</p>}
 
 						<button type="submit" className="authSubmit" disabled={submitting}>
-							{submitting ? "Envoi..." : "Envoyer"}
+							<Send size={18} style={{marginRight: "8px"}} />
+							{submitting ? "Envoi en cours..." : "Envoyer mon avis"}
 						</button>
 					</form>
 				)}

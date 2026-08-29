@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { GripVertical, Trash2, Link as LinkIcon } from "lucide-react";
 
 
 /**
@@ -33,6 +34,12 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 		setPrevChapters(chapters);
 		setLocalOrder({});
 	}
+
+	const defaultChapterId = chapters.length > 0 ? chapters[0].id_chapter : "";
+	const [selectedChapterIdState, setSelectedChapterIdState] = useState("");
+
+	const selectedChapterId = selectedChapterIdState || defaultChapterId;
+	const selectedChapter = chapters.find((c) => c.id_chapter === Number(selectedChapterId));
 
 	const submit = (event) => {
 		event.preventDefault();
@@ -108,17 +115,43 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 				Glissez une ligne pour changer sa position dans le chapitre.
 			</p>
 
-			{chapters.map((chapter) => {
+			{chapters.length > 0 && (
+				<div className="adminFilterBar">
+					<label htmlFor="chapter-select">Voir les niveaux du chapitre :</label>
+					<select
+						id="chapter-select"
+						value={selectedChapterId}
+						onChange={(e) => setSelectedChapterIdState(Number(e.target.value))}
+					>
+						{chapters.map(c => (
+							<option key={c.id_chapter} value={c.id_chapter}>{c.name}</option>
+						))}
+					</select>
+				</div>
+			)}
+
+			{selectedChapter && (() => {
+				const chapter = selectedChapter;
 				const levels = localOrder[chapter.id_chapter] ?? chapter.levels;
 
 				return (
 					<div key={chapter.id_chapter} className="adminSubgroup">
-						<h3>{chapter.name}</h3>
 						<table className="adminTable">
 							<thead>
-								<tr><th></th><th>Niveau</th><th></th></tr>
+								<tr>
+									<th></th>
+									<th>Niveau</th>
+									<th></th>
+								</tr>
 							</thead>
 							<tbody>
+								{levels.length === 0 && (
+									<tr>
+										<td colSpan="3" style={{ textAlign: "center", color: "var(--text-muted)", padding: "20px" }}>
+											Aucun niveau rattaché à ce chapitre.
+										</td>
+									</tr>
+								)}
 								{levels.map((level) => (
 									<tr
 										key={level.id_level}
@@ -133,11 +166,11 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 											(dragOverId === level.id_level ? "dragOver" : "")
 										}
 									>
-										<td className="dragHandle" title="Glisser pour réordonner">⠿</td>
+										<td className="dragHandle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
 										<td>Niveau {level.num}</td>
 										<td>
-											<button className="resetButton" onClick={() => call(`/api/admin/levels/${level.id_level}`, "DELETE")}>
-												Retirer
+											<button className="actionButton actionDelete" title="Retirer" onClick={() => call(`/api/admin/levels/${level.id_level}`, "DELETE")}>
+												<Trash2 size={16} />
 											</button>
 										</td>
 									</tr>
@@ -146,25 +179,28 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 						</table>
 					</div>
 				);
-			})}
+			})()}
 
-			<form className="adminForm" onSubmit={submit}>
-				<select value={num} onChange={(e) => setNum(e.target.value)} required>
-					<option value="" disabled>Niveau non assigné...</option>
-					{unassignedLevels.map((n) => (
-						<option key={n} value={n}>Niveau {n}</option>
-					))}
-				</select>
-				<select value={idChapter} onChange={(e) => setIdChapter(e.target.value)} required>
-					<option value="" disabled>Chapitre...</option>
-					{chapters.map((chapter) => (
-						<option key={chapter.id_chapter} value={chapter.id_chapter}>{chapter.name}</option>
-					))}
-				</select>
-				<button type="submit" className="resetButton" disabled={unassignedLevels.length === 0}>
-					+ Rattacher (en fin de chapitre)
-				</button>
-			</form>
+			<div className="adminCreatePanel">
+				<h3>Rattacher un niveau</h3>
+				<form className="adminForm" onSubmit={submit}>
+					<select value={num} onChange={(e) => setNum(e.target.value)} required>
+						<option value="" disabled>Niveau non assigné...</option>
+						{unassignedLevels.map((n) => (
+							<option key={n} value={n}>Niveau {n}</option>
+						))}
+					</select>
+					<select value={idChapter} onChange={(e) => setIdChapter(e.target.value)} required>
+						<option value="" disabled>Chapitre...</option>
+						{chapters.map((chapter) => (
+							<option key={chapter.id_chapter} value={chapter.id_chapter}>{chapter.name}</option>
+						))}
+					</select>
+					<button type="submit" className="buttonPrimary" disabled={unassignedLevels.length === 0}>
+						<LinkIcon size={16} /> Rattacher
+					</button>
+				</form>
+			</div>
 		</section>
 	);
 };

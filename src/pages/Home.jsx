@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import PopupForms from "../components/PopupForms";
 import Card from "../components/Card";
 import { GameTabProvider } from "../context/GameTabContext";
 import CardModel from "../domain/Card";
+import { BookOpen, Gamepad2, ScrollText } from "lucide-react";
 
 
 /**
@@ -85,52 +87,65 @@ const Home = () => {
 	const [activeTab, setActiveTab] = useState(TABS[0].id);
 
 	return (
-		<div className="home">
+		<div className="homeContainer">
 			<Navigation />
-			<div id="regles">
-				<h1>Les règles du jeu</h1>
-
-				<div className="rulesTabs" role="tablist">
-					{TABS.map((tab) => (
-						<button
-							key={tab.id}
-							role="tab"
-							aria-selected={activeTab === tab.id}
-							className={"rulesTab" + (activeTab === tab.id ? " rulesTabActive" : "")}
-							onClick={() => setActiveTab(tab.id)}
-						>
-							{tab.label}
-						</button>
-					))}
+			
+			<div className="homeHero">
+				<h1>Jeu des Cartes Logiques</h1>
+				<p>Un jeu solo de réflexion où vous manipulez des connecteurs logiques et déduisez des cartes pour atteindre votre objectif.</p>
+				<div className="homeHeroActions">
+					<NavLink to="/tutorials" className="buttonPrimary">
+						<BookOpen size={18} /> Tutoriels
+					</NavLink>
+					<NavLink to="/levels" className="buttonSecondary">
+						<Gamepad2 size={18} /> Jouer (Niveaux)
+					</NavLink>
 				</div>
+			</div>
 
-				<GameTabProvider value={exampleGame}>
-					<div className="rulesPanel">
+			<div className="homeRulesLayout">
+				<aside className="rulesSidebar">
+					<div className="rulesSidebarGroup">
+						<h3><ScrollText size={16} /> Règles du jeu</h3>
+						{TABS.map((tab) => (
+							<button
+								key={tab.id}
+								className={activeTab === tab.id ? "active" : ""}
+								onClick={() => setActiveTab(tab.id)}
+							>
+								{tab.label}
+							</button>
+						))}
+					</div>
+				</aside>
+
+				<main className="rulesMain">
+					<GameTabProvider value={exampleGame}>
 						{activeTab === "presentation" && (
-							<>
+							<div className="rulesSectionContent">
 								<p className="rulesIntro">Un jeu solo où vous manipulez des cartes pour atteindre un objectif logique.</p>
 								<ol>
 									<li>Vous jouez seul, avec des <strong>cartes</strong> qui ont chacune un pouvoir et un moyen de les obtenir.</li>
 									<li>Trois zones structurent la partie : la <strong>Banque</strong>, la <strong>LPU</strong>, la <strong>Zone d'Objectifs</strong>.</li>
 									<li>Le but : faire apparaître les cartes-objectifs dans votre LPU.</li>
 								</ol>
-							</>
+							</div>
 						)}
 
 						{activeTab === "banque" && (
-							<>
-								<FlowSchema highlight="banque" /><br />
+							<div className="rulesSectionContent">
+								<FlowSchema highlight="banque" />
 								<p className="rulesIntro">La Banque contient toutes les cartes du jeu, en nombre illimité.</p>
 								<ol>
 									<li><strong>Obtenir</strong> une carte : elle rejoint définitivement votre LPU.</li>
 									<li><strong>Emprunter</strong> une carte : elle rejoint votre LPU, à rendre plus tard dans la partie.</li>
 								</ol>
-							</>
+							</div>
 						)}
 
 						{activeTab === "lpu" && (
-							<>
-								<FlowSchema highlight="lpu" /><br />
+							<div className="rulesSectionContent">
+								<FlowSchema highlight="lpu" />
 								<p className="rulesIntro">La LPU liste les cartes que vous possédez à un instant donné.</p>
 								<ol>
 									<li>Présenter une ou plusieurs cartes de la LPU permet d'en <strong>obtenir de nouvelles</strong>.</li>
@@ -139,22 +154,22 @@ const Home = () => {
 								<div className="rulesExampleRow">
 									<ExampleCard index={1} label="Dans votre LPU" />
 								</div>
-							</>
+							</div>
 						)}
 
 						{activeTab === "objectifs" && (
-							<>
-								<FlowSchema highlight="objectifs" /><br />
+							<div className="rulesSectionContent">
+								<FlowSchema highlight="objectifs" />
 								<p className="rulesIntro">La Zone d'Objectifs liste les cartes à faire apparaître dans la LPU pour gagner.</p>
 								<ol>
 									<li>La partie s'arrête, victorieuse, dès que la LPU contient toutes les cartes-objectifs.</li>
 									<li>Vous pouvez ajouter vous-même une carte intermédiaire, pour avancer étape par étape.</li>
 								</ol>
-							</>
+							</div>
 						)}
 
 						{activeTab === "types" && (
-							<>
+							<div className="rulesSectionContent">
 								<p className="rulesIntro">Cinq types de cartes composent le jeu.</p>
 								<ol>
 									<li>La <strong>carte blanche</strong> : permet d'obtenir n'importe quelle carte.</li>
@@ -175,11 +190,11 @@ const Home = () => {
 									<ExampleCard index={6} label="équivaut ⇔" />
 									<ExampleCard index={7} label="non ¬" />
 								</div>
-							</>
+							</div>
 						)}
 
 						{activeTab === "connecteurs" && (
-							<>
+							<div className="rulesSectionContent">
 								<p className="rulesIntro">Présenter une carte à connecteur permet d'obtenir de nouvelles cartes.</p>
 								<ol>
 									<li><strong className="symbol">∧</strong> : présentez la carte, obtenez les deux cartes reliées.</li>
@@ -207,11 +222,11 @@ const Home = () => {
 									<span className="rulesPowerArrow">→</span>
 									<ExampleCard index={2} label="Obtenez l'autre" />
 								</div>
-							</>
+							</div>
 						)}
 
 						{activeTab === "score" && (
-							<>
+							<div className="rulesSectionContent">
 								<p className="rulesIntro">Votre score dépend du temps mis et du nombre de coups joués.</p>
 								<ol>
 									<li>Plus vous êtes <strong>rapide</strong> et <strong>efficace</strong> (peu de coups), plus le score est élevé.</li>
@@ -232,10 +247,10 @@ const Home = () => {
 										</div>
 									</div>
 								</div>
-							</>
+							</div>
 						)}
-					</div>
-				</GameTabProvider>
+					</GameTabProvider>
+				</main>
 			</div>
 
 			<PopupForms />

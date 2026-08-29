@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { GripVertical, Trash2, Plus } from "lucide-react";
 
 
 /**
@@ -118,7 +119,7 @@ const ChaptersSection = ({ chapters, call }) => {
 								(dragOverId === chapter.id_chapter ? "dragOver" : "")
 							}
 						>
-							<td className="dragHandle" title="Glisser pour réordonner">⠿</td>
+							<td className="dragHandle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
 							<td>
 								<input
 									defaultValue={chapter.name}
@@ -131,13 +132,14 @@ const ChaptersSection = ({ chapters, call }) => {
 							<td>{chapter.levels.length}</td>
 							<td>
 								<button
-									className="resetButton"
+									className="actionButton actionDelete"
+									title="Supprimer"
 									onClick={() => {
 										if (window.confirm(`Supprimer "${chapter.name}" et ses ${chapter.levels.length} niveau(x) ?`))
 											call(`/api/admin/chapters/${chapter.id_chapter}`, "DELETE");
 									}}
 								>
-									Supprimer
+									<Trash2 size={16} />
 								</button>
 							</td>
 						</tr>
@@ -145,10 +147,15 @@ const ChaptersSection = ({ chapters, call }) => {
 				</tbody>
 			</table>
 
-			<form className="adminForm" onSubmit={submit}>
-				<input placeholder="Nom du chapitre" value={name} onChange={(e) => setName(e.target.value)} required />
-				<button type="submit" className="resetButton">+ Chapitre</button>
-			</form>
+			<div className="adminCreatePanel">
+				<h3>Ajouter un chapitre</h3>
+				<form className="adminForm" onSubmit={submit}>
+					<input placeholder="Nom du chapitre" value={name} onChange={(e) => setName(e.target.value)} required />
+					<button type="submit" className="buttonPrimary">
+						<Plus size={16} /> Créer
+					</button>
+				</form>
+			</div>
 		</section>
 	);
 };

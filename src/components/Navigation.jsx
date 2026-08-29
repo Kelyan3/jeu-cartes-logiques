@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
+import { Sun, Moon, ChevronDown } from "lucide-react";
 
 
 const Navigation = () => {
@@ -52,7 +53,9 @@ const Navigation = () => {
 				<li><NavLink to="/leaderboard" className="navLink">Classement</NavLink></li>
 
 				<li className="choose">
-					<div>Plus</div>
+					<div className="dropdownTrigger">
+						Plus <ChevronDown size={14} className="chevron" />
+					</div>
 					<ul>
 						<li><NavLink to="/forms">Votre avis</NavLink></li>
 						<li><NavLink to="/about">À propos</NavLink></li>
@@ -61,7 +64,9 @@ const Navigation = () => {
 
 				{!loading && !user && (
 					<li className="choose">
-						<div>Compte</div>
+						<div className="dropdownTrigger">
+							Compte <ChevronDown size={14} className="chevron" />
+						</div>
 						<ul>
 							<li><NavLink to="/login">Connexion</NavLink></li>
 							<li><NavLink to="/register">Inscription</NavLink></li>
@@ -71,7 +76,9 @@ const Navigation = () => {
 
 				{!loading && user && (
 					<li className="choose">
-						<div>{user.username}</div>
+						<div className="dropdownTrigger">
+							{user.username} <ChevronDown size={14} className="chevron" />
+						</div>
 						<ul>
 							<li><NavLink to="/profile">Mon profil</NavLink></li>
 							{user.role === "admin" && <li><NavLink to="/admin">Administration</NavLink></li>}
@@ -91,36 +98,9 @@ const Navigation = () => {
 						aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
 					>
 						{theme === "dark" ? (
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="20"
-								height="20"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								aria-hidden="true"
-							>
-								<circle cx="12" cy="12" r="4" />
-								<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-							</svg>
+							<Sun size={20} />
 						) : (
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="20"
-								height="20"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								aria-hidden="true"
-							>
-								<path d="M21 14.3A9 9 0 1 1 9.7 3a7 7 0 0 0 11.3 11.3z" />
-							</svg>
+							<Moon size={20} />
 						)}
 					</button>
 				</li>

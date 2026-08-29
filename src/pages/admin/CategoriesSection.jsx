@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Trash2, Plus } from "lucide-react";
 
 
 /**
@@ -34,13 +35,14 @@ const CategoriesSection = ({ categories, call }) => {
 							</td>
 							<td>
 								<button
-									className="resetButton"
+									className="actionButton actionDelete"
+									title="Supprimer"
 									onClick={() => {
 										if (window.confirm(`Supprimer la catégorie "${category.name}" ? Les utilisateurs concernés devront en rechoisir une.`))
 											call(`/api/admin/categories/${category.id_category}`, "DELETE");
 									}}
 								>
-									Supprimer
+									<Trash2 size={16} />
 								</button>
 							</td>
 						</tr>
@@ -48,10 +50,15 @@ const CategoriesSection = ({ categories, call }) => {
 				</tbody>
 			</table>
 
-			<form className="adminForm" onSubmit={submit}>
-				<input placeholder="Nom de la catégorie" value={name} onChange={(e) => setName(e.target.value)} required />
-				<button type="submit" className="resetButton">+ Catégorie</button>
-			</form>
+			<div className="adminCreatePanel">
+				<h3>Ajouter une catégorie</h3>
+				<form className="adminForm" onSubmit={submit}>
+					<input placeholder="Nom de la catégorie" value={name} onChange={(e) => setName(e.target.value)} required />
+					<button type="submit" className="buttonPrimary">
+						<Plus size={16} /> Créer
+					</button>
+				</form>
+			</div>
 		</section>
 	);
 };

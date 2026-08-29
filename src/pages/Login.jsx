@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import Navigation from "../components/Navigation";
-import PasswordVisibilityIcon from "../components/PasswordVisibilityIcon";
+import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
 
@@ -53,7 +53,7 @@ const Login = () => {
 								aria-label={showPassword ? "Masquer le mot de passe" : "Montrer le mot de passe"}
 								title={showPassword ? "Masquer le mot de passe" : "Montrer le mot de passe"}
 							>
-								<PasswordVisibilityIcon visible={showPassword} />
+								{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
 							</button>
 						</div>
 					</div>

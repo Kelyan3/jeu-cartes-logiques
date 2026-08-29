@@ -1,16 +1,22 @@
 import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
+import { Compass, ArrowLeft } from "lucide-react";
+
 
 const NotFound = () => {
 	return (
-		<div>
+		<div className="home">
 			<Navigation />
 			<div id="notFound">
+				<Compass size={64} className="notFoundIcon" />
 				<span className="eyebrow">Erreur 404</span>
 				<h1>Aucune démonstration ne mène ici</h1>
-				<p>Cette page n'existe pas.</p>
+				<p>Il semblerait que vous vous soyez perdu en chemin. Cette page n'existe pas ou a été déplacée.</p>
 				
-				<NavLink to="/" className="backHome">Retour à l'accueil</NavLink>
+				<NavLink to="/" className="backHome">
+					<ArrowLeft size={18} />
+					Retour à l'accueil
+				</NavLink>
 			</div>
 		</div>
 	);

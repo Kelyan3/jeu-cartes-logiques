@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Clock, Download, FileJson, Hash, Lightbulb, Undo2 } from "lucide-react";
 
 import Deck from "./Deck";
 
@@ -38,6 +39,7 @@ import { computeUndo } from "../domain/rules/history";
 
 import { formatTime } from "../utils/formatTime";
 import { formatCopiedDemonstrationText } from "../utils/clipboardFormat";
+
 
 const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const { user } = useAuth();
@@ -143,6 +145,38 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		if (actionsReady)
 			startTimer();
 	}, [actionsReady, startTimer]);
+
+	/**
+	 * Synchronise la zone de démonstration en temps réel avec les cartes présentes
+	 * sur le plateau en mode "Create" (LPU -> "On a ...", Objectif -> "Montrons ...").
+	 */
+	useEffect(() => {
+		if (mode === "Create")
+		{
+			let demonstrationLines = [];
+			
+			if (game[0])
+			{
+				game[0].forEach((element) => {
+					demonstrationLines.push("On a ");
+					demonstrationLines.push(element.copy());
+					demonstrationLines.push(". ");
+				});
+			}
+
+			if (game.length >= 2 && game[1] && game[1].length > 0)
+			{
+				demonstrationLines.push("Montrons ");
+				demonstrationLines.push(game[1][0].copy());
+				demonstrationLines.push(".");
+			}
+
+			if (demonstrationLines.length > 0)
+				setDemonstration([[0, demonstrationLines]]);
+			else
+				setDemonstration([]);
+		}
+	}, [game, mode]);
 
 	/**
 	 * La carte qui est déjà sélectionnée & celle qui est passée en paramètre utilisent la fonction {@link Card.select()}
@@ -538,76 +572,81 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	return (
 		<div className="game">
-			{mode === "Play" && (
-				<div className="gameStatus">
-					⏱ {formatTime(displaySeconds)} | {displayMoves} coup{displayMoves !== 1 ? "s" : ""}
-				</div>
-			)}
-
-			{win && levelIndex + 2 <= totalLevelCount && (
-				<button className="buttonWin" onClick={nextExercise}>
-					Niveau suivant
-				</button>
-			)}
-
-			<div className="bouton">
-				{/* Revient à la partie avant l'ajout d'une carte */}
-				<div>
-					<button id="back" className="buttonAction " onClick={undo}>
-						<span className="buttonFormula">↶</span>
-						<span className="tooltiptext">Retour arrière</span>
-					</button>
-				</div>
-
-				{mode !== "Create" && (
-					<div>
-						<button id="aide" className="buttonAction " onClick={getNextMove}>
-							<span className="buttonFormula">?</span>
-							<span className="tooltiptext">Aide</span>
-						</button>
+			<div className="gameToolbar">
+				{mode === "Play" && (
+					<div className="gameStatus">
+						<div className="statusBadge" title="Temps écoulé">
+							<Clock size={16} className="statusIcon" />
+							<span className="statusValue">{formatTime(displaySeconds)}</span>
+						</div>
+						<div className="statusBadge" title="Nombre de coups">
+							<Hash size={16} className="statusIcon" />
+							<span className="statusValue">{displayMoves}</span>
+							<span className="statusLabel">coup{displayMoves !== 1 ? "s" : ""}</span>
+						</div>
 					</div>
 				)}
 
-				<GameActionBar
-					mode={mode}
-					levelIndex={levelIndex}
-					isActionUnlocked={isActionUnlocked}
-					addCardAnd={addCardAnd}
-					addCardFuse={addCardFuse}
-					fuseCardAnd={fuseCardAnd}
-					addObjectif={addObjectif}
-					tiersExclus={tiersExclus}
-					transitivite={transitivite}
-				/>
+				<div className="gameActions">
+					{/* Revient à la partie avant l'ajout d'une carte */}
+					<button id="back" className="buttonAction" onClick={undo} title="Retour arrière">
+						<Undo2 size={18} />
+					</button>
 
-				{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
-				{mode === "Create" && (
-					<label className="fileButton">
-						{openFileJson !== "" ? openFileJson : "Choisir un fichier"}
-						<input type="file" accept="application/json" onChange={openFile}></input>
-					</label>
-				)}
+					{mode !== "Create" && (
+						<button id="aide" className="buttonAction" onClick={getNextMove} title="Aide">
+							<Lightbulb size={18} />
+						</button>
+					)}
 
-				{/* Copie du jeu actuel en format JSON dans le presse-papier */}
-				{mode === "Create" && (
-					<button className="fileDownload" onClick={saveAsFile}>Télécharger le fichier</button>
-				)}
+					<GameActionBar
+						mode={mode}
+						levelIndex={levelIndex}
+						isActionUnlocked={isActionUnlocked}
+						addCardAnd={addCardAnd}
+						addCardFuse={addCardFuse}
+						fuseCardAnd={fuseCardAnd}
+						addObjectif={addObjectif}
+						tiersExclus={tiersExclus}
+						transitivite={transitivite}
+					/>
 
-				{
-					<span id="checkBoxSimple">
+					{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
+					{mode === "Create" && (
+						<label className="fileButton">
+							<FileJson size={18} />
+							<span style={{marginLeft: "6px"}}>{openFileJson !== "" ? openFileJson : "JSON"}</span>
+							<input type="file" accept="application/json" onChange={openFile}></input>
+						</label>
+					)}
+
+					{/* Copie du jeu actuel en format JSON dans le presse-papier */}
+					{mode === "Create" && (
+						<button className="fileDownload" onClick={saveAsFile}>
+							<Download size={18} />
+						</button>
+					)}
+
+					<span id="checkBoxSimple" title="Affichage complet">
 						<input
 							type="checkbox"
 							id="afficheSimple"
 							name="Affichage Simplifié"
 							onChange={affichageSimpleHandler}
 							checked={affichageSimple}
-						></input>
+						/>
 						<label htmlFor="afficheSimple">
 							<span className="tooltiptext">Affichage Simplifié</span>
 						</label>
 					</span>
-				}
+				</div>
 			</div>
+
+			{win && levelIndex + 2 <= totalLevelCount && (
+				<button className="buttonWin" onClick={nextExercise}>
+					Niveau suivant
+				</button>
+			)}
 
 			<GameToasts
 				mode={mode}

@@ -52,7 +52,7 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 			return (
 				<span
 					key={path}
-					className={`cardSimple ` + (selec && currentCard.color !== "transparent" ? "selected " : "")}
+					className={`cardSimple pattern-${currentCard.color} ` + (selec && currentCard.color !== "transparent" ? "selected " : "")}
 					style={style}
 				></span>
 			);

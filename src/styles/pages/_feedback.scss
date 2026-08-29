@@ -1,39 +1,103 @@
 .forms .feedbackForm {
-	width: min(480px, 90vw);
+	width: 100%;
 }
 
 .forms .likertOptions {
 	display: flex;
 	flex-direction: column;
-	gap: 6px;
-	margin-top: 4px;
+	gap: 8px;
+	margin-top: 8px;
 }
 
 .forms .likertOption {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 12px;
+	font-family: 'Inter', sans-serif;
 	font-size: 14px;
-	font-weight: 400;
+	font-weight: 500;
 	color: var(--text-primary);
 	cursor: pointer;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	padding: 12px 16px;
+	border-radius: 8px;
+	box-sizing: border-box;
+	transition: border-color .15s ease, background .15s ease;
+}
+
+.forms .likertOption:hover {
+	border-color: var(--accent-cyan);
+	background: var(--bg-surface-alt);
+}
+
+.forms .likertOption:has(input:checked) {
+	border-color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.05);
+	box-shadow: 0 0 0 1px var(--accent-cyan);
 }
 
 .forms .likertOption input {
 	accent-color: var(--accent-cyan);
+	width: 16px;
+	height: 16px;
+	margin: 0;
+	cursor: pointer;
 }
 
 .forms .fieldCheckbox label {
 	display: flex;
 	align-items: flex-start;
-	gap: 8px;
+	gap: 12px;
+	font-family: 'Inter', sans-serif;
 	font-size: 13px;
-	color: var(--text-muted);
-	font-weight: 400;
+	color: var(--text-primary);
+	font-weight: 500;
 	cursor: pointer;
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	padding: 12px 16px;
+	border-radius: 8px;
+	box-sizing: border-box;
+	transition: border-color .15s ease, background .15s ease;
+}
+
+.forms .fieldCheckbox label:has(input:checked) {
+	border-color: var(--accent-cyan);
+	background: rgba(var(--accent-rgb), 0.05);
 }
 
 .forms .fieldCheckbox input {
-	margin-top: 3px;
+	margin-top: 2px;
 	accent-color: var(--accent-cyan);
+	width: 16px;
+	height: 16px;
+	cursor: pointer;
+}
+
+.formSuccessState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	text-align: center;
+}
+
+.formSuccessState .successIcon {
+	color: var(--accent-cyan);
+	margin-bottom: 20px;
+}
+
+.formSuccessState h3 {
+	font-family: 'Sora', sans-serif;
+	font-size: 20px;
+	color: var(--text-primary);
+	margin-bottom: 12px;
+}
+
+.formSuccessState p {
+	color: var(--text-muted);
+	font-size: 15px;
+	line-height: 1.5;
 }

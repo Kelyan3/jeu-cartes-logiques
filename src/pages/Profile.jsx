@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
-
 import { useAuth } from "../hooks/useAuth";
-
 import { API_BASE_URL as API } from "../config/api";
+import { User, Trophy, Target, AlertTriangle, Settings, Tags } from "lucide-react";
 
 
 const Profile = () => {
@@ -21,10 +20,6 @@ const Profile = () => {
 	const [selectedCategory, setSelectedCategory] = useState("");
 	const [savingCategory, setSavingCategory] = useState(false);
 
-	/**
-	 * Charge la liste des catégories disponibles (Professeur, Étudiant L1...),
-	 * pour le menu déroulant de sélection.
-	 */
 	useEffect(() => {
 		fetch(`${API}/api/categories`)
 			.then((response) => response.json())
@@ -32,10 +27,6 @@ const Profile = () => {
 			.catch(() => setCategories([]));
 	}, []);
 
-	/**
-	 * Enregistre la catégorie choisie par l'utilisateur, puis met à jour
-	 * le contexte d'authentification pour refléter le changement partout.
-	 */
 	const handleCategorySubmit = (event) => {
 		event.preventDefault();
 		if (!selectedCategory)
@@ -56,17 +47,13 @@ const Profile = () => {
 			.finally(() => setSavingCategory(false));
 	};
 
-	/**
-	 * Supprime toute la progression de l'utilisateur en base de données,
-	 * après confirmation, et remet les compteurs affichés à zéro localement.
-	 */
 	const handleReset = () => {
 		const confirmed = window.confirm("Réinitialiser toute votre progression ? Cette action est irréversible.");
 		if (!confirmed)
 			return;
 
 		setResetting(true);
-		fetch(`${API}/api/progress`, { method: "DELETE", credentials: "include", })
+		fetch(`${API}/api/progress`, { method: "DELETE", credentials: "include" })
 			.then((response) => {
 				if (!response.ok)
 					throw new Error("Impossible de réinitialiser la progression.");
@@ -78,7 +65,6 @@ const Profile = () => {
 			.finally(() => setResetting(false));
 	};
 
-	// Ajuste loadingStats dès que user change, pendant le rendu.
 	const [statsUser, setStatsUser] = useState(user);
 	if (statsUser !== user)
 	{
@@ -91,8 +77,6 @@ const Profile = () => {
 		if (!user)
 			return;
 
-		// Ignore la réponse si user a de nouveau changé avant qu'elle arrive
-		// (évite d'écraser des données plus récentes avec une réponse obsolète)
 		let ignore = false;
 
 		Promise.all([
@@ -135,8 +119,8 @@ const Profile = () => {
 		};
 	}, [user]);
 
-	// Évite une division par zéro si le manifeste n'a pas encore chargé playTotal.
 	const playPercent = playTotal > 0 ? Math.round((playCompleted / playTotal) * 100) : 0;
+	const userCategoryName = user?.id_category ? categories.find(c => c.id_category === user.id_category)?.name : null;
 
 	if (authLoading)
 	{
@@ -164,61 +148,82 @@ const Profile = () => {
 	return (
 		<div className="forms">
 			<Navigation />
-			<div id="forms" className="profileCard">
-				<span className="eyebrow">Mon compte</span>
-				<h2>{user?.username}</h2>
+			
+			<div className="profileContainer">
+				<div className="profileHeader">
+					<div className="profileHeaderUser">
+						<div className="profileAvatar">
+							<User size={32} />
+						</div>
+						<div className="profileInfo">
+							<h2>{user.username}</h2>
+							<p>
+								<Tags size={14} />
+								{userCategoryName ? userCategoryName : "Aucune catégorie"}
+							</p>
+						</div>
+					</div>
+					<button className="buttonDanger" onClick={handleReset} disabled={resetting} title="Réinitialiser ma progression">
+						<AlertTriangle size={16} />
+						{resetting ? "Réinitialisation..." : "Réinitialiser"}
+					</button>
+				</div>
 
-				{loadingStats && <p className="profileLoading">Chargement des statistiques...</p>}
-
+				{loadingStats && <p className="profileLoading" style={{textAlign: "center"}}>Chargement de vos statistiques...</p>}
 				{!loadingStats && statsError && (
-					<p className="profileLoading">Impossible de charger vos statistiques pour le moment. Réessayez plus tard.</p>
+					<p className="profileLoading" style={{textAlign: "center", color: "var(--danger)"}}>Impossible de charger vos statistiques.</p>
 				)}
 
 				{!loadingStats && !statsError && (
 					<>
-						<div className="field categoryField">
-							<label>Catégorie</label>
-							{user?.id_category ? (
-								<p>{categories.find((c) => c.id_category === user.id_category)?.name ?? "—"}</p>
-							) : (
-								<form onSubmit={handleCategorySubmit}>
-									<select
-										value={selectedCategory}
-										onChange={(event) => setSelectedCategory(event.target.value)}
-									>
-										<option value="" disabled>Choisis ta catégorie...</option>
-										{categories.map((category) => (
-											<option key={category.id_category} value={category.id_category}>
-												{category.name}
-											</option>
-										))}
-									</select>
-									<button type="submit" className="resetButton" disabled={!selectedCategory || savingCategory}>
-										{savingCategory ? "Enregistrement..." : "Valider"}
-									</button>
-								</form>
-							)}
+						<div className="profileStatsGrid">
+							<div className="profileStatCard statScore">
+								<div className="statHeader">
+									<Trophy size={18} />
+									Score global
+								</div>
+								<div className="statValue">{playScore}</div>
+								<div style={{ fontSize: "13px", color: "var(--text-muted)" }}>points accumulés</div>
+							</div>
+							
+							<div className="profileStatCard">
+								<div className="statHeader">
+									<Target size={18} />
+									Progression
+								</div>
+								<div className="statValue">{playCompleted} <span style={{fontSize: "16px", color: "var(--text-muted)"}}>/ {playTotal}</span></div>
+								<div className="statProgress">
+									<div className="statProgressHeader">
+										<span>Niveaux complétés</span>
+										<span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{playPercent}%</span>
+									</div>
+									<div className="progressTrack">
+										<div className="progressFill" style={{ width: playPercent + "%"}}></div>
+									</div>
+								</div>
+							</div>
 						</div>
 
-						<div className="progressBlock">
-							<div className="progressLabel">
-								<span>Niveaux complétés</span>
-								<span>{playPercent}%</span>
-							</div>
-
-							<div className="progressTrack">
-								<div className="progressFill" style={{ width: playPercent + "%"}}></div>
-							</div>
-
-							<div className="progressCount">{playCompleted} / {playTotal}</div>
-
-							<div className="progressScore">
-								<span className="scoreValue">{playScore} pt{playScore > 1 ? "s" : ""}</span>
-							</div>
-
-							<button className="resetButton" onClick={handleReset}>
-								{resetting ? "Réinitialisation..." : "Réinitialiser ma progression"}
-							</button>
+						<div className="profileSection">
+							<h3><Settings size={18} /> Paramètres du compte</h3>
+							<p className="sectionDesc">Sélectionnez la catégorie qui correspond le mieux à votre profil pour adapter certaines fonctionnalités du jeu.</p>
+							
+							<form className="profileFormGroup" onSubmit={handleCategorySubmit}>
+								<select
+									value={selectedCategory}
+									onChange={(event) => setSelectedCategory(event.target.value)}
+								>
+									<option value="" disabled>Choisis ta catégorie...</option>
+									{categories.map((category) => (
+										<option key={category.id_category} value={category.id_category}>
+											{category.name}
+										</option>
+									))}
+								</select>
+								<button type="submit" className="buttonPrimary" disabled={!selectedCategory || savingCategory}>
+									{savingCategory ? "Enregistrement..." : "Valider"}
+								</button>
+							</form>
 						</div>
 					</>
 				)}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Trash2, Plus } from "lucide-react";
 
 import { MENUS } from "./constants";
 
@@ -70,8 +71,8 @@ const QuestsSection = ({ quests, chapters, call }) => {
 								</select>
 							</td>
 							<td>
-								<button className="resetButton" onClick={() => call(`/api/admin/quests/${quest.id_quest}`, "DELETE")}>
-									Supprimer
+								<button className="actionButton actionDelete" title="Supprimer" onClick={() => call(`/api/admin/quests/${quest.id_quest}`, "DELETE")}>
+									<Trash2 size={16} />
 								</button>
 							</td>
 						</tr>
@@ -79,21 +80,26 @@ const QuestsSection = ({ quests, chapters, call }) => {
 				</tbody>
 			</table>
 
-			<form className="adminForm" onSubmit={submit}>
-				<select value={menu} onChange={(e) => setMenu(e.target.value)}>
-					{MENUS.map((m) => <option key={m} value={m}>{m}</option>)}
-				</select>
-				<input placeholder="Label" value={label} onChange={(e) => setLabel(e.target.value)} required />
-				<input placeholder="Clé bouton (ex: addGoal_objectif)" value={unlocksKey} onChange={(e) => setUnlocksKey(e.target.value)} required />
-				<select value={requiredChapter} onChange={(e) => setRequiredChapter(e.target.value)}>
-					<option value="">Toujours débloquée</option>
-					{chapters.map((chapter) => (
-						<option key={chapter.id_chapter} value={chapter.id_chapter}>{chapter.name}</option>
-					))}
-				</select>
-				<input type="number" placeholder="Position" value={position} onChange={(e) => setPosition(e.target.value)} required />
-				<button type="submit" className="resetButton">+ Quête</button>
-			</form>
+			<div className="adminCreatePanel">
+				<h3>Ajouter une quête</h3>
+				<form className="adminForm" onSubmit={submit}>
+					<select value={menu} onChange={(e) => setMenu(e.target.value)}>
+						{MENUS.map((m) => <option key={m} value={m}>{m}</option>)}
+					</select>
+					<input placeholder="Label" value={label} onChange={(e) => setLabel(e.target.value)} required />
+					<input placeholder="Clé bouton (ex: addGoal_objectif)" value={unlocksKey} onChange={(e) => setUnlocksKey(e.target.value)} required />
+					<select value={requiredChapter} onChange={(e) => setRequiredChapter(e.target.value)}>
+						<option value="">Toujours débloquée</option>
+						{chapters.map((chapter) => (
+							<option key={chapter.id_chapter} value={chapter.id_chapter}>{chapter.name}</option>
+						))}
+					</select>
+					<input type="number" placeholder="Position" value={position} onChange={(e) => setPosition(e.target.value)} required />
+					<button type="submit" className="buttonPrimary">
+						<Plus size={16} /> Créer
+					</button>
+				</form>
+			</div>
 		</section>
 	);
 };

@@ -10,6 +10,7 @@
 	align-items: center;
 	padding-top: 90px;
 	padding-bottom: 60px;
+	background: var(--bg-body);
 }
 
 .home .levelLockedMessage {
@@ -28,17 +29,34 @@
 }
 
 .forms #forms {
-	width: min(540px, 92vw);
+	width: min(480px, 92vw);
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
-	border-radius: 12px;
-	padding: 20px;
+	border-radius: 16px;
+	padding: 40px;
 	text-align: center;
+	box-shadow: var(--shadow-soft);
 }
 
 .forms #forms .eyebrow {
 	display: block;
-	margin-bottom: 10px;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--accent-cyan);
+	margin-bottom: 12px;
+	font-weight: 700;
+}
+
+.forms #forms h2 {
+	font-family: 'Sora', sans-serif;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin-top: 0;
+	margin-bottom: 32px;
+	letter-spacing: -0.01em;
 }
 
 //===================================
@@ -63,21 +81,22 @@
 // Champs de formulaire générique
 //================================
 .forms .authForm {
-	width: min(360px, 80vw);
+	width: 100%;
 	text-align: left;
-	margin: 24px auto 0;
+	margin: 0 auto;
 }
 
 .forms .field {
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	margin-bottom: 18px;
+	margin-bottom: 20px;
 }
 
 .forms .field label {
-	font-size: 13px;
-	color: var(--text-muted);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	color: var(--text-primary);
 	font-weight: 500;
 }
 
@@ -86,13 +105,14 @@
 .forms .field textarea {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	padding: 10px 12px;
+	border-radius: 10px;
+	padding: 12px 14px;
 	color: var(--text-primary);
 	font-family: 'Inter', sans-serif;
 	font-size: 15px;
 	outline: none;
-	transition: border-color .15s ease;
+	width: 100%;
+	transition: border-color .2s ease, box-shadow .2s ease;
 }
 
 .forms .field textarea {
@@ -106,13 +126,17 @@
 .forms .field select:focus,
 .forms .field textarea:focus {
 	border-color: var(--accent-cyan);
-	box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.2);
+	box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.15);
 }
 
 .forms .formError {
 	color: var(--danger);
+	font-family: 'Inter', sans-serif;
 	font-size: 14px;
-	margin-bottom: 14px;
+	margin-bottom: 16px;
+	background: color-mix(in srgb, var(--danger) 10%, transparent);
+	padding: 10px 12px;
+	border-radius: 8px;
 }
 
 .forms .formSuccess {
@@ -125,42 +149,48 @@
 // Boutons génériques
 //====================
 .forms .authSubmit {
-	display: inline-block;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 100%;
-	padding: 11px;
-	border: 1px solid var(--accent-cyan);
-	border-radius: 8px;
-	background: transparent;
-	color: var(--accent-cyan);
-	font-family: 'Sora', sans-serif;
+	padding: 14px;
+	margin-top: 8px;
+	border: none;
+	border-radius: 10px;
+	background: var(--accent-cyan);
+	color: #ffffff;
+	font-family: 'Inter', sans-serif;
 	font-weight: 600;
-	font-size: 15px;
-	text-align: center;
-	text-decoration: none;
-	box-sizing: border-box;
-	transition: background .15s ease;
+	font-size: 16px;
+	cursor: pointer;
+	transition: transform .15s ease, opacity .15s ease, background-color .15s ease;
 }
 
 .forms .authSubmit:hover:not(:disabled) {
-	background: rgba(var(--accent-rgb), 0.1);
+	opacity: 0.9;
+	transform: translateY(-1px);
 }
 
 .forms .authSubmit:disabled {
-	opacity: 0.5;
-	cursor: default;
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
 }
 
 .forms .authSwitch {
-	width: min(360px, 80vw);
-	margin: 16px auto 0;
-	font-size: 13px;
+	width: 100%;
+	margin: 20px auto 0;
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
 	color: var(--text-muted);
+	text-align: center;
 }
 
 .forms .authSwitch a {
 	color: var(--accent-cyan);
 	font-weight: 600;
 	text-decoration: none;
+	margin-left: 4px;
 }
 
 .forms .authSwitch a:hover {
@@ -168,35 +198,34 @@
 }
 
 .passwordField {
+	position: relative;
 	display: flex;
-	gap: 8px;
-	align-items: stretch;
+	align-items: center;
 }
 
 .passwordField input {
-	flex: 1;
-	min-width: 0;
+	padding-right: 48px !important; // space for the absolute icon
 }
 
 .togglePassword {
+	position: absolute;
+	right: 4px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	flex-shrink: 0;
-	width: 44px;
-	padding: 0;
-	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	background: var(--bg-base);
+	width: 36px;
+	height: 36px;
+	background: transparent;
+	border: none;
 	color: var(--text-muted);
 	cursor: pointer;
-	transition: border-color .15s ease, color .15s ease, background .15s ease;
+	border-radius: 8px;
+	transition: color .2s ease, background .2s ease;
 }
 
 .togglePassword:hover {
-	border-color: var(--accent-cyan);
 	color: var(--accent-cyan);
-	background: rgba(var(--accent-rgb), 0.1);
+	background: var(--bg-surface-alt);
 }
 
 //===========================

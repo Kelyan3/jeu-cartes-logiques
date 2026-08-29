@@ -16,30 +16,57 @@
 	margin-bottom: 20px;
 }
 
-.adminSectionSelect {
+.adminLayout {
 	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin-bottom: 24px;
+	gap: 32px;
+	align-items: flex-start;
 }
 
-.adminSectionSelect label {
+.adminSidebar {
+	flex: 0 0 240px;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.adminSidebarGroup h3 {
 	font-family: 'Sora', sans-serif;
-	font-size: 14px;
-	font-weight: 600;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
 	color: var(--text-muted);
+	margin-bottom: 8px;
+	padding-left: 12px;
 }
 
-.adminSectionSelect select {
-	background: var(--bg-surface);
-	border: 1px solid var(--border-subtle);
+.adminSidebarGroup button {
+	display: block;
+	width: 100%;
+	text-align: left;
+	background: transparent;
+	border: none;
+	padding: 10px 12px;
 	border-radius: 8px;
-	padding: 10px 14px;
 	color: var(--text-primary);
 	font-family: 'Inter', sans-serif;
 	font-size: 14px;
-	min-width: 200px;
 	cursor: pointer;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.adminSidebarGroup button:hover {
+	background: var(--bg-surface);
+}
+
+.adminSidebarGroup button.active {
+	background: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
+	color: var(--accent-cyan);
+	font-weight: 500;
+}
+
+.adminMain {
+	flex: 1;
+	min-width: 0;
 }
 
 .adminSection {
@@ -48,6 +75,23 @@
 	border-radius: 12px;
 	padding: 24px 28px;
 	margin-bottom: 28px;
+}
+
+@media (max-width: 768px) {
+	.adminLayout {
+		flex-direction: column;
+	}
+	.adminSidebar {
+		flex: none;
+		width: 100%;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 16px;
+	}
+	.adminSidebarGroup {
+		flex: 1;
+		min-width: 140px;
+	}
 }
 
 .adminSection h2 {
@@ -59,6 +103,34 @@
 	color: var(--text-muted);
 	font-size: 14px;
 	margin-bottom: 16px;
+}
+
+.adminFilterBar {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 24px;
+	padding-bottom: 24px;
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+.adminFilterBar label {
+	font-family: 'Sora', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	color: var(--text-muted);
+}
+
+.adminFilterBar select {
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 8px 12px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	min-width: 200px;
+	cursor: pointer;
 }
 
 .adminSubgroup {
@@ -136,6 +208,72 @@
 	padding: 8px 14px;
 	font-size: 13px;
 	white-space: nowrap;
+}
+
+.adminCreatePanel {
+	margin-top: 24px;
+	padding: 20px;
+	background: var(--bg-base);
+	border: 1px dashed var(--border-subtle);
+	border-radius: 10px;
+}
+
+.adminCreatePanel h3 {
+	font-size: 14px;
+	color: var(--text-primary);
+	margin-bottom: 12px;
+	font-family: 'Sora', sans-serif;
+}
+
+.buttonPrimary {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--accent-cyan);
+	color: var(--bg-body);
+	border: none;
+	border-radius: 6px;
+	padding: 8px 14px;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: opacity 0.15s ease;
+	white-space: nowrap;
+}
+
+.buttonPrimary:hover:not(:disabled) {
+	opacity: 0.85;
+}
+
+.buttonPrimary:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.actionButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: 1px solid var(--border-subtle);
+	border-radius: 6px;
+	background: var(--bg-base);
+	color: var(--text-muted);
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.actionButton:hover {
+	background: var(--bg-surface);
+	color: var(--text-primary);
+}
+
+.actionButton.actionDelete:hover {
+	border-color: var(--danger);
+	color: var(--danger);
+	background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
 .adminTable tr[draggable="true"] {

@@ -1,63 +1,184 @@
 .leaderboardCard {
-	width: min(720px, 92vw);
+	width: min(840px, 92vw);
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
-	border-radius: 12px;
-	padding: 40px 48px;
+	border-radius: 16px;
+	padding: 40px;
 	margin-top: 24px;
 	text-align: center;
 	box-shadow: var(--shadow-soft);
 }
 
-.leaderboardTable {
-	width: 100%;
-	border-collapse: collapse;
-	margin-top: 24px;
-	text-align: left;
+.leaderboardCard h2 {
+	font-family: 'Sora', sans-serif;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin-top: 0;
+	margin-bottom: 32px;
+	letter-spacing: -0.01em;
+}
+
+.leaderboardCard .eyebrow {
+	display: block;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--accent-cyan);
+	margin-bottom: 12px;
+	font-weight: 700;
+}
+
+.filterContainer {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 32px;
 }
 
 .leaderboardFilter {
-	margin-top: 16px;
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	padding: 8px 12px;
+	border-radius: 10px;
+	padding: 10px 16px;
 	color: var(--text-primary);
 	font-family: 'Inter', sans-serif;
-	font-size: 14px;
+	font-size: 15px;
+	cursor: pointer;
+	outline: none;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.leaderboardFilter:focus {
+	border-color: var(--accent-cyan);
+	box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.15);
+}
+
+.emptyLeaderboard {
+	padding: 48px 0;
+	color: var(--text-muted);
+}
+
+.emptyLeaderboard .emptyIcon {
+	opacity: 0.3;
+	margin-bottom: 16px;
+}
+
+.leaderboardTable {
+	width: 100%;
+	border-collapse: collapse;
+	text-align: left;
 }
 
 .leaderboardTable th {
-	font-family: 'Sora', sans-serif;
-	font-size: 12px;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
 	text-transform: uppercase;
 	letter-spacing: 0.05em;
 	color: var(--text-muted);
-	padding-bottom: 12px;
+	padding: 16px 12px;
 	border-bottom: 1px solid var(--border-subtle);
+	font-weight: 600;
 }
 
 .leaderboardTable td {
-	padding: 14px 0;
+	padding: 16px 12px;
 	border-bottom: 1px solid var(--border-subtle);
 	color: var(--text-primary);
-	font-size: 14px;
+	font-size: 15px;
+	font-family: 'Inter', sans-serif;
+}
+
+.leaderboardTable tr {
+	transition: background .15s ease;
+}
+
+.leaderboardTable tr:hover {
+	background: var(--bg-base);
 }
 
 .leaderboardTable tr:last-child td {
 	border-bottom: none;
 }
 
+.rankCol {
+	width: 80px;
+	text-align: center !important;
+}
+
+.rankIcon {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.rankIcon.gold {
+	color: #F59E0B;
+}
+
+.rankIcon.silver {
+	color: #9CA3AF;
+}
+
+.rankIcon.bronze {
+	color: #B45309;
+}
+
+.rankNumber {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: var(--bg-surface-alt);
+	color: var(--text-muted);
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.userCol {
+	font-weight: 600;
+	font-family: 'Sora', sans-serif;
+}
+
+.totalLevels {
+	color: var(--text-muted);
+	font-size: 13px;
+}
+
+.scoreCol {
+	font-family: 'JetBrains Mono', monospace;
+	font-weight: 600;
+	color: var(--accent-cyan);
+}
+
+.top-rank td {
+	background: rgba(var(--accent-rgb), 0.02);
+}
+
+.top-rank-1 td {
+	background: rgba(245, 158, 11, 0.05); /* Gold tint */
+}
+
+.top-rank-2 td {
+	background: rgba(156, 163, 175, 0.05); /* Silver tint */
+}
+
+.top-rank-3 td {
+	background: rgba(180, 83, 9, 0.05); /* Bronze tint */
+}
+
 .leaderboardProgress {
 	display: inline-block;
 	width: 120px;
 	vertical-align: middle;
-	margin-right: 10px;
+	margin-right: 12px;
 }
 
 .leaderboardPercent {
 	font-family: 'JetBrains Mono', monospace;
-	font-size: 12px;
+	font-size: 13px;
 	color: var(--accent-amber);
 	vertical-align: middle;
+	font-weight: 500;
 }

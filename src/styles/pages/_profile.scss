@@ -1,26 +1,100 @@
-.categoryField {
-	margin-top: 24px;
+.profileContainer {
+	width: min(700px, 90vw);
+	margin: 0 auto;
+	padding-bottom: 60px;
 	text-align: left;
 }
 
-.categoryField select {
+.profileHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	margin-bottom: 32px;
+	padding: 24px;
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	padding: 10px 12px;
+	border-radius: 12px;
+	flex-wrap: wrap;
+}
+
+.profileHeaderUser {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.profileAvatar {
+	width: 64px;
+	height: 64px;
+	border-radius: 50%;
+	background: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
+	color: var(--accent-cyan);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.profileInfo h2 {
+	font-family: 'Sora', sans-serif;
+	font-size: 24px;
+	margin: 0 0 6px 0;
 	color: var(--text-primary);
-	font-family: 'Inter', sans-serif;
-	font-size: 15px;
-	width: 100%;
-	margin-bottom: 10px;
 }
 
-.progressBlock {
-	margin-top: 28px;
-	text-align: left;
+.profileInfo p {
+	font-size: 14px;
+	color: var(--text-muted);
+	margin: 0;
+	display: flex;
+	align-items: center;
+	gap: 6px;
 }
 
-.progressLabel {
+.profileStatsGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 20px;
+	margin-bottom: 32px;
+}
+
+.profileStatCard {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 24px;
+	display: flex;
+	flex-direction: column;
+}
+
+.statHeader {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: var(--text-muted);
+	font-size: 14px;
+	font-weight: 500;
+	margin-bottom: 16px;
+}
+
+.statValue {
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 32px;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: 8px;
+}
+
+.statScore .statValue {
+	color: var(--accent-amber);
+}
+
+.statProgress {
+	margin-top: 12px;
+}
+
+.statProgressHeader {
 	display: flex;
 	justify-content: space-between;
 	font-size: 13px;
@@ -28,96 +102,94 @@
 	margin-bottom: 8px;
 }
 
-.progressLabel span:last-child {
-	color: var(--accent-amber);
-	font-family: 'JetBrains Mono', monospace;
-	font-weight: 600;
+.profileSection {
+	background: var(--bg-base);
+	border: 1px solid var(--border-subtle);
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 24px;
 }
 
-.progressCount {
-	margin-top: 8px;
-	font-size: 12px;
-	color: var(--text-muted);
-	text-align: right;
-}
-
-.progressScore {
-	margin-top: 24px;
-	padding-top: 20px;
-	border-top: 1px solid var(--border-subtle);
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	font-size: 14px;
-	color: var(--text-muted);
-}
-
-.progressScore::before {
-	content: "Score total";
-}
-
-.progressScore .scoreValue {
-	color: var(--accent-amber);
-	font-family: 'JetBrains Mono', monospace;
-	font-weight: 600;
+.profileSection h3 {
+	font-family: 'Sora', sans-serif;
 	font-size: 16px;
-}
-
-.preferencesBlock {
-	margin-top: 24px;
-	padding-top: 20px;
-	border-top: 1px solid var(--border-subtle);
-	text-align: left;
-}
-
-.preferencesBlock .eyebrow {
-	display: block;
-	margin-bottom: 14px;
-}
-
-.themeSwitch {
+	margin: 0 0 16px 0;
+	color: var(--text-primary);
 	display: flex;
 	align-items: center;
+	gap: 8px;
+}
+
+.profileSection p.sectionDesc {
+	font-size: 14px;
+	color: var(--text-muted);
+	margin-top: 0;
+	margin-bottom: 20px;
+	line-height: 1.5;
+}
+
+.profileFormGroup {
+	display: flex;
 	gap: 12px;
+	align-items: flex-start;
+}
+
+.profileFormGroup select {
+	flex: 1;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	padding: 10px 14px;
+	color: var(--text-primary);
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
 	cursor: pointer;
 }
 
-.themeSwitch input {
-	display: none;
-}
-
-.themeSwitchTrack {
-	position: relative;
-	width: 44px;
-	height: 24px;
-	border-radius: 999px;
-	background: var(--bg-base);
-	border: 1px solid var(--border-subtle);
-	transition: border-color .2s ease;
-}
-
-.themeSwitchTrack::after {
-	content: "";
-	position: absolute;
-	top: 2px;
-	left: 2px;
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	background: var(--text-muted);
-	transition: transform .2s ease, background .2s ease;
-}
-
-.themeSwitch input:checked + .themeSwitchTrack {
-	border-color: var(--accent-cyan);
-}
-
-.themeSwitch input:checked + .themeSwitchTrack::after {
-	transform: translateX(20px);
+.buttonPrimary {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 	background: var(--accent-cyan);
+	color: var(--bg-body);
+	border: none;
+	border-radius: 6px;
+	padding: 10px 16px;
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: opacity 0.15s ease;
+	white-space: nowrap;
 }
 
-.themeSwitchLabel {
+.buttonPrimary:hover:not(:disabled) {
+	opacity: 0.85;
+}
+
+.buttonPrimary:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+
+.buttonDanger {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: color-mix(in srgb, var(--danger) 15%, transparent);
+	color: var(--danger);
+	border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+	border-radius: 8px;
+	padding: 10px 16px;
+	font-family: 'Inter', sans-serif;
 	font-size: 14px;
-	color: var(--text-primary);
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.buttonDanger:hover {
+	background: var(--danger);
+	color: white;
 }
