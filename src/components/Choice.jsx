@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
 import { DEFAULT_LEVEL_COUNTS, TUTORIAL_DIFFICULTY } from "../config/levels";
-import { CheckCircle, Lock } from "lucide-react";
+import { CheckCircle, Lock, Clock, Trophy } from "lucide-react";
 import { formatTime } from "../utils/formatTime";
 
 
@@ -169,8 +169,13 @@ const Choice = ({ mode }) => {
 									{locked ? <Lock size={16} className="levelIcon lockedIcon" /> : level.completed ? <CheckCircle size={16} className="levelIcon completedIcon" /> : null}
 								</div>
 								{level.completed && (
-									<div className="levelScore">
-										{formatTime(level.best_time_seconds)} <span className="separator">|</span> {level.score} pts
+									<div className="levelScoreInfo">
+										<span className="levelTime" title="Meilleur temps">
+											<Clock size={12} /> {formatTime(level.best_time_seconds)}
+										</span>
+										<span className="levelScoreValue" title="Score">
+											<Trophy size={12} /> {level.score} pts
+										</span>
 									</div>
 								)}
 							</div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Clock, Download, FileJson, Hash, Lightbulb, Play, Square, Undo2 } from "lucide-react";
 
 import Deck from "./Deck";
@@ -153,34 +153,33 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * Synchronise la zone de démonstration en temps réel avec les cartes présentes
 	 * sur le plateau en mode "Create" (LPU -> "On a ...", Objectif -> "Montrons ...").
 	 */
-	useEffect(() => {
-		if (mode === "Create" && !isTestingMode)
+	const computedCreateDemonstration = useMemo(() => {
+		if (mode !== "Create" || isTestingMode)
+			return null;
+
+		let demonstrationLines = [];
+		if (game[0])
 		{
-			let demonstrationLines = [];
-			
-			if (game[0])
-			{
-				game[0].forEach((element) =>
-				{
-					demonstrationLines.push("On a ");
-					demonstrationLines.push(element.copy());
-					demonstrationLines.push(". ");
-				});
-			}
-
-			if (game.length >= 2 && game[1] && game[1].length > 0)
-			{
-				demonstrationLines.push("Montrons ");
-				demonstrationLines.push(game[1][0].copy());
-				demonstrationLines.push(".");
-			}
-
-			if (demonstrationLines.length > 0)
-				setDemonstration([[0, demonstrationLines]]);
-			else
-				setDemonstration([]);
+			game[0].forEach((element) => {
+				demonstrationLines.push("On a ");
+				demonstrationLines.push(element.copy());
+				demonstrationLines.push(". ");
+			});
 		}
+
+		if (game.length >= 2 && game[1] && game[1].length > 0)
+		{
+			demonstrationLines.push("Montrons ");
+			demonstrationLines.push(game[1][0].copy());
+			demonstrationLines.push(".");
+		}
+
+		return demonstrationLines.length > 0 ? [[0, demonstrationLines]] : [];
 	}, [game, mode, isTestingMode]);
+
+	const activeDemonstration = (mode === "Create" && !isTestingMode && computedCreateDemonstration !== null)
+		? computedCreateDemonstration
+		: demonstration;
 
 	/**
 	 * La carte qui est déjà sélectionnée & celle qui est passée en paramètre utilisent la fonction {@link Card.select()}
@@ -728,7 +727,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			</GameTabProvider>
 
 			<GameDemonstration
-				demonstration={demonstration}
+				demonstration={activeDemonstration}
 				constructDemonstration={constructDemonstration}
 				onLineClick={demonstrationClickHandler}
 				onCopy={copyHandler}
@@ -762,7 +761,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 				totalLevelCount={totalLevelCount}
 				saveProgressFailed={saveProgressFailed}
 				gameResult={gameResult}
-				demonstration={demonstration}
+				demonstration={activeDemonstration}
 				constructDemonstration={constructDemonstration}
 				onCopy={copyHandler}
 				onClose={() => setPopupWin(false)}

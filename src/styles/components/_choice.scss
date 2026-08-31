@@ -97,19 +97,29 @@
 	border-color: var(--accent-amber) !important;
 }
 
-.levelScore {
+.levelScoreInfo {
 	margin-top: 12px;
-	font-family: 'JetBrains Mono', monospace;
-	font-size: 12px;
-	font-weight: 500;
-	color: var(--text-muted);
 	display: flex;
-	align-items: center;
-	gap: 6px;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+	padding-top: 8px;
+	border-top: 1px dashed color-mix(in srgb, var(--accent-amber) 30%, transparent);
+	font-family: 'JetBrains Mono', monospace;
+	font-size: 11px;
 }
 
-.levelScore .separator {
-	color: var(--border-subtle);
+.levelTime, .levelScoreValue {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+	color: var(--text-muted);
+}
+
+.levelScoreValue {
+	color: var(--accent-amber);
+	font-weight: 600;
 }
 
 .levelLocked {
