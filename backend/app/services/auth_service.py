@@ -33,16 +33,16 @@ def get_user_by_id(id_user):
 			row = cur.fetchone()
 			return User(*row) if row else None
 
-def get_user_row_by_email(email):
+def get_user_row_by_username_and_email(username, email):
 	"""
-	Récupère la ligne complète (avec le hash du mot de passe) à partir de l'email.
-	Utilisé uniquement au moment du login, pour vérifier le mot de passe.
+	Récupère la ligne complète (avec le hash du mot de passe) uniquement si le
+	nom d'utilisateur ET l'email correspondent à un même compte.
 	"""
 	with psycopg.connect(CONN_PARAMS) as conn:
 		with conn.cursor() as cur:
 			cur.execute(
-				"SELECT id_user, username, email, password_hash, role, id_category FROM users WHERE email = %s",
-				(email,),
+				"SELECT id_user, username, email, password_hash, role, id_category FROM users WHERE LOWER(username) = LOWER(%s) AND LOWER(email) = LOWER(%s)",
+				(username, email),
 			)
 			return cur.fetchone()
 

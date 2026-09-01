@@ -8,7 +8,7 @@ from app.services.auth_service import (
 	User,
 	email_or_username_exists,
 	create_user,
-	get_user_row_by_email,
+	get_user_row_by_username_and_email,
 	verify_password,
 	get_categories,
 	set_user_category,
@@ -48,10 +48,14 @@ def register():
 @auth_bp.route("/login", methods=["POST"])
 def login():
 	data = get_json_body()
-	email = data.get("email", "").strip().lower()
+	username = (data.get("username") or "").strip()
+	email = (data.get("email") or "").strip().lower()
 	password = data.get("password", "")
 
-	row = get_user_row_by_email(email)
+	if not username or not email or not password:
+		return jsonify({"error": "Nom d'utilisateur, email et mot de passe sont requis"}), 400
+
+	row = get_user_row_by_username_and_email(username, email)
 	if row and verify_password(row, password):
 		user = User(row[0], row[1], row[2], row[4], row[5])
 		login_user(user)

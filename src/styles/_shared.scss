@@ -10,7 +10,7 @@
 	align-items: center;
 	padding-top: 90px;
 	padding-bottom: 60px;
-	background: var(--bg-body);
+	background: var(--bg-base);
 }
 
 .home .levelLockedMessage {
@@ -137,6 +137,40 @@
 	background: color-mix(in srgb, var(--danger) 10%, transparent);
 	padding: 10px 12px;
 	border-radius: 8px;
+	text-align: left;
+}
+
+.forms .formWarning {
+	color: #d97706;
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	line-height: 1.4;
+	margin-bottom: 20px;
+	background: rgba(217, 119, 6, 0.1);
+	border: 1px solid rgba(217, 119, 6, 0.25);
+	padding: 12px 14px;
+	border-radius: 8px;
+	text-align: left;
+}
+
+.forms .checkboxField {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	margin-bottom: 20px;
+	text-align: left;
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	color: var(--text-primary);
+	cursor: pointer;
+}
+
+.forms .checkboxField input[type="checkbox"] {
+	margin-top: 3px;
+	width: 18px;
+	height: 18px;
+	accent-color: var(--accent-cyan);
+	cursor: pointer;
 }
 
 .forms .formSuccess {

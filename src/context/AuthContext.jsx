@@ -24,12 +24,12 @@ export const AuthProvider = ({ children }) => {
 	 * 
 	 * @returns {Promise<{ok: true} | {ok: false, error: string}>}
 	 */
-	const login = async (email, password) => {
+	const login = async (username, email, password) => {
 		const response = await fetch(`${API}/api/login`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			credentials: "include",
-			body: JSON.stringify({ email, password }),
+			body: JSON.stringify({ username, email, password }),
 		});
 
 		const data = await response.json();

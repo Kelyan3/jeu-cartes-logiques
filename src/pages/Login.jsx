@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 
 
 const Login = () => {
+	const [username, setUsername] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
@@ -20,7 +21,7 @@ const Login = () => {
 		setError("");
 		setSubmitting(true);
 
-		const result = await login(email, password);
+		const result = await login(username, email, password);
 
 		setSubmitting(false);
 
@@ -38,7 +39,12 @@ const Login = () => {
 				<h2>Se connecter</h2>
 				<form onSubmit={handleSubmit} className="authForm">
 					<div className="field">
-						<label htmlFor="email">Email</label>
+						<label htmlFor="username">Nom d'utilisateur</label>
+						<input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+					</div>
+
+					<div className="field">
+						<label htmlFor="email">Adresse email</label>
 						<input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 					</div>
 

@@ -11,6 +11,7 @@ const Register = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
+	const [passwordSavedChecked, setPasswordSavedChecked] = useState(false);
 	const [error, setError] = useState("");
 	const [submitting, setSubmitting] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
@@ -133,9 +134,23 @@ const Register = () => {
 								/>
 							</div>
 
+							<div className="formWarning">
+								Attention : Aucun e-mail de confirmation ne sera envoyé. En cas de perte de votre mot de passe, il ne sera <strong>pas possible</strong> de le récupérer. Veillez à bien le noter en lieu sûr.
+							</div>
+
+							<label className="checkboxField">
+								<input
+									type="checkbox"
+									checked={passwordSavedChecked}
+									onChange={(e) => setPasswordSavedChecked(e.target.checked)}
+									required
+								/>
+								<span>J'ai bien noté mon mot de passe et je sais qu'il ne pourra pas être récupéré en cas d'oubli.</span>
+							</label>
+
 							{error && <p className="formError">{error}</p>}
 
-							<button type="submit" className="authSubmit" disabled={submitting}>
+							<button type="submit" className="authSubmit" disabled={submitting || !passwordSavedChecked}>
 								{submitting ? "Création..." : "Créer mon compte"}
 							</button>
 
