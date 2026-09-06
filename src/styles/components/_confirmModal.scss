@@ -176,6 +176,22 @@
 	}
 }
 
+.authModalCard {
+	width: min(460px, 94vw);
+}
+
+.authModalActions {
+	flex-wrap: wrap;
+	gap: 10px;
+
+	@media (max-width: 480px) {
+		flex-direction: column-reverse;
+		.confirmModalBtn {
+			width: 100%;
+		}
+	}
+}
+
 @keyframes confirmModalFadeIn {
 	from {
 		opacity: 0;

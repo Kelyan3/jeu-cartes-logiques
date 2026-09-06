@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
@@ -26,6 +26,7 @@ const Register = () => {
 
 	const { register, setUser } = useAuth();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	/**
 	 * Charge la liste des catégories dès l'arrivée sur la page, pour qu'elle soit
@@ -83,7 +84,9 @@ const Register = () => {
 			})
 			.finally(() => {
 				setSavingCategory(false);
-				navigate("/");
+				const params = new URLSearchParams(window.location.search);
+				const redirect = params.get("redirect");
+				navigate(redirect && redirect.startsWith("/") ? redirect : "/");
 			});
 	};
 
@@ -155,7 +158,7 @@ const Register = () => {
 							</button>
 
 							<p className="authSwitch">
-								Déjà un compte ? <NavLink to="/login">Se connecter</NavLink>
+								Déjà un compte ? <NavLink to={`/login${location.search}`}>Se connecter</NavLink>
 							</p>
 						</form>
 					</>
@@ -187,7 +190,13 @@ const Register = () => {
 							</button>
 
 							<p className="authSwitch">
-								<NavLink to="/" onClick={() => navigate("/")}>Choisir plus tard</NavLink>
+								<NavLink to={(() => {
+									const params = new URLSearchParams(window.location.search);
+									const redirect = params.get("redirect");
+									return redirect && redirect.startsWith("/") ? redirect : "/";
+								})()}>
+									Choisir plus tard
+								</NavLink>
 							</p>
 						</form>
 					</>

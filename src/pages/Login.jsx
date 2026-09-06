@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
@@ -15,6 +15,7 @@ const Login = () => {
 
 	const { login } = useAuth();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const handleSubmit = async (event) => {
 		event.preventDefault();
@@ -26,7 +27,11 @@ const Login = () => {
 		setSubmitting(false);
 
 		if (result.ok)
-			navigate("/");
+		{
+			const params = new URLSearchParams(window.location.search);
+			const redirect = params.get("redirect");
+			navigate(redirect && redirect.startsWith("/") ? redirect : "/");
+		}
 		else
 			setError(result.error);
 	};
@@ -71,7 +76,7 @@ const Login = () => {
 					</button>
 
 					<p className="authSwitch">
-						Pas de compte ? <NavLink to="/register">S'inscrire</NavLink>
+						Pas de compte ? <NavLink to={`/register${location.search}`}>S'inscrire</NavLink>
 					</p>
 				</form>
 			</div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useAuthModal } from "../context/AuthModalContext";
 import { API_BASE_URL as API } from "../config/api";
 import { DEFAULT_LEVEL_COUNTS, TUTORIAL_DIFFICULTY } from "../config/levels";
 import { CheckCircle, Lock, Clock, Trophy } from "lucide-react";
@@ -14,6 +15,7 @@ const ChoiceContent = ({ mode, user }) => {
 	);
 
 	const navigate = useNavigate();
+	const { openAuthModal } = useAuthModal();
 	const [completedLevels, setCompletedLevels] = useState([]);
 
 	/**
@@ -125,8 +127,16 @@ const ChoiceContent = ({ mode, user }) => {
 			return;
 
 		const url = cell.dataset.url;
-		if (url)
-			navigate(url);
+		if (!url)
+			return;
+
+		if (!user)
+		{
+			openAuthModal(url);
+			return;
+		}
+
+		navigate(url);
 	}
 
 	/**

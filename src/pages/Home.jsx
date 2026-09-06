@@ -6,6 +6,8 @@ import Card from "../components/Card";
 import { GameTabProvider } from "../context/GameTabContext";
 import CardModel from "../domain/Card";
 import { BookOpen, Gamepad2, ScrollText } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useAuthModal } from "../context/AuthModalContext";
 
 
 /**
@@ -84,7 +86,17 @@ const TABS = [
 
 
 const Home = () => {
+	const { user, loading } = useAuth();
+	const { openAuthModal } = useAuthModal();
 	const [activeTab, setActiveTab] = useState(TABS[0].id);
+
+	const handleProtectedClick = (path) => (event) => {
+		if (!loading && !user)
+		{
+			event.preventDefault();
+			openAuthModal(path);
+		}
+	};
 
 	return (
 		<div className="homeContainer">
@@ -94,10 +106,10 @@ const Home = () => {
 				<h1>Jeu des Cartes Logiques</h1>
 				<p>Un jeu solo de réflexion où vous manipulez des connecteurs logiques et déduisez des cartes pour atteindre votre objectif.</p>
 				<div className="homeHeroActions">
-					<NavLink to="/tutorials" className="buttonPrimary">
+					<NavLink to="/tutorials" className="buttonPrimary" onClick={handleProtectedClick("/tutorials")}>
 						<BookOpen size={18} /> Tutoriels
 					</NavLink>
-					<NavLink to="/levels" className="buttonSecondary">
+					<NavLink to="/levels" className="buttonSecondary" onClick={handleProtectedClick("/levels")}>
 						<Gamepad2 size={18} /> Jouer (Niveaux)
 					</NavLink>
 				</div>

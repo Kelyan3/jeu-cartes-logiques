@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useAuthModal } from "../context/AuthModalContext";
 import { useTheme } from "../hooks/useTheme";
 import { Sun, Moon, ChevronDown } from "lucide-react";
 
 
 const Navigation = () => {
 	const { user, loading, logout } = useAuth();
+	const { openAuthModal } = useAuthModal();
 	const { theme, toggleTheme } = useTheme();
 	const [menuOpen, setMenuOpen] = useState(false);
 
@@ -24,6 +26,15 @@ const Navigation = () => {
 		document.body.classList.toggle("navOpen", menuOpen);
 		return () => document.body.classList.remove("navOpen");
 	}, [menuOpen]);
+
+	const handleProtectedClick = (path) => (event) => {
+		if (!loading && !user)
+		{
+			event.preventDefault();
+			setMenuOpen(false);
+			openAuthModal(path);
+		}
+	};
 
 	const handleNavbarClick = (event) => {
 		if (event.target.closest("a, .logoutLink"))
@@ -54,9 +65,21 @@ const Navigation = () => {
 				className={`navbar${menuOpen ? " isOpen" : ""}`}
 				onClick={handleNavbarClick}
 			>
-				<li><NavLink to="/tutorials" className="navLink">Tutoriels</NavLink></li>
-				<li><NavLink to="/levels" className="navLink">Niveaux</NavLink></li>
-				<li><NavLink to="/exercise/Create" className="navLink">Créer un niveau</NavLink></li>
+				<li>
+					<NavLink to="/tutorials" className="navLink" onClick={handleProtectedClick("/tutorials")}>
+						Tutoriels
+					</NavLink>
+				</li>
+				<li>
+					<NavLink to="/levels" className="navLink" onClick={handleProtectedClick("/levels")}>
+						Niveaux
+					</NavLink>
+				</li>
+				<li>
+					<NavLink to="/exercise/Create" className="navLink" onClick={handleProtectedClick("/exercise/Create")}>
+						Créer un niveau
+					</NavLink>
+				</li>
 				<li><NavLink to="/leaderboard" className="navLink">Classement</NavLink></li>
 
 				<li className="choose">

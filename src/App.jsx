@@ -1,8 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { AuthProvider } from "./context/AuthContext";
+import { AuthModalProvider } from "./context/AuthModalContext";
 import { ThemeProvider } from "./context/ThemeContext";
 
+import ProtectedPlayRoute from "./components/ProtectedPlayRoute";
 import About from "./pages/About";
 import Exercise from "./pages/Exercise";
 import Forms from "./pages/Forms";
@@ -16,26 +18,57 @@ import Profile from "./pages/Profile";
 import Leaderboard from "./pages/Leaderboard";
 import Admin from "./pages/Admin";
 
+
 const App = () => {
 	return (
 		<ThemeProvider>
 			<AuthProvider>
 				<BrowserRouter>
-					<Routes>
-						<Route path="/" element={<Home />} />
-						<Route path="/exercise/:mode/:num" element={<Exercise />} />
-						<Route path="/exercise/:mode" element={<Exercise />} />
-						<Route path="/about" element={<About />} />
-						<Route path="/forms" element={<Forms />} />
-						<Route path="/levels" element={<Levels />} />
-						<Route path="/tutorials" element={<Tutorials />} />
-						<Route path="/login" element={<Login />} />
-						<Route path="/register" element={<Register />} />
-						<Route path="/profile" element={<Profile />} />
-						<Route path="/leaderboard" element={<Leaderboard />} />
-						<Route path="/admin" element={<Admin />} />
-						<Route path="*" element={<NotFound />} />
-					</Routes>
+					<AuthModalProvider>
+						<Routes>
+							<Route path="/" element={<Home />} />
+							<Route
+								path="/exercise/:mode/:num"
+								element={
+									<ProtectedPlayRoute>
+										<Exercise />
+									</ProtectedPlayRoute>
+								}
+							/>
+							<Route
+								path="/exercise/:mode"
+								element={
+									<ProtectedPlayRoute>
+										<Exercise />
+									</ProtectedPlayRoute>
+								}
+							/>
+							<Route path="/about" element={<About />} />
+							<Route path="/forms" element={<Forms />} />
+							<Route
+								path="/levels"
+								element={
+									<ProtectedPlayRoute>
+										<Levels />
+									</ProtectedPlayRoute>
+								}
+							/>
+							<Route
+								path="/tutorials"
+								element={
+									<ProtectedPlayRoute>
+										<Tutorials />
+									</ProtectedPlayRoute>
+								}
+							/>
+							<Route path="/login" element={<Login />} />
+							<Route path="/register" element={<Register />} />
+							<Route path="/profile" element={<Profile />} />
+							<Route path="/leaderboard" element={<Leaderboard />} />
+							<Route path="/admin" element={<Admin />} />
+							<Route path="*" element={<NotFound />} />
+						</Routes>
+					</AuthModalProvider>
 				</BrowserRouter>
 			</AuthProvider>
 		</ThemeProvider>
