@@ -7,14 +7,13 @@ import { CheckCircle, Lock, Clock, Trophy } from "lucide-react";
 import { formatTime } from "../utils/formatTime";
 
 
-const Choice = ({ mode }) => {
+const ChoiceContent = ({ mode, user }) => {
 	const [jsonCount, setJsonCount] = useState(DEFAULT_LEVEL_COUNTS.Tutorial);
 	const [difficulty, setDifficulty] = useState(() =>
 		TUTORIAL_DIFFICULTY.map((cat) => [...cat])
 	);
 
 	const navigate = useNavigate();
-	const { user } = useAuth();
 	const [completedLevels, setCompletedLevels] = useState([]);
 
 	/**
@@ -25,15 +24,6 @@ const Choice = ({ mode }) => {
 	 */
 	const [chapters, setChapters] = useState(null);
 	const [chaptersError, setChaptersError] = useState(false);
-
-	// Réinitialise l'état des chapitres dès que mode/user change.
-	const [chaptersKey, setChaptersKey] = useState({ mode, user });
-	if (chaptersKey.mode !== mode || chaptersKey.user !== user)
-	{
-		setChaptersKey({ mode, user });
-		setChapters(null);
-		setChaptersError(false);
-	}
 
 	useEffect(() => {
 		if (mode !== "Play")
@@ -255,6 +245,18 @@ const Choice = ({ mode }) => {
 		<div className="choice">
 			{mode === "Play" ? affichePlay() : afficheChoice()}
 		</div>
+	);
+};
+
+const Choice = ({ mode }) => {
+	const { user } = useAuth();
+
+	return (
+		<ChoiceContent
+			key={`${mode}-${user?.id ?? "anon"}`}
+			mode={mode}
+			user={user}
+		/>
 	);
 };
 

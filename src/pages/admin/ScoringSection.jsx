@@ -3,32 +3,18 @@ import { SCORING_FIELDS } from "./constants";
 import ConfirmModal from "../../components/ConfirmModal";
 
 
-const ScoringSection = ({ globalScoring, call }) => {
-	const [edited, setEdited] = useState(null);
+const ScoringEditor = ({ initialScoring, call }) => {
+	const [values, setValues] = useState(() => ({ ...initialScoring }));
 	const [validationErrorMsg, setValidationErrorMsg] = useState(null);
-
-	/**
-	 * Resynchronise la copie éditable dès que globalScoring change (nouvelle
-	 * réponse serveur), pendant le rendu et non dans un useEffect.
-	 */
-	const [prevGlobalScoring, setPrevGlobalScoring] = useState(globalScoring);
-	if (prevGlobalScoring !== globalScoring) {
-		setPrevGlobalScoring(globalScoring);
-		setEdited(globalScoring ? { ...globalScoring } : null);
-	}
-
-	const values = edited ?? globalScoring;
 
 	const setField = (key, rawValue) => {
 		const value = rawValue === "" ? "" : Number(rawValue);
-		setEdited((prev) => ({ ...(prev ?? globalScoring), [key]: value }));
+		setValues((prev) => ({ ...prev, [key]: value }));
 		setValidationErrorMsg(null);
 	};
 
 	const hasChanges = () => {
-		if (!globalScoring || !edited)
-			return false;
-		return SCORING_FIELDS.some((field) => Number(edited[field.key]) !== globalScoring[field.key]);
+		return SCORING_FIELDS.some((field) => Number(values[field.key]) !== initialScoring[field.key]);
 	};
 
 	/**
@@ -36,22 +22,19 @@ const ScoringSection = ({ globalScoring, call }) => {
 	 * reflète les contraintes CHECK posées en base (data.sql), pour donner
 	 * un message immédiat plutôt qu'un aller-retour serveur pour rien.
 	 */
-	const validationError = (values) => {
-		if (SCORING_FIELDS.some((field) => values[field.key] === "" || Number.isNaN(Number(values[field.key]))))
+	const validationError = (vals) => {
+		if (SCORING_FIELDS.some((field) => vals[field.key] === "" || Number.isNaN(Number(vals[field.key]))))
 			return "Tous les champs doivent être des nombres.";
-		if (Number(values.score_min) > Number(values.score_max))
+		if (Number(vals.score_min) > Number(vals.score_max))
 			return "Score min ne peut pas dépasser Score max.";
-		if (Number(values.time_interval_s) <= 0)
+		if (Number(vals.time_interval_s) <= 0)
 			return "Palier temps doit être strictement positif.";
-		if (SCORING_FIELDS.some((field) => Number(values[field.key]) < 0))
+		if (SCORING_FIELDS.some((field) => Number(vals[field.key]) < 0))
 			return "Aucune valeur ne peut être négative.";
 		return null;
 	};
 
 	const save = () => {
-		if (!values)
-			return;
-
 		const error = validationError(values);
 		if (error)
 		{
@@ -65,44 +48,31 @@ const ScoringSection = ({ globalScoring, call }) => {
 	};
 
 	return (
-		<section className="adminSection">
-			<h2>Gestion du score</h2>
-			<p className="adminHint">
-				score = max(score_min, score_max - pénalité_temps - pénalité_coups).<br />
-				La pénalité temps retire "Pénalité / palier temps" pts par tranche de "Palier temps (s)" secondes dépassée au-delà du "Délai de grâce".<br />
-				La pénalité coups retire "Pénalité / coup" pts par coup au-delà du "Seuil de coups".<br />
-				Ne concerne que les niveaux du mode Play.<br />
-				Ces paramètres s'appliquent à tous les niveaux.
-			</p>
-
-			{!values ? (
-				<p className="choiceMessage">Chargement des paramètres de score...</p>
-			) : (
-				<div className="scoringCard">
-					<h3>Paramètres globaux</h3>
-					{validationErrorMsg && (
-						<div className="adminError" role="alert" style={{ marginBottom: "16px" }}>
-							{validationErrorMsg}
-						</div>
-					)}
-					<div className="scoringFields">
-						{SCORING_FIELDS.map((field) => (
-							<label key={field.key}>
-								{field.label}
-								<input
-									type="number"
-									min="0"
-									value={values[field.key]}
-									onChange={(e) => setField(field.key, e.target.value)}
-								/>
-							</label>
-						))}
+		<>
+			<div className="scoringCard">
+				<h3>Paramètres globaux</h3>
+				{validationErrorMsg && (
+					<div className="adminError" role="alert" style={{ marginBottom: "16px" }}>
+						{validationErrorMsg}
 					</div>
-					<button className="resetButton" disabled={!hasChanges()} onClick={save}>
-						Enregistrer
-					</button>
+				)}
+				<div className="scoringFields">
+					{SCORING_FIELDS.map((field) => (
+						<label key={field.key}>
+							{field.label}
+							<input
+								type="number"
+								min="0"
+								value={values[field.key]}
+								onChange={(e) => setField(field.key, e.target.value)}
+							/>
+						</label>
+					))}
 				</div>
-			)}
+				<button className="resetButton" disabled={!hasChanges()} onClick={save}>
+					Enregistrer
+				</button>
+			</div>
 
 			<ConfirmModal
 				isOpen={validationErrorMsg !== null}
@@ -114,6 +84,29 @@ const ScoringSection = ({ globalScoring, call }) => {
 				onConfirm={() => setValidationErrorMsg(null)}
 				onCancel={() => setValidationErrorMsg(null)}
 			/>
+		</>
+	);
+};
+
+const ScoringSection = ({ globalScoring, call }) => {
+	const scoringKey = globalScoring ? JSON.stringify(globalScoring) : "none";
+
+	return (
+		<section className="adminSection">
+			<h2>Gestion du score</h2>
+			<p className="adminHint">
+				score = max(score_min, score_max - pénalité_temps - pénalité_coups).<br />
+				La pénalité temps retire "Pénalité / palier temps" pts par tranche de "Palier temps (s)" secondes dépassée au-delà du "Délai de grâce".<br />
+				La pénalité coups retire "Pénalité / coup" pts par coup au-delà du "Seuil de coups".<br />
+				Ne concerne que les niveaux du mode Play.<br />
+				Ces paramètres s'appliquent à tous les niveaux.
+			</p>
+
+			{!globalScoring ? (
+				<p className="choiceMessage">Chargement des paramètres de score...</p>
+			) : (
+				<ScoringEditor key={scoringKey} initialScoring={globalScoring} call={call} />
+			)}
 		</section>
 	);
 };

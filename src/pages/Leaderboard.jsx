@@ -19,14 +19,11 @@ const Leaderboard = () => {
 			.catch(() => setCategories([]));
 	}, []);
 
-	// Repasse en "Chargement..." dès que la catégorie sélectionnée change.
-	const [loadingCategory, setLoadingCategory] = useState(selectedCategory);
-	if (loadingCategory !== selectedCategory)
-	{
-		setLoadingCategory(selectedCategory);
+	const handleCategoryChange = (event) => {
+		setSelectedCategory(event.target.value);
 		setLoading(true);
 		setLoadError(false);
-	}
+	};
 
 	useEffect(() => {
 		const query = selectedCategory ? `?category=${selectedCategory}` : "";
@@ -81,7 +78,7 @@ const Leaderboard = () => {
 					<select
 						className="leaderboardFilter"
 						value={selectedCategory}
-						onChange={(event) => setSelectedCategory(event.target.value)}
+						onChange={handleCategoryChange}
 					>
 						<option value="">Toutes les catégories</option>
 						{categories.map((category) => (

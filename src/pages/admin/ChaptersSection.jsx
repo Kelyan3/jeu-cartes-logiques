@@ -21,19 +21,15 @@ const ChaptersSection = ({ chapters, call }) => {
 	const [dragOverId, setDragOverId] = useState(null);
 
 	/**
-	 * Réordonnancement local optimiste : appliqué immédiatement au dépôt, avant même la réponse du serveur.
+	 * Réordonnancement local optimiste : { forChapters, list }
+	 * Dérivé directement au rendu : si chapters change côté serveur, l'override expire
+	 * naturellement sans appel à setState pendant le rendu.
 	 */
-	const [localOrder, setLocalOrder] = useState(null);
-
-	// Efface l'override local dès que les chapitres serveur changent.
-	const [prevChapters, setPrevChapters] = useState(chapters);
-	if (prevChapters !== chapters)
-	{
-		setPrevChapters(chapters);
-		setLocalOrder(null);
-	}
-
-	const orderedChapters = localOrder ?? chapters;
+	const [optimisticOrder, setOptimisticOrder] = useState(null);
+	const orderedChapters =
+		optimisticOrder && optimisticOrder.forChapters === chapters
+			? optimisticOrder.list
+			: chapters;
 
 	const submit = (event) => {
 		event.preventDefault();
@@ -73,7 +69,7 @@ const ChaptersSection = ({ chapters, call }) => {
 		const targetIndex = reordered.findIndex((c) => c.id_chapter === targetChapter.id_chapter);
 		reordered.splice(targetIndex, 0, draggedFull);
 
-		setLocalOrder(reordered);
+		setOptimisticOrder({ forChapters: chapters, list: reordered });
 
 		const hasChanged = reordered.some((chapter, index) => chapter.position !== index + 1);
 		if (hasChanged)

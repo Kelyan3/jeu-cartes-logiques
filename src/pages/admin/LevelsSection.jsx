@@ -24,18 +24,17 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 	const [dragOverId, setDragOverId] = useState(null);
 
 	/**
-	 * Réordonnancement local optimiste : appliqué immédiatement au dépôt,
-	 * avant même la réponse du serveur, pour un affichage instantané.
+	 * Réordonnancement local optimiste : { forChapters, map: { [id_chapter]: reorderedLevels } }
+	 * Dérivé directement au rendu : dès que chapters change côté serveur, l'override expire
+	 * sans nécessiter de setState pendant le rendu.
 	 */
-	const [localOrder, setLocalOrder] = useState({});
+	const [optimisticLevels, setOptimisticLevels] = useState(null);
 
-	// Efface l'override local dès que les chapitres serveur changent.
-	const [prevChapters, setPrevChapters] = useState(chapters);
-	if (prevChapters !== chapters)
-	{
-		setPrevChapters(chapters);
-		setLocalOrder({});
-	}
+	const getLevelsForChapter = (chapter) => {
+		if (optimisticLevels && optimisticLevels.forChapters === chapters && optimisticLevels.map[chapter.id_chapter])
+			return optimisticLevels.map[chapter.id_chapter];
+		return chapter.levels;
+	};
 
 	const defaultChapterId = chapters.length > 0 ? chapters[0].id_chapter : "";
 	const [selectedChapterIdState, setSelectedChapterIdState] = useState("");
@@ -89,7 +88,13 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 		const targetIndex = reordered.findIndex((l) => l.id_level === targetLevel.id_level);
 		reordered.splice(targetIndex, 0, draggedFull);
 
-		setLocalOrder((prev) => ({ ...prev, [id_chapter]: reordered }));
+		setOptimisticLevels((prev) => {
+			const currentMap = (prev && prev.forChapters === chapters) ? prev.map : {};
+			return {
+				forChapters: chapters,
+				map: { ...currentMap, [id_chapter]: reordered }
+			};
+		});
 
 		const hasChanged = reordered.some((level, index) => level.position !== index + 1);
 		if (hasChanged)
@@ -134,7 +139,7 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 
 			{selectedChapter && (() => {
 				const chapter = selectedChapter;
-				const levels = localOrder[chapter.id_chapter] ?? chapter.levels;
+				const levels = getLevelsForChapter(chapter);
 
 				return (
 					<div key={chapter.id_chapter} className="adminSubgroup">

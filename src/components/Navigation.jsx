@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../hooks/useTheme";
 import { Sun, Moon, ChevronDown } from "lucide-react";
@@ -9,15 +9,13 @@ const Navigation = () => {
 	const { user, loading, logout } = useAuth();
 	const { theme, toggleTheme } = useTheme();
 	const [menuOpen, setMenuOpen] = useState(false);
-	const location = useLocation();
 
-	// Ferme le menu mobile à chaque changement de page.
-	const [prevLocation, setPrevLocation] = useState(location);
-	if (location !== prevLocation)
-	{
-		setPrevLocation(location);
-		setMenuOpen(false);
-	}
+	// Ferme le menu mobile lors des navigations par l'historique du navigateur.
+	useEffect(() => {
+		const handlePopState = () => setMenuOpen(false);
+		window.addEventListener("popstate", handlePopState);
+		return () => window.removeEventListener("popstate", handlePopState);
+	}, []);
 
 	/**
 	 * Empêche le scroll du corps de page quand le menu mobile est ouvert.
@@ -26,6 +24,11 @@ const Navigation = () => {
 		document.body.classList.toggle("navOpen", menuOpen);
 		return () => document.body.classList.remove("navOpen");
 	}, [menuOpen]);
+
+	const handleNavbarClick = (event) => {
+		if (event.target.closest("a, .logoutLink"))
+			setMenuOpen(false);
+	};
 
 	return (
 		<nav className="navigation">
@@ -46,7 +49,11 @@ const Navigation = () => {
 				<span></span>
 			</button>
 
-			<ul id="primary-navbar" className={`navbar${menuOpen ? " isOpen" : ""}`}>
+			<ul
+				id="primary-navbar"
+				className={`navbar${menuOpen ? " isOpen" : ""}`}
+				onClick={handleNavbarClick}
+			>
 				<li><NavLink to="/tutorials" className="navLink">Tutoriels</NavLink></li>
 				<li><NavLink to="/levels" className="navLink">Niveaux</NavLink></li>
 				<li><NavLink to="/exercise/Create" className="navLink">Créer un niveau</NavLink></li>
