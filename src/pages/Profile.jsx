@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
+import ConfirmModal from "../components/ConfirmModal";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
 import { User, Trophy, Target, AlertTriangle, Settings, Tags } from "lucide-react";
@@ -12,9 +13,12 @@ const Profile = () => {
 	const [playCompleted, setPlayCompleted] = useState(0);
 	const [playTotal, setPlayTotal] = useState(0);
 	const [playScore, setPlayScore] = useState(0);
-	const [loadingStats, setLoadingStats] = useState(true);
+	const [loadedUser, setLoadedUser] = useState(null);
 	const [statsError, setStatsError] = useState(false);
 	const [resetting, setResetting] = useState(false);
+	const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+	const loadingStats = Boolean(user && loadedUser !== user && !statsError);
 
 	const [categories, setCategories] = useState([]);
 	const [selectedCategory, setSelectedCategory] = useState("");
@@ -48,10 +52,10 @@ const Profile = () => {
 	};
 
 	const handleReset = () => {
-		const confirmed = window.confirm("Réinitialiser toute votre progression ? Cette action est irréversible.");
-		if (!confirmed)
-			return;
+		setShowResetConfirm(true);
+	};
 
+	const executeReset = () => {
 		setResetting(true);
 		fetch(`${API}/api/progress`, { method: "DELETE", credentials: "include" })
 			.then((response) => {
@@ -60,18 +64,11 @@ const Profile = () => {
 
 				setPlayCompleted(0);
 				setPlayScore(0);
+				setShowResetConfirm(false);
 			})
 			.catch(() => setStatsError(true))
 			.finally(() => setResetting(false));
 	};
-
-	const [statsUser, setStatsUser] = useState(user);
-	if (statsUser !== user)
-	{
-		setStatsUser(user);
-		setLoadingStats(!!user);
-		setStatsError(false);
-	}
 
 	useEffect(() => {
 		if (!user)
@@ -104,14 +101,12 @@ const Profile = () => {
 						.filter((p) => p.mode === "Play" && p.completed)
 						.reduce((total, p) => total + p.score, 0)
 				);
+				setLoadedUser(user);
+				setStatsError(false);
 			})
 			.catch(() => {
 				if (!ignore)
 					setStatsError(true);
-			})
-			.finally(() => {
-				if (!ignore)
-					setLoadingStats(false);
 			});
 
 		return () => {
@@ -228,6 +223,18 @@ const Profile = () => {
 					</>
 				)}
 			</div>
+
+			<ConfirmModal
+				isOpen={showResetConfirm}
+				variant="danger"
+				title="Réinitialiser la progression"
+				message="Voulez-vous vraiment réinitialiser toute votre progression ? Vos niveaux complétés et votre score global seront définitivement remis à zéro. Cette action est irréversible."
+				confirmLabel={resetting ? "Réinitialisation..." : "Oui, réinitialiser"}
+				cancelLabel="Annuler"
+				isPending={resetting}
+				onConfirm={executeReset}
+				onCancel={() => setShowResetConfirm(false)}
+			/>
 		</div>
 	);
 };

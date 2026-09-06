@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { GripVertical, Trash2, Plus } from "lucide-react";
+import ConfirmModal from "../../components/ConfirmModal";
 
 
 /**
@@ -7,6 +8,7 @@ import { GripVertical, Trash2, Plus } from "lucide-react";
  */
 const ChaptersSection = ({ chapters, call }) => {
 	const [name, setName] = useState("");
+	const [chapterToDelete, setChapterToDelete] = useState(null);
 
 	/**
 	 * Chapitre actuellement glissé : { id_chapter }
@@ -134,10 +136,7 @@ const ChaptersSection = ({ chapters, call }) => {
 								<button
 									className="actionButton actionDelete"
 									title="Supprimer"
-									onClick={() => {
-										if (window.confirm(`Supprimer "${chapter.name}" et ses ${chapter.levels.length} niveau(x) ?`))
-											call(`/api/admin/chapters/${chapter.id_chapter}`, "DELETE");
-									}}
+									onClick={() => setChapterToDelete(chapter)}
 								>
 									<Trash2 size={16} />
 								</button>
@@ -156,6 +155,28 @@ const ChaptersSection = ({ chapters, call }) => {
 					</button>
 				</form>
 			</div>
+
+			<ConfirmModal
+				isOpen={chapterToDelete !== null}
+				variant="danger"
+				title="Supprimer le chapitre"
+				message={
+					chapterToDelete ? (
+						<>
+							Voulez-vous vraiment supprimer le chapitre <strong>"{chapterToDelete.name}"</strong> et ses <strong>{chapterToDelete.levels.length} niveau(x)</strong> associés ?
+						</>
+					) : ""
+				}
+				confirmLabel="Supprimer"
+				cancelLabel="Annuler"
+				onConfirm={() => {
+					if (chapterToDelete) {
+						call(`/api/admin/chapters/${chapterToDelete.id_chapter}`, "DELETE");
+						setChapterToDelete(null);
+					}
+				}}
+				onCancel={() => setChapterToDelete(null)}
+			/>
 		</section>
 	);
 };

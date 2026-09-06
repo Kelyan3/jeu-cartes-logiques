@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
+import ConfirmModal from "../../components/ConfirmModal";
 
 import { MENUS } from "./constants";
 
@@ -14,6 +15,7 @@ const QuestsSection = ({ quests, chapters, call }) => {
 	const [unlocksKey, setUnlocksKey] = useState("");
 	const [requiredChapter, setRequiredChapter] = useState("");
 	const [position, setPosition] = useState("");
+	const [questToDelete, setQuestToDelete] = useState(null);
 
 	const submit = (event) => {
 		event.preventDefault();
@@ -71,7 +73,7 @@ const QuestsSection = ({ quests, chapters, call }) => {
 								</select>
 							</td>
 							<td>
-								<button className="actionButton actionDelete" title="Supprimer" onClick={() => call(`/api/admin/quests/${quest.id_quest}`, "DELETE")}>
+								<button className="actionButton actionDelete" title="Supprimer" onClick={() => setQuestToDelete(quest)}>
 									<Trash2 size={16} />
 								</button>
 							</td>
@@ -100,6 +102,28 @@ const QuestsSection = ({ quests, chapters, call }) => {
 					</button>
 				</form>
 			</div>
+
+			<ConfirmModal
+				isOpen={questToDelete !== null}
+				variant="danger"
+				title="Supprimer la quête"
+				message={
+					questToDelete ? (
+						<>
+							Voulez-vous supprimer la quête <strong>"{questToDelete.label}"</strong> ?
+						</>
+					) : ""
+				}
+				confirmLabel="Supprimer"
+				cancelLabel="Annuler"
+				onConfirm={() => {
+					if (questToDelete) {
+						call(`/api/admin/quests/${questToDelete.id_quest}`, "DELETE");
+						setQuestToDelete(null);
+					}
+				}}
+				onCancel={() => setQuestToDelete(null)}
+			/>
 		</section>
 	);
 };

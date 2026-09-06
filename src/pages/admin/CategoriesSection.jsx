@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
+import ConfirmModal from "../../components/ConfirmModal";
 
 
 /**
@@ -7,6 +8,7 @@ import { Trash2, Plus } from "lucide-react";
  */
 const CategoriesSection = ({ categories, call }) => {
 	const [name, setName] = useState("");
+	const [categoryToDelete, setCategoryToDelete] = useState(null);
 
 	const submit = (event) => {
 		event.preventDefault();
@@ -37,10 +39,7 @@ const CategoriesSection = ({ categories, call }) => {
 								<button
 									className="actionButton actionDelete"
 									title="Supprimer"
-									onClick={() => {
-										if (window.confirm(`Supprimer la catégorie "${category.name}" ? Les utilisateurs concernés devront en rechoisir une.`))
-											call(`/api/admin/categories/${category.id_category}`, "DELETE");
-									}}
+									onClick={() => setCategoryToDelete(category)}
 								>
 									<Trash2 size={16} />
 								</button>
@@ -59,6 +58,28 @@ const CategoriesSection = ({ categories, call }) => {
 					</button>
 				</form>
 			</div>
+
+			<ConfirmModal
+				isOpen={categoryToDelete !== null}
+				variant="danger"
+				title="Supprimer la catégorie"
+				message={
+					categoryToDelete ? (
+						<>
+							Voulez-vous supprimer la catégorie <strong>"{categoryToDelete.name}"</strong> ? Les utilisateurs concernés devront en sélectionner une nouvelle.
+						</>
+					) : ""
+				}
+				confirmLabel="Supprimer"
+				cancelLabel="Annuler"
+				onConfirm={() => {
+					if (categoryToDelete) {
+						call(`/api/admin/categories/${categoryToDelete.id_category}`, "DELETE");
+						setCategoryToDelete(null);
+					}
+				}}
+				onCancel={() => setCategoryToDelete(null)}
+			/>
 		</section>
 	);
 };

@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { DEVICE_LABELS } from "./constants";
 import FeedbackRating from "./FeedbackRating";
+import ConfirmModal from "../../components/ConfirmModal";
 
 
 /**
  * Section "Avis reçus" : liste des retours utilisateurs avec suppression.
  */
 const FeedbackSection = ({ feedback, call }) => {
+	const [feedbackToDelete, setFeedbackToDelete] = useState(null);
+
 	return (
 		<section className="adminSection">
 			<h2>Avis reçus</h2>
@@ -26,10 +30,7 @@ const FeedbackSection = ({ feedback, call }) => {
 							<span className="feedbackDate">{new Date(entry.created_at).toLocaleDateString("fr-FR")}</span>
 							<button
 								className="resetButton"
-								onClick={() => {
-									if (window.confirm("Supprimer cet avis ?"))
-										call(`/api/admin/feedback/${entry.id_feedback}`, "DELETE");
-								}}
+								onClick={() => setFeedbackToDelete(entry.id_feedback)}
 							>
 								Supprimer
 							</button>
@@ -45,6 +46,22 @@ const FeedbackSection = ({ feedback, call }) => {
 					)}
 				</article>
 			))}
+
+			<ConfirmModal
+				isOpen={feedbackToDelete !== null}
+				variant="danger"
+				title="Supprimer l'avis"
+				message="Êtes-vous sûr de vouloir supprimer définitivement cet avis utilisateur ?"
+				confirmLabel="Supprimer"
+				cancelLabel="Annuler"
+				onConfirm={() => {
+					if (feedbackToDelete) {
+						call(`/api/admin/feedback/${feedbackToDelete}`, "DELETE");
+						setFeedbackToDelete(null);
+					}
+				}}
+				onCancel={() => setFeedbackToDelete(null)}
+			/>
 		</section>
 	);
 };

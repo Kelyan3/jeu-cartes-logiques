@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { GripVertical, Trash2, Link as LinkIcon } from "lucide-react";
+import ConfirmModal from "../../components/ConfirmModal";
 
 
 /**
@@ -10,6 +11,7 @@ import { GripVertical, Trash2, Link as LinkIcon } from "lucide-react";
 const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 	const [num, setNum] = useState("");
 	const [idChapter, setIdChapter] = useState("");
+	const [levelToRemove, setLevelToRemove] = useState(null);
 
 	/**
 	 * Niveau actuellement glissé : { id_level, id_chapter }.
@@ -169,7 +171,7 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 										<td className="dragHandle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
 										<td>Niveau {level.num}</td>
 										<td>
-											<button className="actionButton actionDelete" title="Retirer" onClick={() => call(`/api/admin/levels/${level.id_level}`, "DELETE")}>
+											<button className="actionButton actionDelete" title="Retirer" onClick={() => setLevelToRemove(level)}>
 												<Trash2 size={16} />
 											</button>
 										</td>
@@ -201,6 +203,28 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 					</button>
 				</form>
 			</div>
+
+			<ConfirmModal
+				isOpen={levelToRemove !== null}
+				variant="warning"
+				title="Détacher le niveau"
+				message={
+					levelToRemove ? (
+						<>
+							Voulez-vous retirer le <strong>Niveau {levelToRemove.num}</strong> de ce chapitre ? Il redeviendra disponible dans les niveaux non assignés.
+						</>
+					) : ""
+				}
+				confirmLabel="Retirer"
+				cancelLabel="Annuler"
+				onConfirm={() => {
+					if (levelToRemove) {
+						call(`/api/admin/levels/${levelToRemove.id_level}`, "DELETE");
+						setLevelToRemove(null);
+					}
+				}}
+				onCancel={() => setLevelToRemove(null)}
+			/>
 		</section>
 	);
 };

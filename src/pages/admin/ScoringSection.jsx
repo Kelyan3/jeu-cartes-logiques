@@ -1,10 +1,11 @@
 import { useState } from "react";
-
 import { SCORING_FIELDS } from "./constants";
+import ConfirmModal from "../../components/ConfirmModal";
 
 
 const ScoringSection = ({ globalScoring, call }) => {
 	const [edited, setEdited] = useState(null);
+	const [validationErrorMsg, setValidationErrorMsg] = useState(null);
 
 	/**
 	 * Resynchronise la copie éditable dès que globalScoring change (nouvelle
@@ -21,6 +22,7 @@ const ScoringSection = ({ globalScoring, call }) => {
 	const setField = (key, rawValue) => {
 		const value = rawValue === "" ? "" : Number(rawValue);
 		setEdited((prev) => ({ ...(prev ?? globalScoring), [key]: value }));
+		setValidationErrorMsg(null);
 	};
 
 	const hasChanges = () => {
@@ -53,10 +55,11 @@ const ScoringSection = ({ globalScoring, call }) => {
 		const error = validationError(values);
 		if (error)
 		{
-			window.alert(error);
+			setValidationErrorMsg(error);
 			return;
 		}
 
+		setValidationErrorMsg(null);
 		const body = Object.fromEntries(SCORING_FIELDS.map((field) => [field.key, Number(values[field.key])]));
 		call(`/api/admin/scoring`, "PUT", body);
 	};
@@ -77,6 +80,11 @@ const ScoringSection = ({ globalScoring, call }) => {
 			) : (
 				<div className="scoringCard">
 					<h3>Paramètres globaux</h3>
+					{validationErrorMsg && (
+						<div className="adminError" role="alert" style={{ marginBottom: "16px" }}>
+							{validationErrorMsg}
+						</div>
+					)}
 					<div className="scoringFields">
 						{SCORING_FIELDS.map((field) => (
 							<label key={field.key}>
@@ -95,6 +103,17 @@ const ScoringSection = ({ globalScoring, call }) => {
 					</button>
 				</div>
 			)}
+
+			<ConfirmModal
+				isOpen={validationErrorMsg !== null}
+				variant="warning"
+				title="Paramètres de score invalides"
+				message={validationErrorMsg}
+				confirmLabel="J'ai compris"
+				cancelLabel={null}
+				onConfirm={() => setValidationErrorMsg(null)}
+				onCancel={() => setValidationErrorMsg(null)}
+			/>
 		</section>
 	);
 };
