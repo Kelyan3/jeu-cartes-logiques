@@ -31,7 +31,7 @@ const FusionPopup = ({ open, onChooseConnector, onClose }) => {
 							</label>
 						))}
 					</div>
-					<button className="popupClose" onClick={onClose}>✕</button>
+					<button className="popupClose" onClick={onClose} aria-label="Fermer">✕</button>
 				</>
 			}
 		/>

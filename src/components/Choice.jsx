@@ -159,7 +159,16 @@ const ChoiceContent = ({ mode, user }) => {
 						return (
 							<div
 								key={level.num}
+								role="button"
+								tabIndex={locked ? -1 : 0}
 								onClick={goToExo}
+								onKeyDown={(e) => {
+									if (e.key === "Enter" || e.key === " ")
+									{
+										e.preventDefault();
+										goToExo(e);
+									}
+								}}
 								data-url={"/exercise/" + mode + "/" + level.num}
 								data-locked={locked ? "true" : "false"}
 								className={`levelCard ${level.completed ? "levelCompleted" : ""} ${locked ? "levelLocked" : ""}`}
@@ -208,7 +217,16 @@ const ChoiceContent = ({ mode, user }) => {
 				levels.push(
 					<div
 						key={num}
+						role="button"
+						tabIndex={0}
 						onClick={goToExo}
+						onKeyDown={(e) => {
+							if (e.key === "Enter" || e.key === " ")
+							{
+								e.preventDefault();
+								goToExo(e);
+							}
+						}}
 						data-url={"/exercise/" + mode + "/" + num}
 						className={`levelCard ${isCompleted ? "levelCompleted" : ""}`}
 					>

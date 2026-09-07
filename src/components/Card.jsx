@@ -161,7 +161,15 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 
 	return (
 		<div
+			role={isWin ? "presentation" : "button"}
+			tabIndex={isWin ? -1 : 0}
 			onClick={handleClick}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					handleClick();
+				}
+			}}
 			className={
 				"card " +
 				(isWin ? "" : "hoverable ") +

@@ -126,6 +126,14 @@
 	margin-bottom: 20px;
 	margin-left: 12px;
 	margin-right: 12px;
+	outline: none;
+	transition: outline 0.15s ease, transform 0.15s ease-in-out;
+}
+
+.card:focus-visible {
+	outline: 3px solid var(--accent-cyan);
+	outline-offset: 4px;
+	border-radius: 8px;
 }
 
 .new {

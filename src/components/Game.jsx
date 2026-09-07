@@ -576,6 +576,42 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, addToGame, isWin,
 	});
 
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+			if ((e.key === 'z' || e.key === 'Z') && (e.ctrlKey || e.metaKey))
+			{
+				e.preventDefault();
+				undo();
+			}
+			else if (e.key === 'h' || e.key === 'H')
+			{
+				if (mode !== "Create")
+				{
+					e.preventDefault();
+					getNextMove();
+				}
+			}
+			else if (e.key === 'Escape')
+			{
+				e.preventDefault();
+				if (popupAddCard || popupFusion || popupDeleteCard)
+				{
+					setPopupAddCard(false);
+					setPopupFusion(false);
+					setPopupDeleteCard(false);
+				}
+				else
+					clearSelection();
+			}
+		};
+
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [gameHistory, game, mode, popupAddCard, popupFusion, popupDeleteCard]);
+
 	return (
 		<div className="game">
 			<div className="gameToolbar">
@@ -595,12 +631,12 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 				<div className="gameActions">
 					{/* Revient à la partie avant l'ajout d'une carte */}
-					<button id="back" className="buttonAction" onClick={undo} title="Retour arrière">
+					<button id="back" className="buttonAction" onClick={undo} title="Retour arrière (Ctrl+Z)">
 						<Undo2 size={18} />
 					</button>
 
 					{mode !== "Create" && (
-						<button id="aide" className="buttonAction" onClick={getNextMove} title="Aide">
+						<button id="aide" className="buttonAction" onClick={getNextMove} title="Aide (H)">
 							<Lightbulb size={18} />
 						</button>
 					)}
