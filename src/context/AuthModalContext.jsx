@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import AuthRequiredModal from "../components/AuthRequiredModal";
+import { AuthRequiredModal } from "../components/Modals";
 
 
 const AuthModalContext = createContext(null);

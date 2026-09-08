@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Game from "../components/Game";
 import Navigation from "../components/Navigation";
-import PopupForms from "../components/PopupForms";
+import { PopupForms } from "../components/Modals";
 
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";

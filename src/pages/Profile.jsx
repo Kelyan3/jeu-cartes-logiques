@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
-import ConfirmModal from "../components/ConfirmModal";
+import { ConfirmModal } from "../components/Modals";
 import { useAuth } from "../hooks/useAuth";
 import { API_BASE_URL as API } from "../config/api";
 import { User, Trophy, Target, AlertTriangle, Settings, Tags } from "lucide-react";

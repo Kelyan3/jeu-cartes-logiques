@@ -4,13 +4,9 @@ import { Clock, Download, FileJson, Hash, Lightbulb, Play, Square, Undo2 } from 
 import Deck from "./Deck";
 
 import GameActionBar from "./game/GameActionBar";
+import GamePopups from "./game/GamePopups";
 import GameDemonstration from "./game/GameDemonstration";
 import GameToasts from "./game/GameToasts";
-import GameWinPopup from "./game/GameWinPopup";
-
-import AddCardPopup from "./create/AddCardPopup";
-import FusionPopup from "./create/FusionPopup";
-import DeleteCardPopup from "./create/DeleteCardPopup";
 
 import { GameTabProvider } from "../context/GameTabContext";
 
@@ -578,7 +574,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	useEffect(() => {
 		const handleKeyDown = (e) => {
-			if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+			if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')
+				return;
 
 			if ((e.key === 'z' || e.key === 'Z') && (e.ctrlKey || e.metaKey))
 			{
@@ -587,8 +584,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			}
 			else if (e.key === 'h' || e.key === 'H')
 			{
-				if (mode !== "Create")
-				{
+				if (mode !== "Create") {
 					e.preventDefault();
 					getNextMove();
 				}
@@ -769,29 +765,25 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 				onCopy={copyHandler}
 			/>
 
-			<AddCardPopup
-				open={popupAddCard}
+			<GamePopups
+				popupAddCard={popupAddCard}
+				popupFusion={popupFusion}
+				popupDeleteCard={popupDeleteCard}
+				popupWin={popupWin}
+				
+				onCloseAddCard={() => setPopupAddCard(false)}
+				onCloseFusion={() => setPopupFusion(false)}
+				onCloseDeleteCard={() => setPopupDeleteCard(false)}
+				onCloseWin={() => setPopupWin(false)}
+				
 				onChooseColor={chooseColor}
-				onClose={() => setPopupAddCard(false)}
-			/>
-
-			<FusionPopup
-				open={popupFusion}
 				onChooseConnector={chooseConnector}
-				onClose={() => setPopupFusion(false)}
-			/>
-
-			<DeleteCardPopup
-				open={popupDeleteCard}
-				card={game[firstSelectedDeckIndex]?.[firstSelectedCardIndex]}
-				deckIndex={firstSelectedDeckIndex}
-				cardIndex={firstSelectedCardIndex}
-				onConfirm={deleteCard}
-				onCancel={() => setPopupDeleteCard(false)}
-			/>
-
-			<GameWinPopup
-				open={popupWin}
+				
+				cardToDelete={game[firstSelectedDeckIndex]?.[firstSelectedCardIndex]}
+				deleteDeckIndex={firstSelectedDeckIndex}
+				deleteCardIndex={firstSelectedCardIndex}
+				onConfirmDelete={deleteCard}
+				
 				mode={mode}
 				levelIndex={levelIndex}
 				totalLevelCount={totalLevelCount}
@@ -799,9 +791,8 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 				gameResult={gameResult}
 				demonstration={activeDemonstration}
 				constructDemonstration={constructDemonstration}
-				onCopy={copyHandler}
-				onClose={() => setPopupWin(false)}
-				onNext={nextExercise}
+				onCopyDemonstration={copyHandler}
+				onNextLevel={nextExercise}
 			/>
 		</div>
 	);

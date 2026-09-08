@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SCORING_FIELDS } from "./constants";
-import ConfirmModal from "../../components/ConfirmModal";
+import { ConfirmModal } from "../../components/Modals";
 
 
 const ScoringEditor = ({ initialScoring, call }) => {

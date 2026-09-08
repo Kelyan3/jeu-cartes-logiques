@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { DEVICE_LABELS } from "./constants";
 import FeedbackRating from "./FeedbackRating";
-import ConfirmModal from "../../components/ConfirmModal";
+import { ConfirmModal } from "../../components/Modals";
 
 
 /**

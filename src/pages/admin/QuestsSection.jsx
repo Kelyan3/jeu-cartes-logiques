@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
-import ConfirmModal from "../../components/ConfirmModal";
+import { ConfirmModal } from "../../components/Modals";
 
 import { MENUS } from "./constants";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
-import PopupForms from "../components/PopupForms";
+import { PopupForms } from "../components/Modals";
 import Card from "../components/Card";
 import { GameTabProvider } from "../context/GameTabContext";
 import CardModel from "../domain/Card";

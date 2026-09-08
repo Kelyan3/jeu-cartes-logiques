@@ -1,5 +1,5 @@
 import Navigation from "../components/Navigation";
-import PopupForms from "../components/PopupForms";
+import { PopupForms } from "../components/Modals";
 import Choice from "../components/Choice";
 
 const Tutorials = () => {

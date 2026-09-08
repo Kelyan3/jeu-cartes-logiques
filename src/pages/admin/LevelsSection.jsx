@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { GripVertical, Trash2, Link as LinkIcon } from "lucide-react";
-import ConfirmModal from "../../components/ConfirmModal";
+import { ConfirmModal } from "../../components/Modals";
 
 
 /**
