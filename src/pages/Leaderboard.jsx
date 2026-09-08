@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import Navigation from "../components/Navigation";
 import { API_BASE_URL as API } from "../config/api";
 import { Trophy, Medal } from "lucide-react";
@@ -124,7 +125,11 @@ const Leaderboard = () => {
 											{index === 2 && <Medal size={20} className="rankIcon bronze" />}
 											{index > 2 && <span className="rankNumber">{index + 1}</span>}
 										</td>
-										<td className="userCol">{entry.username}</td>
+										<td className="userCol">
+											<NavLink to={`/profile/${entry.username}`} className="userProfileLink" title={`Voir le profil de ${entry.username}`}>
+												{entry.username}
+											</NavLink>
+										</td>
 										<td>{entry.completed} <span className="totalLevels">/ {total}</span></td>
 										<td className="scoreCol">{entry.score.toLocaleString()}</td>
 										<td>

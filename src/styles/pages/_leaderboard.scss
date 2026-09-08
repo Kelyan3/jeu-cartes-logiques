@@ -141,6 +141,17 @@
 	font-family: 'Sora', sans-serif;
 }
 
+.userProfileLink {
+	color: var(--text-primary);
+	text-decoration: none;
+	transition: color 0.15s ease;
+
+	&:hover {
+		color: var(--accent-cyan);
+		text-decoration: underline;
+	}
+}
+
 .totalLevels {
 	color: var(--text-muted);
 	font-size: 13px;
