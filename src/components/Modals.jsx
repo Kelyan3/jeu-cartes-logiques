@@ -59,12 +59,12 @@ export const AuthRequiredModal = ({
 
 	return (
 		<div
-			className="confirmModalOverlay"
+			className="confirm-modal-overlay"
 			onClick={handleBackdropClick}
 			role="presentation"
 		>
 			<div
-				className="confirmModalCard authModalCard"
+				className="confirm-modal-card auth-modal-card"
 				role="alertdialog"
 				aria-modal="true"
 				aria-labelledby="auth-modal-title"
@@ -72,36 +72,36 @@ export const AuthRequiredModal = ({
 			>
 				<button
 					type="button"
-					className="confirmModalClose"
+					className="confirm-modal-close"
 					onClick={onCancel}
 					aria-label="Fermer la boîte de dialogue"
 				>
 					<X size={16} />
 				</button>
 
-				<div className="confirmModalIconWrapper warning">
+				<div className="confirm-modal-icon-wrapper warning">
 					<Lock size={26} strokeWidth={2.2} />
 				</div>
 
-				<h3 id="auth-modal-title" className="confirmModalTitle">
+				<h3 id="auth-modal-title" className="confirm-modal-title">
 					Compte requis
 				</h3>
 
-				<div id="auth-modal-desc" className="confirmModalMessage">
+				<div id="auth-modal-desc" className="confirm-modal-message">
 					Vous devez être connecté à un compte pour pouvoir jouer à un niveau ou créer vos propres exercices.
 				</div>
 
-				<div className="confirmModalActions authModalActions">
+				<div className="confirm-modal-actions auth-modal-actions">
 					<button
 						type="button"
-						className="confirmModalBtn confirmModalBtnCancel"
+						className="confirm-modal-btn confirm-modal-btn-cancel"
 						onClick={onCancel}
 					>
 						Annuler
 					</button>
 					<button
 						type="button"
-						className="confirmModalBtn confirmModalBtnCancel"
+						className="confirm-modal-btn confirm-modal-btn-cancel"
 						onClick={onRegister}
 					>
 						<UserPlus size={16} /> S'inscrire
@@ -109,7 +109,7 @@ export const AuthRequiredModal = ({
 					<button
 						ref={loginBtnRef}
 						type="button"
-						className="confirmModalBtn confirmModalBtnConfirm info"
+						className="confirm-modal-btn confirm-modal-btn-confirm info"
 						onClick={onLogin}
 					>
 						<LogIn size={16} /> Se connecter
@@ -205,12 +205,12 @@ export const ConfirmModal = ({
 
 	return (
 		<div
-			className="confirmModalOverlay"
+			className="confirm-modal-overlay"
 			onClick={handleBackdropClick}
 			role="presentation"
 		>
 			<div
-				className="confirmModalCard"
+				className="confirm-modal-card"
 				role="alertdialog"
 				aria-modal="true"
 				aria-labelledby="confirm-modal-title"
@@ -218,7 +218,7 @@ export const ConfirmModal = ({
 			>
 				<button
 					type="button"
-					className="confirmModalClose"
+					className="confirm-modal-close"
 					onClick={onCancel}
 					disabled={isPending}
 					aria-label="Fermer la boîte de dialogue"
@@ -226,24 +226,24 @@ export const ConfirmModal = ({
 					<X size={16} />
 				</button>
 
-				<div className={`confirmModalIconWrapper ${variant}`}>
+				<div className={`confirm-modal-icon-wrapper ${variant}`}>
 					{renderIcon()}
 				</div>
 
-				<h3 id="confirm-modal-title" className="confirmModalTitle">
+				<h3 id="confirm-modal-title" className="confirm-modal-title">
 					{title}
 				</h3>
 
-				<div id="confirm-modal-desc" className="confirmModalMessage">
+				<div id="confirm-modal-desc" className="confirm-modal-message">
 					{message}
 				</div>
 
-				<div className="confirmModalActions">
+				<div className="confirm-modal-actions">
 					{cancelLabel && (
 						<button
 							ref={cancelBtnRef}
 							type="button"
-							className="confirmModalBtn confirmModalBtnCancel"
+							className="confirm-modal-btn confirm-modal-btn-cancel"
 							onClick={onCancel}
 							disabled={isPending}
 						>
@@ -253,7 +253,7 @@ export const ConfirmModal = ({
 					<button
 						ref={confirmBtnRef}
 						type="button"
-						className={`confirmModalBtn confirmModalBtnConfirm ${variant}`}
+						className={`confirm-modal-btn confirm-modal-btn-confirm ${variant}`}
 						onClick={onConfirm}
 						disabled={isPending}
 					>
@@ -279,7 +279,7 @@ export const Popup = props => {
 
 export const PopupForms = () => {
 	return (
-		<div className="popupForms-box">
+		<div className="popup-forms-box">
 			<div className="bigbox">
 				<div className="box">
 					<NavLink to="/forms">Votre avis nous intéresse</NavLink>

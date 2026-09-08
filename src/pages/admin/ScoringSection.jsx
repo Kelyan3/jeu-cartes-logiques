@@ -1,6 +1,16 @@
 import { useState } from "react";
-import { SCORING_FIELDS } from "./constants";
 import { ConfirmModal } from "../../components/Modals";
+
+
+const SCORING_FIELDS = [
+	{ key: "score_max", label: "Score max" },
+	{ key: "score_min", label: "Score min" },
+	{ key: "time_grace_s", label: "Délai de grâce (s)" },
+	{ key: "time_interval_s", label: "Palier temps (s)" },
+	{ key: "time_penalty", label: "Pénalité / palier temps" },
+	{ key: "moves_threshold", label: "Seuil de coups" },
+	{ key: "moves_rate", label: "Pénalité / coup" },
+];
 
 
 const ScoringEditor = ({ initialScoring, call }) => {
@@ -49,14 +59,14 @@ const ScoringEditor = ({ initialScoring, call }) => {
 
 	return (
 		<>
-			<div className="scoringCard">
+			<div className="scoring-card">
 				<h3>Paramètres globaux</h3>
 				{validationErrorMsg && (
-					<div className="adminError" role="alert" style={{ marginBottom: "16px" }}>
+					<div className="admin-error" role="alert" style={{ marginBottom: "16px" }}>
 						{validationErrorMsg}
 					</div>
 				)}
-				<div className="scoringFields">
+				<div className="scoring-fields">
 					{SCORING_FIELDS.map((field) => (
 						<label key={field.key}>
 							{field.label}
@@ -69,7 +79,7 @@ const ScoringEditor = ({ initialScoring, call }) => {
 						</label>
 					))}
 				</div>
-				<button className="resetButton" disabled={!hasChanges()} onClick={save}>
+				<button className="reset-button" disabled={!hasChanges()} onClick={save}>
 					Enregistrer
 				</button>
 			</div>
@@ -92,9 +102,9 @@ const ScoringSection = ({ globalScoring, call }) => {
 	const scoringKey = globalScoring ? JSON.stringify(globalScoring) : "none";
 
 	return (
-		<section className="adminSection">
+		<section className="admin-section">
 			<h2>Gestion du score</h2>
-			<p className="adminHint">
+			<p className="admin-hint">
 				score = max(score_min, score_max - pénalité_temps - pénalité_coups).<br />
 				La pénalité temps retire "Pénalité / palier temps" pts par tranche de "Palier temps (s)" secondes dépassée au-delà du "Délai de grâce".<br />
 				La pénalité coups retire "Pénalité / coup" pts par coup au-delà du "Seuil de coups".<br />
@@ -103,7 +113,7 @@ const ScoringSection = ({ globalScoring, call }) => {
 			</p>
 
 			{!globalScoring ? (
-				<p className="choiceMessage">Chargement des paramètres de score...</p>
+				<p className="choice-message">Chargement des paramètres de score...</p>
 			) : (
 				<ScoringEditor key={scoringKey} initialScoring={globalScoring} call={call} />
 			)}

@@ -95,7 +95,7 @@ const Exercise = () => {
 			<Navigation />
 			
 			{effectiveUnlockStatus === "locked" && (
-				<p className="levelLockedMessage">Vous n'avez pas encore débloqué ce niveau.</p>
+				<p className="level-locked-message">Vous n'avez pas encore débloqué ce niveau.</p>
 			)}
 
 			{effectiveUnlockStatus === "ok" && ex !== undefined && (

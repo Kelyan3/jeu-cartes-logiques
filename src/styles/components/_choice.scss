@@ -5,18 +5,18 @@
 	padding-bottom: 64px;
 }
 
-.levelCategory {
+.level-category {
 	margin-bottom: 48px;
 }
 
-.categoryHeader {
+.category-header {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	margin-bottom: 24px;
 }
 
-.categoryHeader h2 {
+.category-header h2 {
 	font-family: 'Sora', sans-serif;
 	font-size: 24px;
 	font-weight: 700;
@@ -25,17 +25,17 @@
 	letter-spacing: -0.01em;
 }
 
-.categoryLockedIcon {
+.category-locked-icon {
 	color: var(--text-muted);
 }
 
-.levelsGrid {
+.levels-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 	gap: 16px;
 }
 
-.levelCard {
+.level-card {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
@@ -49,55 +49,55 @@
 	transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 
-.levelCard:hover:not(.levelLocked) {
+.level-card:hover:not(.level-locked) {
 	border-color: var(--accent-cyan);
 	box-shadow: var(--shadow-soft);
 	background: rgba(var(--accent-rgb), 0.04);
 	transform: translateY(-2px);
 }
 
-.levelCardTop {
+.level-card-top {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	gap: 8px;
 }
 
-.levelTitle {
+.level-title {
 	font-family: 'Inter', sans-serif;
 	font-size: 15px;
 	font-weight: 600;
 	color: var(--text-primary);
 }
 
-.levelIcon {
+.level-icon {
 	display: flex;
 	align-items: center;
 }
 
-.completedIcon {
+.completed-icon {
 	color: var(--accent-amber);
 }
 
-.lockedIcon {
+.locked-icon {
 	color: var(--text-muted);
 }
 
-.levelCompleted {
+.level-completed {
 	border-color: color-mix(in srgb, var(--accent-amber) 30%, transparent);
 	background: color-mix(in srgb, var(--accent-amber) 4%, var(--bg-surface));
 }
 
-.levelCompleted .levelTitle {
+.level-completed .level-title {
 	color: var(--text-primary);
 }
 
-.levelCompleted:hover {
+.level-completed:hover {
 	background: color-mix(in srgb, var(--accent-amber) 8%, var(--bg-surface)) !important;
 	border-color: var(--accent-amber) !important;
 }
 
-.levelScoreInfo {
+.level-score-info {
 	margin-top: 12px;
 	display: flex;
 	flex-direction: column;
@@ -109,7 +109,7 @@
 	font-size: 11px;
 }
 
-.levelTime, .levelScoreValue {
+.level-time, .level-score-value {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -117,18 +117,18 @@
 	color: var(--text-muted);
 }
 
-.levelScoreValue {
+.level-score-value {
 	color: var(--accent-amber);
 	font-weight: 600;
 }
 
-.levelLocked {
+.level-locked {
 	cursor: not-allowed;
 	opacity: 0.6;
 	background: var(--bg-base);
 }
 
-.choiceMessage {
+.choice-message {
 	color: var(--text-muted);
 	font-family: 'Inter', sans-serif;
 	font-size: 15px;

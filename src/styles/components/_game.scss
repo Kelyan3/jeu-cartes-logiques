@@ -7,7 +7,7 @@
 	width: 100%;
 }
 
-.game .deckRow {
+.game .deck-row {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 20px;
@@ -15,7 +15,7 @@
 	justify-content: flex-start;
 }
 
-.game .buttonWin {
+.game .button-win {
 	background: var(--bg-surface);
 	border: 1px solid var(--accent-cyan);
 	box-shadow: var(--shadow-soft);
@@ -33,12 +33,12 @@
 	transition: background .15s ease, transform .15s ease, border-color .15s ease;
 }
 
-.game .buttonWin:hover {
+.game .button-win:hover {
 	box-shadow: rgba(var(--accent-rgb), 0.1);
 	transform: translateY(-2px);
 }
 
-.gameToolbar {
+.game-toolbar {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -57,14 +57,14 @@
 	box-shadow: var(--shadow-soft);
 }
 
-.gameStatus {
+.game-status {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	flex-wrap: wrap;
 }
 
-.statusBadge {
+.status-badge {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -77,33 +77,33 @@
 	color: var(--text-primary);
 }
 
-.statusBadge .statusIcon {
+.status-badge .status-icon {
 	color: var(--accent-cyan);
 }
 
-.statusBadge .statusValue {
+.status-badge .status-value {
 	font-weight: 700;
 	font-family: 'JetBrains Mono', monospace;
 }
 
-.statusBadge .statusLabel {
+.status-badge .status-label {
 	color: var(--text-muted);
 	font-size: 13px;
 }
 
-.gameActions {
+.game-actions {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
 	gap: 8px;
 }
 
-.gameActions button {
+.game-actions button {
 	cursor: pointer;
 	position: relative;
 }
 
-.gameActions .buttonAction {
+.game-actions .button-action {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 8px;
@@ -117,7 +117,7 @@
 	color: var(--text-primary);
 }
 
-.gameActions .buttonFormula {
+.game-actions .button-formula {
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 13px;
 	font-weight: 600;
@@ -125,7 +125,7 @@
 	white-space: nowrap;
 }
 
-.gameActions .fileButton {
+.game-actions .file-button {
 	display: inline-flex;
 	align-items: center;
 	height: 36px;
@@ -141,16 +141,16 @@
 	transition: border-color .15s ease, color .15s ease;
 }
 
-.gameActions .fileButton input[type="file"] {
+.game-actions .file-button input[type="file"] {
 	display: none;
 }
 
-.gameActions .fileButton:hover {
+.game-actions .file-button:hover {
 	border-color: var(--accent-cyan);
 	color: var(--accent-cyan);
 }
 
-.gameActions .fileDownload {
+.game-actions .file-download {
 	height: 36px;
 	padding: 0 13px;
 	margin: 0;
@@ -167,12 +167,12 @@
 	transition: background .15s ease, box-shadow .15s ease;
 }
 
-.gameActions .fileDownload:hover {
+.game-actions .file-download:hover {
 	background: rgba(var(--accent-rgb), 0.1);
 }
 
 
-.gameActions .tooltiptext {
+.game-actions .tooltiptext {
 	visibility: hidden;
 	width: 110px;
 	line-height: 18px;
@@ -190,7 +190,7 @@
 	transform: translateX(-50%);
 }
 
-.gameActions .tooltiptext::after {
+.game-actions .tooltiptext::after {
 	border-color: transparent transparent var(--border-subtle) transparent;
 	border-style: solid;
 	border-width: 5px;
@@ -201,7 +201,7 @@
 	position: absolute;
 }
 
-.gameActions #checkBoxSimple {
+.game-actions #check-box-simple {
 	display: inline-flex;
 	align-items: center;
 	height: 36px;
@@ -217,27 +217,27 @@
 	cursor: pointer;
 }
 
-.gameActions #checkBoxSimple input {
+.game-actions #check-box-simple input {
 	cursor: pointer;
 	accent-color: var(--accent-cyan);
 }
 
-.gameActions #checkBoxSimple .tooltiptext {
+.game-actions #check-box-simple .tooltiptext {
 	top: calc(100% + 8px);
 	width: 160px;
 }
 
-.gameActions .buttonAction:hover {
+.game-actions .button-action:hover {
 	border-color: var(--accent-cyan);
 	box-shadow: rgba(var(--accent-rgb), 0.08);
 	color: var(--accent-cyan);
 }
 
-.gameActions .actionDropdown {
+.game-actions .action-dropdown {
 	position: relative;
 }
 
-.gameActions .actionDropdownMenu {
+.game-actions .action-dropdown-menu {
 	position: absolute;
 	top: 100%;
 	left: 0;
@@ -252,7 +252,7 @@
 	overflow: hidden;
 }
 
-.gameActions .actionDropdownMenu button {
+.game-actions .action-dropdown-menu button {
 	background: none;
 	border: none;
 	text-align: left;
@@ -263,36 +263,36 @@
 	cursor: pointer;
 }
 
-.gameActions .actionDropdownMenu button:hover {
+.game-actions .action-dropdown-menu button:hover {
 	background: var(--bg-base);
 }
 
-.gameActions .actionDropdownMenu button.boutonSelection {
+.game-actions .action-dropdown-menu button.bouton-selection {
 	border-left: 3px solid var(--accent-cyan);
 }
 
-.gameActions .buttonAction:hover .tooltiptext {
+.game-actions .button-action:hover .tooltiptext {
 	visibility: visible;
 }
 
-.gameActions #checkBoxSimple:hover .tooltiptext {
+.game-actions #check-box-simple:hover .tooltiptext {
 	visibility: visible;
 }
 
-.gameActions .boutonSelection {
+.game-actions .bouton-selection {
 	border: 1px solid var(--accent-cyan) !important;
 	border-radius: 8px;
 	box-shadow: rgba(var(--accent-rgb), 0.12);
 }
 
-.popupDeleteActions {
+.popup-delete-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 12px;
 	margin-top: 20px;
 }
 
-.btnSecondary {
+.btn-secondary {
 	margin-top: 24px;
 	padding: 10px;
 	border: 1px solid var(--border-subtle);
@@ -305,11 +305,11 @@
 	transition: background .15s ease, box-shadow .15s ease;
 }
 
-.btnSecondary:hover {
+.btn-secondary:hover {
 	background: rgba(var(--accent-rgb), 0.1);
 }
 
-.btnDanger {
+.btn-danger {
 	margin-top: 24px;
 	padding: 10px;
 	border: 1px solid var(--danger);
@@ -322,7 +322,7 @@
 	transition: background .15s ease;
 }
 
-.btnDanger:hover {
+.btn-danger:hover {
 	background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
@@ -335,7 +335,7 @@
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.game .toastTutorial {
+.game .toast-tutorial {
 	grid-area: t;
 	position: relative;
 	width: fit-content;
@@ -347,7 +347,7 @@
 	animation: toast-in-flow .2s ease;
 }
 
-.game .toastError {
+.game .toast-error {
 	position: fixed;
 	top: 84px;
 	right: 24px;
@@ -383,12 +383,12 @@
 	}
 }
 
-.game #checkBoxSimple {
+.game #check-box-simple {
 	color: var(--text-muted);
 }
 
 @media (max-width: 900px) {
-	.game .toastError {
+	.game .toast-error {
 		left: 50%;
 		right: auto;
 		transform: translateX(-50%);

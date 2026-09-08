@@ -27,7 +27,7 @@
 	text-overflow: ellipsis;
 }
 
-.burgerButton {
+.burger-button {
 	display: none;
 	flex-shrink: 0;
 	width: 40px;
@@ -42,7 +42,7 @@
 	border-radius: 8px;
 }
 
-.burgerButton span {
+.burger-button span {
 	display: block;
 	width: 18px;
 	height: 2px;
@@ -51,15 +51,15 @@
 	transition: transform .2s ease, opacity .2s ease;
 }
 
-.burgerButton .isOpen span:nth-child(1) {
+.burger-button.is-open span:nth-child(1) {
 	transform: translateY(7px) rotate(45deg);
 }
 
-.burgerButton .isOpen span:nth-child(2) {
+.burger-button.is-open span:nth-child(2) {
 	opacity: 0;
 }
 
-.burgerButton .isOpen span:nth-child(3) {
+.burger-button.is-open span:nth-child(3) {
 	transform: translateY(-7px) rotate(-45deg);
 }
 
@@ -76,7 +76,7 @@
 	position: relative;
 }
 
-.navbar > li.choose > div.dropdownTrigger {
+.navbar > li.choose > div.dropdown-trigger {
 	display: flex;
 	align-items: center;
 	gap: 6px;
@@ -90,16 +90,16 @@
 	cursor: pointer;
 }
 
-.dropdownTrigger .chevron {
+.dropdown-trigger .chevron {
 	transition: transform .2s ease;
 	opacity: 0.6;
 }
 
-.navbar > li.choose:hover > div.dropdownTrigger {
+.navbar > li.choose:hover > div.dropdown-trigger {
 	background: var(--bg-surface);
 }
 
-.navbar > li.choose:hover > div.dropdownTrigger .chevron {
+.navbar > li.choose:hover > div.dropdown-trigger .chevron {
 	transform: rotate(180deg);
 }
 
@@ -126,7 +126,7 @@
 }
 
 .choose ul li a,
-.choose ul li .logoutLink {
+.choose ul li .logout-link {
 	display: block;
 	padding: 9px 12px;
 	border-radius: 6px;
@@ -138,7 +138,7 @@
 }
 
 .choose ul li a:hover,
-.choose ul li .logoutLink:hover {
+.choose ul li .logout-link:hover {
 	background: rgba(var(--accent-rgb), 0.1);
 	color: var(--accent-cyan);
 }
@@ -148,7 +148,7 @@
 	background: rgba(var(--accent-rgb), 0.1);
 }
 
-.navLink {
+.nav-link {
 	display: block;
 	padding: 10px 14px;
 	border-radius: 8px;
@@ -160,17 +160,17 @@
 	transition: background .15s ease, color .15s ease;
 }
 
-.navLink:hover {
+.nav-link:hover {
 	background: rgba(var(--accent-rgb), 0.1);
 	color: var(--accent-cyan);
 }
 
-.navLink.active {
+.nav-link.active {
 	color: var(--accent-cyan);
 	background: rgba(var(--accent-rgb), 0.1);
 }
 
-.themeNavItem {
+.theme-nav-item {
 	display: flex;
 	align-items: center;
 	margin-left: 4px;
@@ -178,7 +178,7 @@
 	border-left: 1px solid var(--border-subtle);
 }
 
-.themeIconButton {
+.theme-icon-button {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -193,7 +193,7 @@
 	transition: border-color .15s ease, color .15s ease, background .15s ease;
 }
 
-.themeIconButton:hover {
+.theme-icon-button:hover {
 	border-color: var(--accent-cyan);
 	color: var(--accent-cyan);
 	background: rgba(var(--accent-rgb), 0.1);
@@ -204,7 +204,7 @@
 		padding: 0 16px;
 	}
 
-	.burgerButton {
+	.burger-button {
 		display: flex;
 	}
 
@@ -230,7 +230,7 @@
 		transition: opacity .18s ease, transform .18s ease, visibility .18s;
 	}
 
-	.navbar.isOpen {
+	.navbar.is-open {
 		transform: translateY(0);
 		opacity: 1;
 		visibility: visible;
@@ -241,20 +241,20 @@
 		width: 100%;
 	}
 
-	.navLink {
+	.nav-link {
 		padding: 12px 8px;
 	}
 
-	.navbar > li.choose > div.dropdownTrigger {
+	.navbar > li.choose > div.dropdown-trigger {
 		padding: 12px 8px;
 		cursor: default;
 	}
 
-	.navbar > li.choose:hover > div.dropdownTrigger {
+	.navbar > li.choose:hover > div.dropdown-trigger {
 		background: transparent;
 	}
 
-	.dropdownTrigger .chevron {
+	.dropdown-trigger .chevron {
 		display: none;
 	}
 
@@ -271,11 +271,11 @@
 	}
 
 	.choose ul li a,
-	.choose ul li .logoutLink {
+	.choose ul li .logout-link {
 		padding: 10px 8px;
 	}
 
-	.themeNavItem {
+	.theme-nav-item {
 		margin: 8px 0 0;
 		padding: 12px 0 0;
 		border-left: none;
@@ -284,6 +284,6 @@
 	}
 }
 
-body.navOpen {
+body.nav-open {
 	overflow: hidden;
 }

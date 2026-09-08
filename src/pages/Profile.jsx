@@ -63,34 +63,34 @@ const OtherUserProfile = ({ username, currentUser }) => {
 		<div className="forms">
 			<Navigation />
 
-			<div className="profileContainer">
+			<div className="profile-container">
 				{loading && (
-					<p className="profileLoading" style={{ textAlign: "center", marginTop: "40px" }}>
+					<p className="profile-loading" style={{ textAlign: "center", marginTop: "40px" }}>
 						Chargement du profil de {username}...
 					</p>
 				)}
 
 				{!loading && notFound && (
-					<div className="profileSection" style={{ textAlign: "center", padding: "48px 24px" }}>
+					<div className="profile-section" style={{ textAlign: "center", padding: "48px 24px" }}>
 						<AlertTriangle size={48} style={{ color: "var(--accent-amber)", margin: "0 auto 16px" }} />
 						<h2>Utilisateur introuvable</h2>
-						<p className="sectionDesc" style={{ marginBottom: "24px" }}>
+						<p className="section-desc" style={{ marginBottom: "24px" }}>
 							Le compte de «&nbsp;{username}&nbsp;» n'existe pas ou a été supprimé.
 						</p>
-						<NavLink to="/leaderboard" className="buttonPrimary">
+						<NavLink to="/leaderboard" className="button-primary">
 							<Trophy size={16} /> Voir le classement
 						</NavLink>
 					</div>
 				)}
 
 				{!loading && !notFound && error && (
-					<div className="profileSection" style={{ textAlign: "center", padding: "48px 24px" }}>
+					<div className="profile-section" style={{ textAlign: "center", padding: "48px 24px" }}>
 						<AlertTriangle size={48} style={{ color: "var(--danger)", margin: "0 auto 16px" }} />
 						<h2>Erreur de chargement</h2>
-						<p className="sectionDesc" style={{ marginBottom: "24px" }}>
+						<p className="section-desc" style={{ marginBottom: "24px" }}>
 							Impossible de charger le profil de cet utilisateur pour le moment.
 						</p>
-						<NavLink to="/leaderboard" className="buttonPrimary">
+						<NavLink to="/leaderboard" className="button-primary">
 							<Trophy size={16} /> Retour au classement
 						</NavLink>
 					</div>
@@ -98,14 +98,14 @@ const OtherUserProfile = ({ username, currentUser }) => {
 
 				{!loading && !notFound && !error && profile && (
 					<>
-						<div className="profileHeader">
-							<div className="profileHeaderUser">
-								<div className="profileAvatar">
+						<div className="profile-header">
+							<div className="profile-header-user">
+								<div className="profile-avatar">
 									<User size={32} />
 								</div>
-								<div className="profileInfo">
+								<div className="profile-info">
 									<h2>{profile.username}</h2>
-									<div className="profileMeta">
+									<div className="profile-meta">
 										<p>
 											<Tags size={14} />
 											{profile.category_name || "Aucune catégorie"}
@@ -120,44 +120,44 @@ const OtherUserProfile = ({ username, currentUser }) => {
 								</div>
 							</div>
 
-							<div className="profileHeaderActions">
-								<NavLink to="/leaderboard" className="buttonSecondary">
+							<div className="profile-header-actions">
+								<NavLink to="/leaderboard" className="button-secondary">
 									<Trophy size={16} /> Classement
 								</NavLink>
 								{currentUser && (
-									<NavLink to="/profile" className="buttonSecondary">
+									<NavLink to="/profile" className="button-secondary">
 										<User size={16} /> Mon profil
 									</NavLink>
 								)}
 							</div>
 						</div>
 
-						<div className="profileStatsGrid">
-							<div className="profileStatCard statScore">
-								<div className="statHeader">
+						<div className="profile-stats-grid">
+							<div className="profile-stat-card stat-score">
+								<div className="stat-header">
 									<Trophy size={18} />
 									Score global
 								</div>
-								<div className="statValue">{(profile.score ?? 0).toLocaleString()}</div>
+								<div className="stat-value">{(profile.score ?? 0).toLocaleString()}</div>
 								<div style={{ fontSize: "13px", color: "var(--text-muted)" }}>points accumulés</div>
 							</div>
 
-							<div className="profileStatCard">
-								<div className="statHeader">
+							<div className="profile-stat-card">
+								<div className="stat-header">
 									<Target size={18} />
 									Progression
 								</div>
-								<div className="statValue">
+								<div className="stat-value">
 									{profile.completed ?? 0}{" "}
 									<span style={{ fontSize: "16px", color: "var(--text-muted)" }}>/ {playTotal}</span>
 								</div>
-								<div className="statProgress">
-									<div className="statProgressHeader">
+								<div className="stat-progress">
+									<div className="stat-progress-header">
 										<span>Niveaux complétés</span>
 										<span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{playPercent}%</span>
 									</div>
-									<div className="progressTrack">
-										<div className="progressFill" style={{ width: playPercent + "%" }}></div>
+									<div className="progress-track">
+										<div className="progress-fill" style={{ width: playPercent + "%" }}></div>
 									</div>
 								</div>
 							</div>
@@ -295,10 +295,10 @@ const OwnProfile = ({ user, setUser }) => {
 		return (
 			<div className="forms">
 				<Navigation />
-				<div id="forms" className="profileCard">
+				<div id="forms" className="profile-card">
 					<span className="eyebrow">Mon compte</span>
 					<p>Vous devez être connecté pour voir votre profil.</p>
-					<NavLink to="/login" className="authSubmit">
+					<NavLink to="/login" className="auth-submit">
 						Se connecter
 					</NavLink>
 				</div>
@@ -316,15 +316,15 @@ const OwnProfile = ({ user, setUser }) => {
 		<div className="forms">
 			<Navigation />
 
-			<div className="profileContainer">
-				<div className="profileHeader">
-					<div className="profileHeaderUser">
-						<div className="profileAvatar">
+			<div className="profile-container">
+				<div className="profile-header">
+					<div className="profile-header-user">
+						<div className="profile-avatar">
 							<User size={32} />
 						</div>
-						<div className="profileInfo">
+						<div className="profile-info">
 							<h2>{user.username}</h2>
-							<div className="profileMeta">
+							<div className="profile-meta">
 								<p>
 									<Tags size={14} />
 									{userCategoryName || "Aucune catégorie"}
@@ -339,12 +339,12 @@ const OwnProfile = ({ user, setUser }) => {
 						</div>
 					</div>
 
-					<div className="profileHeaderActions">
-						<NavLink to="/leaderboard" className="buttonSecondary">
+					<div className="profile-header-actions">
+						<NavLink to="/leaderboard" className="button-secondary">
 							<Trophy size={16} /> Classement
 						</NavLink>
 						<button
-							className="buttonDanger"
+							className="button-danger"
 							onClick={handleReset}
 							disabled={resetting}
 							title="Réinitialiser ma progression"
@@ -356,59 +356,59 @@ const OwnProfile = ({ user, setUser }) => {
 				</div>
 
 				{loadingStats && (
-					<p className="profileLoading" style={{ textAlign: "center" }}>
+					<p className="profile-loading" style={{ textAlign: "center" }}>
 						Chargement de vos statistiques...
 					</p>
 				)}
 				{!loadingStats && statsError && (
-					<p className="profileLoading" style={{ textAlign: "center", color: "var(--danger)" }}>
+					<p className="profile-loading" style={{ textAlign: "center", color: "var(--danger)" }}>
 						Impossible de charger vos statistiques.
 					</p>
 				)}
 
 				{!loadingStats && !statsError && (
 					<>
-						<div className="profileStatsGrid">
-							<div className="profileStatCard statScore">
-								<div className="statHeader">
+						<div className="profile-stats-grid">
+							<div className="profile-stat-card stat-score">
+								<div className="stat-header">
 									<Trophy size={18} />
 									Score global
 								</div>
-								<div className="statValue">{playScore.toLocaleString()}</div>
+								<div className="stat-value">{playScore.toLocaleString()}</div>
 								<div style={{ fontSize: "13px", color: "var(--text-muted)" }}>points accumulés</div>
 							</div>
 
-							<div className="profileStatCard">
-								<div className="statHeader">
+							<div className="profile-stat-card">
+								<div className="stat-header">
 									<Target size={18} />
 									Progression
 								</div>
-								<div className="statValue">
+								<div className="stat-value">
 									{playCompleted}{" "}
 									<span style={{ fontSize: "16px", color: "var(--text-muted)" }}>/ {playTotal}</span>
 								</div>
-								<div className="statProgress">
-									<div className="statProgressHeader">
+								<div className="stat-progress">
+									<div className="stat-progress-header">
 										<span>Niveaux complétés</span>
 										<span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{playPercent}%</span>
 									</div>
-									<div className="progressTrack">
-										<div className="progressFill" style={{ width: playPercent + "%" }}></div>
+									<div className="progress-track">
+										<div className="progress-fill" style={{ width: playPercent + "%" }}></div>
 									</div>
 								</div>
 							</div>
 						</div>
 
-						<div className="profileSection">
+						<div className="profile-section">
 							<h3>
 								<Settings size={18} /> Paramètres du compte
 							</h3>
-							<p className="sectionDesc">
+							<p className="section-desc">
 								Sélectionnez la catégorie qui correspond le mieux à votre profil pour adapter certaines
 								fonctionnalités du jeu.
 							</p>
 
-							<form className="profileFormGroup" onSubmit={handleCategorySubmit}>
+							<form className="profile-form-group" onSubmit={handleCategorySubmit}>
 								<select
 									value={selectedCategory}
 									onChange={(event) => setSelectedCategory(event.target.value)}
@@ -424,7 +424,7 @@ const OwnProfile = ({ user, setUser }) => {
 								</select>
 								<button
 									type="submit"
-									className="buttonPrimary"
+									className="button-primary"
 									disabled={!selectedCategory || savingCategory}
 								>
 									{savingCategory ? "Enregistrement..." : "Valider"}

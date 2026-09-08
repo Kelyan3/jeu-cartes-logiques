@@ -98,7 +98,7 @@ const Register = () => {
 					<>
 						<span className="eyebrow">Nouveau compte</span>
 						<h2>Créer un compte</h2>
-						<form onSubmit={handleSubmit} className="authForm">
+						<form onSubmit={handleSubmit} className="auth-form">
 							<div className="field">
 								<label htmlFor="username">Nom d'utilisateur</label>
 								<input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -111,11 +111,11 @@ const Register = () => {
 
 							<div className="field">
 								<label htmlFor="password">Mot de passe</label>
-								<div className="passwordField">
+								<div className="password-field">
 									<input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
 									<button
 										type="button"
-										className="togglePassword"
+										className="toggle-password"
 										onClick={() => setShowPassword((e) => !e)}
 										aria-label={showPassword ? "Masquer le mot de passe" : "Montrer le mot de passe"}
 										title={showPassword ? "Masquer le mot de passe" : "Montrer le mot de passe"}
@@ -137,11 +137,11 @@ const Register = () => {
 								/>
 							</div>
 
-							<div className="formWarning">
+							<div className="form-warning">
 								Attention : Aucun e-mail de confirmation ne sera envoyé. En cas de perte de votre mot de passe, il ne sera <strong>pas possible</strong> de le récupérer. Veillez à bien le noter en lieu sûr.
 							</div>
 
-							<label className="checkboxField">
+							<label className="checkbox-field">
 								<input
 									type="checkbox"
 									checked={passwordSavedChecked}
@@ -151,13 +151,13 @@ const Register = () => {
 								<span>J'ai bien noté mon mot de passe et je sais qu'il ne pourra pas être récupéré en cas d'oubli.</span>
 							</label>
 
-							{error && <p className="formError">{error}</p>}
+							{error && <p className="form-error">{error}</p>}
 
-							<button type="submit" className="authSubmit" disabled={submitting || !passwordSavedChecked}>
+							<button type="submit" className="auth-submit" disabled={submitting || !passwordSavedChecked}>
 								{submitting ? "Création..." : "Créer mon compte"}
 							</button>
 
-							<p className="authSwitch">
+							<p className="auth-switch">
 								Déjà un compte ? <NavLink to={`/login${location.search}`}>Se connecter</NavLink>
 							</p>
 						</form>
@@ -168,7 +168,7 @@ const Register = () => {
 					<>
 						<span className="eyebrow">Dernière étape</span>
 						<h2>Choisir votre catégorie</h2>
-						<form onSubmit={handleCategorySubmit} className="authForm">
+						<form onSubmit={handleCategorySubmit} className="auth-form">
 							<div className="field">
 								<label htmlFor="category">Catégorie</label>
 								<select
@@ -185,11 +185,11 @@ const Register = () => {
 								</select>
 							</div>
 
-							<button type="submit" className="authSubmit" disabled={!selectedCategory || savingCategory}>
+							<button type="submit" className="auth-submit" disabled={!selectedCategory || savingCategory}>
 								{savingCategory ? "Enregistrement..." : "Confirmer"}
 							</button>
 
-							<p className="authSwitch">
+							<p className="auth-switch">
 								<NavLink to={(() => {
 									const params = new URLSearchParams(window.location.search);
 									const redirect = params.get("redirect");

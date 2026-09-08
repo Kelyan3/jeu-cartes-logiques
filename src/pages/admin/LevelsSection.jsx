@@ -114,16 +114,16 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 	};
 
 	return (
-		<section className="adminSection">
+		<section className="admin-section">
 			<h2>Niveaux</h2>
-			<p className="adminHint">
+			<p className="admin-hint">
 				Un niveau doit déjà exister comme fichier <code>exN.json</code> (créé via "Créer un niveau",
 				déposé dans <code>public/json/exos_feuilles/</code>) avant de pouvoir être rattaché ici à un chapitre.
 				Glissez une ligne pour changer sa position dans le chapitre.
 			</p>
 
 			{chapters.length > 0 && (
-				<div className="adminFilterBar">
+				<div className="admin-filter-bar">
 					<label htmlFor="chapter-select">Voir les niveaux du chapitre :</label>
 					<select
 						id="chapter-select"
@@ -142,8 +142,8 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 				const levels = getLevelsForChapter(chapter);
 
 				return (
-					<div key={chapter.id_chapter} className="adminSubgroup">
-						<table className="adminTable">
+					<div key={chapter.id_chapter} className="admin-subgroup">
+						<table className="admin-table">
 							<thead>
 								<tr>
 									<th></th>
@@ -170,13 +170,13 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 										onDragEnd={handleDragEnd}
 										className={
 											(draggedLevel?.id_level === level.id_level ? "dragging " : "") +
-											(dragOverId === level.id_level ? "dragOver" : "")
+											(dragOverId === level.id_level ? "drag-over" : "")
 										}
 									>
-										<td className="dragHandle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
+										<td className="drag-handle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
 										<td>Niveau {level.num}</td>
 										<td>
-											<button className="actionButton actionDelete" title="Retirer" onClick={() => setLevelToRemove(level)}>
+											<button className="action-button action-delete" title="Retirer" onClick={() => setLevelToRemove(level)}>
 												<Trash2 size={16} />
 											</button>
 										</td>
@@ -188,9 +188,9 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 				);
 			})()}
 
-			<div className="adminCreatePanel">
+			<div className="admin-create-panel">
 				<h3>Rattacher un niveau</h3>
-				<form className="adminForm" onSubmit={submit}>
+				<form className="admin-form" onSubmit={submit}>
 					<select value={num} onChange={(e) => setNum(e.target.value)} required>
 						<option value="" disabled>Niveau non assigné...</option>
 						{unassignedLevels.map((n) => (
@@ -203,7 +203,7 @@ const LevelsSection = ({ chapters, unassignedLevels, call }) => {
 							<option key={chapter.id_chapter} value={chapter.id_chapter}>{chapter.name}</option>
 						))}
 					</select>
-					<button type="submit" className="buttonPrimary" disabled={unassignedLevels.length === 0}>
+					<button type="submit" className="button-primary" disabled={unassignedLevels.length === 0}>
 						<LinkIcon size={16} /> Rattacher
 					</button>
 				</form>

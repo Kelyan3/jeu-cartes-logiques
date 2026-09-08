@@ -14,8 +14,8 @@ const COLORS = [
 ];
 
 const CONNECTORS = [
-	["et", "Et", "∧"],
-	["ou", "Ou", "∨"],
+	["and", "Et", "∧"],
+	["or", "Ou", "∨"],
 	["=>", "Implique", "⇒"],
 	["<=>", "Équivaut", "⇔"],
 ];
@@ -69,16 +69,16 @@ const GamePopups = ({
 					content={
 						<>
 							<b>Choisissez une couleur</b>
-							<div className="colorGrid" onChange={onChooseColor}>
+							<div className="color-grid" onChange={onChooseColor}>
 								{COLORS.map(([value, label]) => (
-									<label className="colorSwatchLabel" key={value}>
+									<label className="color-swatch-label" key={value}>
 										<input type="radio" value={value} name="couleur" />
-										<span className="colorSwatch" style={{ backgroundColor: value }}></span>
-										<span className="colorSwatchName">{label}</span>
+										<span className="color-swatch" style={{ backgroundColor: value }}></span>
+										<span className="color-swatch-name">{label}</span>
 									</label>
 								))}
 							</div>
-							<button className="popupClose" onClick={onCloseAddCard} aria-label="Fermer">✕</button>
+							<button className="popup-close" onClick={onCloseAddCard} aria-label="Fermer">✕</button>
 						</>
 					}
 				/>
@@ -91,16 +91,16 @@ const GamePopups = ({
 					content={
 						<>
 							<b>Choisissez un connecteur</b>
-							<div className="connectorGrid" onChange={onChooseConnector}>
+							<div className="connector-grid" onChange={onChooseConnector}>
 								{CONNECTORS.map(([value, name, symbol]) => (
-									<label className="connectorLabel" key={value}>
+									<label className="connector-label" key={value}>
 										<input type="radio" value={value} name="connecteur" />
-										<span className="connectorSymbol">{symbol}</span>
-										<span className="connectorName">{name}</span>
+										<span className="connector-symbol">{symbol}</span>
+										<span className="connector-name">{name}</span>
 									</label>
 								))}
 							</div>
-							<button className="popupClose" onClick={onCloseFusion} aria-label="Fermer">✕</button>
+							<button className="popup-close" onClick={onCloseFusion} aria-label="Fermer">✕</button>
 						</>
 					}
 				/>
@@ -118,11 +118,11 @@ const GamePopups = ({
 								{deleteDeckIndex}][{deleteCardIndex}] ?
 							</b>
 							<br />
-							<div className="popupDeleteActions">
-								<button className="btnSecondary" onClick={onCloseDeleteCard}>
+							<div className="popup-delete-actions">
+								<button className="btn-secondary" onClick={onCloseDeleteCard}>
 									Annuler
 								</button>
-								<button className="btnDanger" onClick={onConfirmDelete}>
+								<button className="btn-danger" onClick={onConfirmDelete}>
 									Supprimer
 								</button>
 							</div>
@@ -138,18 +138,18 @@ const GamePopups = ({
 						<>
 							<b>Bravo, vous avez trouvé la solution !</b>
 							{gameResult && mode !== "Create" && (
-								<p className="gameResultSummary">
+								<p className="game-result-summary">
 									Temps : {formatTime(gameResult.elapsedSeconds)}
 									{mode === "Play" && gameResult.score !== null && ` | Score : ${gameResult.score}`}
 								</p>
 							)}
 							{saveProgressFailed && (
-								<p className="saveProgressWarning">
+								<p className="save-progress-warning">
 									⚠ Votre progression n'a pas pu être enregistrée. Vérifiez votre connexion.
 								</p>
 							)}
 							<span
-								className="closeButton"
+								className="close-button"
 								onClick={() => {
 									onCloseWin();
 									if (mode === "Tutorial")
@@ -176,12 +176,12 @@ const GamePopups = ({
 								className="demonstration-win"
 							/>
 
-							<div className="popupWinActions">
-								<button className="popupSecondary" onClick={onCloseWin}>
+							<div className="popup-win-actions">
+								<button className="popup-secondary" onClick={onCloseWin}>
 									Revoir le niveau
 								</button>
 								{levelIndex + 2 <= totalLevelCount && (
-									<button className="popupPrimary" onClick={onNextLevel}>
+									<button className="popup-primary" onClick={onNextLevel}>
 										Niveau suivant
 									</button>
 								)}

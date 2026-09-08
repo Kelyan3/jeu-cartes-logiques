@@ -5,7 +5,7 @@ const GameToasts = ({ mode, tutorialMessage, errorMessage }) => {
 	return (
 		<>
 			{mode === "Tutorial" && tutorialMessage !== "" && (
-				<div className="toast toastTutorial">
+				<div className="toast toast-tutorial">
 					{tutorialMessage.map((element, index) => (
 						<div key={index}>{element}</div>
 					))}
@@ -13,7 +13,7 @@ const GameToasts = ({ mode, tutorialMessage, errorMessage }) => {
 			)}
 
 			{errorMessage !== "" && (
-				<div className="toast toastError">{errorMessage}</div>
+				<div className="toast toast-error">{errorMessage}</div>
 			)}
 		</>
 	);

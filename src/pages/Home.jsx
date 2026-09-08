@@ -52,9 +52,9 @@ const exampleGame = [exampleCards];
  * une légende optionnelle. Doit être utilisé à l'intérieur d'un <GameTabProvider>.
  */
 const ExampleCard = ({ index, label }) => (
-	<div className="exampleCard">
+	<div className="example-card">
 		<Card deckIndex={0} cardIndex={index} update={() => {}} isWin={true} affichageSimple={false} isHelp={false} />
-		{label && <p className="exampleCardLabel">{label}</p>}
+		{label && <p className="example-card-label">{label}</p>}
 	</div>
 );
 
@@ -64,12 +64,12 @@ const ExampleCard = ({ index, label }) => (
  * selon l'onglet actif (ou aucune, sur l'onglet "Présentation").
  */
 const FlowSchema = ({ highlight }) => (
-	<div className="flowSchema">
-		<div className={"flowBox" + (highlight === "banque" ? " flowBoxActive" : "")}>Banque</div>
-		<div className="flowArrow"><span>obtenir / emprunter</span></div>
-		<div className={"flowBox" + (highlight === "lpu" ? " flowBoxActive" : "")}>LPU</div>
-		<div className="flowArrow"><span>contient l'objectif</span></div>
-		<div className={"flowBox" + (highlight === "objectifs" ? " flowBoxActive" : "")}>Zone d'Objectifs</div>
+	<div className="flow-schema">
+		<div className={"flow-box" + (highlight === "banque" ? " flow-box-active" : "")}>Banque</div>
+		<div className="flow-arrow"><span>obtenir / emprunter</span></div>
+		<div className={"flow-box" + (highlight === "lpu" ? " flow-box-active" : "")}>LPU</div>
+		<div className="flow-arrow"><span>contient l'objectif</span></div>
+		<div className={"flow-box" + (highlight === "objectifs" ? " flow-box-active" : "")}>Zone d'Objectifs</div>
 	</div>
 );
 
@@ -99,25 +99,25 @@ const Home = () => {
 	};
 
 	return (
-		<div className="homeContainer">
+		<div className="home-container">
 			<Navigation />
 			
-			<div className="homeHero">
+			<div className="home-hero">
 				<h1>Jeu des Cartes Logiques</h1>
 				<p>Un jeu solo de réflexion où vous manipulez des connecteurs logiques et déduisez des cartes pour atteindre votre objectif.</p>
-				<div className="homeHeroActions">
-					<NavLink to="/tutorials" className="buttonPrimary" onClick={handleProtectedClick("/tutorials")}>
+				<div className="home-hero-actions">
+					<NavLink to="/tutorials" className="button-primary" onClick={handleProtectedClick("/tutorials")}>
 						<BookOpen size={18} /> Tutoriels
 					</NavLink>
-					<NavLink to="/levels" className="buttonSecondary" onClick={handleProtectedClick("/levels")}>
+					<NavLink to="/levels" className="button-secondary" onClick={handleProtectedClick("/levels")}>
 						<Gamepad2 size={18} /> Jouer (Niveaux)
 					</NavLink>
 				</div>
 			</div>
 
-			<div className="homeRulesLayout">
-				<aside className="rulesSidebar">
-					<div className="rulesSidebarGroup">
+			<div className="home-rules-layout">
+				<aside className="rules-sidebar">
+					<div className="rules-sidebar-group">
 						<h3><ScrollText size={16} /> Règles du jeu</h3>
 						{TABS.map((tab) => (
 							<button
@@ -131,11 +131,11 @@ const Home = () => {
 					</div>
 				</aside>
 
-				<main className="rulesMain">
+				<main className="rules-main">
 					<GameTabProvider value={exampleGame}>
 						{activeTab === "presentation" && (
-							<div className="rulesSectionContent">
-								<p className="rulesIntro">Un jeu solo où vous manipulez des cartes pour atteindre un objectif logique.</p>
+							<div className="rules-section-content">
+								<p className="rules-intro">Un jeu solo où vous manipulez des cartes pour atteindre un objectif logique.</p>
 								<ol>
 									<li>Vous jouez seul, avec des <strong>cartes</strong> qui ont chacune un pouvoir et un moyen de les obtenir.</li>
 									<li>Trois zones structurent la partie : la <strong>Banque</strong>, la <strong>LPU</strong>, la <strong>Zone d'Objectifs</strong>.</li>
@@ -145,9 +145,9 @@ const Home = () => {
 						)}
 
 						{activeTab === "banque" && (
-							<div className="rulesSectionContent">
+							<div className="rules-section-content">
 								<FlowSchema highlight="banque" />
-								<p className="rulesIntro">La Banque contient toutes les cartes du jeu, en nombre illimité.</p>
+								<p className="rules-intro">La Banque contient toutes les cartes du jeu, en nombre illimité.</p>
 								<ol>
 									<li><strong>Obtenir</strong> une carte : elle rejoint définitivement votre LPU.</li>
 									<li><strong>Emprunter</strong> une carte : elle rejoint votre LPU, à rendre plus tard dans la partie.</li>
@@ -156,23 +156,23 @@ const Home = () => {
 						)}
 
 						{activeTab === "lpu" && (
-							<div className="rulesSectionContent">
+							<div className="rules-section-content">
 								<FlowSchema highlight="lpu" />
-								<p className="rulesIntro">La LPU liste les cartes que vous possédez à un instant donné.</p>
+								<p className="rules-intro">La LPU liste les cartes que vous possédez à un instant donné.</p>
 								<ol>
 									<li>Présenter une ou plusieurs cartes de la LPU permet d'en <strong>obtenir de nouvelles</strong>.</li>
 									<li>Posséder une carte en plusieurs exemplaires ne change rien : une seule suffit.</li>
 								</ol>
-								<div className="rulesExampleRow">
+								<div className="rules-example-row">
 									<ExampleCard index={1} label="Dans votre LPU" />
 								</div>
 							</div>
 						)}
 
 						{activeTab === "objectifs" && (
-							<div className="rulesSectionContent">
+							<div className="rules-section-content">
 								<FlowSchema highlight="objectifs" />
-								<p className="rulesIntro">La Zone d'Objectifs liste les cartes à faire apparaître dans la LPU pour gagner.</p>
+								<p className="rules-intro">La Zone d'Objectifs liste les cartes à faire apparaître dans la LPU pour gagner.</p>
 								<ol>
 									<li>La partie s'arrête, victorieuse, dès que la LPU contient toutes les cartes-objectifs.</li>
 									<li>Vous pouvez ajouter vous-même une carte intermédiaire, pour avancer étape par étape.</li>
@@ -181,8 +181,8 @@ const Home = () => {
 						)}
 
 						{activeTab === "types" && (
-							<div className="rulesSectionContent">
-								<p className="rulesIntro">Cinq types de cartes composent le jeu.</p>
+							<div className="rules-section-content">
+								<p className="rules-intro">Cinq types de cartes composent le jeu.</p>
 								<ol>
 									<li>La <strong>carte blanche</strong> : permet d'obtenir n'importe quelle carte.</li>
 									<li>Les <strong>cartes monochromes</strong> (rouge, jaune, bleue...) : sans pouvoir spécial.</li>
@@ -193,7 +193,7 @@ const Home = () => {
 										<strong className="symbol">¬</strong>).
 									</li>
 								</ol>
-								<div className="rulesExampleRow">
+								<div className="rules-example-row">
 									<ExampleCard index={0} label="Blanche" />
 									<ExampleCard index={1} label="Monochrome" />
 									<ExampleCard index={3} label="et ∧" />
@@ -206,56 +206,56 @@ const Home = () => {
 						)}
 
 						{activeTab === "connecteurs" && (
-							<div className="rulesSectionContent">
-								<p className="rulesIntro">Présenter une carte à connecteur permet d'obtenir de nouvelles cartes.</p>
+							<div className="rules-section-content">
+								<p className="rules-intro">Présenter une carte à connecteur permet d'obtenir de nouvelles cartes.</p>
 								<ol>
 									<li><strong className="symbol">∧</strong> : présentez la carte, obtenez les deux cartes reliées.</li>
 									<li><strong className="symbol">⇒</strong> : présentez la carte et la carte de départ de la flèche, obtenez celle d'arrivée.</li>
 									<li><strong className="symbol">⇔</strong> : présentez la carte et l'une des deux cartes reliées, obtenez l'autre.</li>
 								</ol>
 
-								<div className="rulesPowerRow">
+								<div className="rules-power-row">
 									<ExampleCard index={3} label="Présentez" />
-									<span className="rulesPowerArrow">→</span>
+									<span className="rules-power-arrow">→</span>
 									<ExampleCard index={1} label="Obtenez" />
 									<ExampleCard index={2} label="Obtenez" />
 								</div>
 
-								<div className="rulesPowerRow">
+								<div className="rules-power-row">
 									<ExampleCard index={5} label="Présentez" />
 									<ExampleCard index={1} label="+ la carte de départ" />
-									<span className="rulesPowerArrow">→</span>
+									<span className="rules-power-arrow">→</span>
 									<ExampleCard index={2} label="Obtenez" />
 								</div>
 
-								<div className="rulesPowerRow">
+								<div className="rules-power-row">
 									<ExampleCard index={6} label="Présentez" />
 									<ExampleCard index={1} label="+ une des deux cartes" />
-									<span className="rulesPowerArrow">→</span>
+									<span className="rules-power-arrow">→</span>
 									<ExampleCard index={2} label="Obtenez l'autre" />
 								</div>
 							</div>
 						)}
 
 						{activeTab === "score" && (
-							<div className="rulesSectionContent">
-								<p className="rulesIntro">Votre score dépend du temps mis et du nombre de coups joués.</p>
+							<div className="rules-section-content">
+								<p className="rules-intro">Votre score dépend du temps mis et du nombre de coups joués.</p>
 								<ol>
 									<li>Plus vous êtes <strong>rapide</strong> et <strong>efficace</strong> (peu de coups), plus le score est élevé.</li>
 									<li>Le score n'existe qu'en <strong>mode Jeu</strong> : le mode Tutoriel n'en a pas.</li>
 									<li>Il s'affiche à la fin du niveau, et reste visible sur la liste des niveaux une fois le niveau complété.</li>
 								</ol>
 
-								<div className="rulesScorePreview">
-									<div className="rulesScorePreviewItem">
-										<p className="scorePreviewLabel">Aperçu de la fin de niveau</p>
-										<p className="scorePreviewResult">Temps : 00:51 | Score : 85</p>
+								<div className="rules-score-preview">
+									<div className="rules-score-preview-item">
+										<p className="score-preview-label">Aperçu de la fin de niveau</p>
+										<p className="score-preview-result">Temps : 00:51 | Score : 85</p>
 									</div>
-									<div className="rulesScorePreviewItem">
-										<p className="scorePreviewLabel">Aperçu de la liste des niveaux</p>
-										<div className="scorePreviewLevel">
-											<span className="levelName">Niveau 3 ✓</span>
-											<span className="levelScoreValue">00:51 | 85 pts</span>
+									<div className="rules-score-preview-item">
+										<p className="score-preview-label">Aperçu de la liste des niveaux</p>
+										<div className="score-preview-level">
+											<span className="level-name">Niveau 3 ✓</span>
+											<span className="level-score-value">00:51 | 85 pts</span>
 										</div>
 									</div>
 								</div>

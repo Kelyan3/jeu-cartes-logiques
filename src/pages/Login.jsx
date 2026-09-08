@@ -42,7 +42,7 @@ const Login = () => {
 			<div id="forms">
 				<span className="eyebrow">Connexion</span>
 				<h2>Se connecter</h2>
-				<form onSubmit={handleSubmit} className="authForm">
+				<form onSubmit={handleSubmit} className="auth-form">
 					<div className="field">
 						<label htmlFor="username">Nom d'utilisateur</label>
 						<input id="username" type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
@@ -55,11 +55,11 @@ const Login = () => {
 
 					<div className="field">
 						<label htmlFor="password">Mot de passe</label>
-						<div className="passwordField">
+						<div className="password-field">
 							<input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
 							<button
 								type="button"
-								className="togglePassword"
+								className="toggle-password"
 								onClick={() => setShowPassword((e) => !e)}
 								aria-label={showPassword ? "Masquer le mot de passe" : "Montrer le mot de passe"}
 								title={showPassword ? "Masquer le mot de passe" : "Montrer le mot de passe"}
@@ -69,13 +69,13 @@ const Login = () => {
 						</div>
 					</div>
 
-					{error && <p className="formError">{error}</p>}
+					{error && <p className="form-error">{error}</p>}
 
-					<button type="submit" className="authSubmit" disabled={submitting}>
+					<button type="submit" className="auth-submit" disabled={submitting}>
 						{submitting ? "Connexion..." : "Se connecter"}
 					</button>
 
-					<p className="authSwitch">
+					<p className="auth-switch">
 						Pas de compte ? <NavLink to={`/register${location.search}`}>S'inscrire</NavLink>
 					</p>
 				</form>

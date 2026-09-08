@@ -1,11 +1,17 @@
-import { RATING_LABELS } from "./constants";
+const RATING_LABELS = [
+	"Pas du tout d'accord",
+	"Pas d'accord",
+	"Moyen",
+	"D'accord",
+	"Totalement d'accord",
+];
 
 
 const FeedbackRating = ({ label, rating, comment }) => (
-	<div className="feedbackRating">
-		<span className="feedbackRatingLabel">{label}</span>
-		<span className="feedbackRatingValue">{RATING_LABELS[rating - 1]} ({rating}/5)</span>
-		{comment && <p className="feedbackRatingComment">{comment}</p>}
+	<div className="feedback-rating">
+		<span className="feedback-rating-label">{label}</span>
+		<span className="feedback-rating-value">{RATING_LABELS[rating - 1]} ({rating}/5)</span>
+		{comment && <p className="feedback-rating-comment">{comment}</p>}
 	</div>
 );
 

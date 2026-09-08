@@ -19,7 +19,7 @@ const ProtectedPlayRoute = ({ children }) => {
 		return (
 			<div className="home">
 				<Navigation />
-				<p className="choiceMessage">Vérification de la session...</p>
+				<p className="choice-message">Vérification de la session...</p>
 			</div>
 		);
 	}
@@ -32,7 +32,7 @@ const ProtectedPlayRoute = ({ children }) => {
 			<div className="home">
 				<Navigation />
 				<div className="choice">
-					<p className="choiceMessage">Vous devez être connecté à un compte pour accéder aux niveaux.</p>
+					<p className="choice-message">Vous devez être connecté à un compte pour accéder aux niveaux.</p>
 				</div>
 				<AuthRequiredModal
 					isOpen={true}

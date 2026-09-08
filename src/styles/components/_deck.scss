@@ -82,7 +82,7 @@
 	border-style: dashed;
 }
 
-.goalGroup {
+.goal-group {
 	display: flex;
 	gap: 20px;
 	margin-left: auto;
@@ -90,18 +90,18 @@
 	min-width: 200px;
 }
 
-.deckRow > .goal {
+.deck-row > .goal {
 	margin-left: auto;
 }
 
-.deckToolbar {
+.deck-toolbar {
 	display: flex;
 	justify-content: center;
 	gap: 6px;
 	margin-bottom: 12px;
 }
 
-.deckAction {
+.deck-action {
 	position: relative;
 	width: 64px;
 	height: 64px;
@@ -114,18 +114,18 @@
 	transition: border-color .15s ease, color .15s ease;
 }
 
-.deckAction > p {
+.deck-action > p {
 	text-align: center;
 	font-size: 32px;
 }
 
-.deckActionSymbol {
+.deck-action-symbol {
 	font-family: 'JetBrains Mono', monospace;
 	font-weight: 600;
 	font-size: 32px;
 }
 
-.deckTooltip {
+.deck-tooltip {
 	visibility: hidden;
 	position: absolute;
 	top: 120%;
@@ -141,6 +141,6 @@
 	z-index: 50;
 }
 
-.deckAction:hover .deckTooltip {
+.deck-action:hover .deck-tooltip {
 	visibility: visible;
 }

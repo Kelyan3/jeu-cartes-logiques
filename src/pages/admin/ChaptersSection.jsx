@@ -88,12 +88,12 @@ const ChaptersSection = ({ chapters, call }) => {
 	};
 
 	return (
-		<section className="adminSection">
+		<section className="admin-section">
 			<h2>Chapitres</h2>
-			<p className="adminHint">
+			<p className="admin-hint">
 				Glissez une ligne pour changer l'ordre des chapitres. Les nouveaux chapitres sont ajoutés à la fin de la liste.
 			</p>
-			<table className="adminTable">
+			<table className="admin-table">
 				<thead>
 					<tr>
 						<th></th>
@@ -114,10 +114,10 @@ const ChaptersSection = ({ chapters, call }) => {
 							onDragEnd={handleDragEnd}
 							className={
 								(draggedChapter?.id_chapter === chapter.id_chapter ? "dragging " : "") +
-								(dragOverId === chapter.id_chapter ? "dragOver" : "")
+								(dragOverId === chapter.id_chapter ? "drag-over" : "")
 							}
 						>
-							<td className="dragHandle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
+							<td className="drag-handle" title="Glisser pour réordonner"><GripVertical size={16} /></td>
 							<td>
 								<input
 									defaultValue={chapter.name}
@@ -130,7 +130,7 @@ const ChaptersSection = ({ chapters, call }) => {
 							<td>{chapter.levels.length}</td>
 							<td>
 								<button
-									className="actionButton actionDelete"
+									className="action-button action-delete"
 									title="Supprimer"
 									onClick={() => setChapterToDelete(chapter)}
 								>
@@ -142,11 +142,11 @@ const ChaptersSection = ({ chapters, call }) => {
 				</tbody>
 			</table>
 
-			<div className="adminCreatePanel">
+			<div className="admin-create-panel">
 				<h3>Ajouter un chapitre</h3>
-				<form className="adminForm" onSubmit={submit}>
+				<form className="admin-form" onSubmit={submit}>
 					<input placeholder="Nom du chapitre" value={name} onChange={(e) => setName(e.target.value)} required />
-					<button type="submit" className="buttonPrimary">
+					<button type="submit" className="button-primary">
 						<Plus size={16} /> Créer
 					</button>
 				</form>

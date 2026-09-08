@@ -37,27 +37,7 @@
 	font-family: 'Sora', sans-serif;
 }
 
-.popup-box .box .gameResultSummary {
-	margin: -8px 0 16px 0;
-	font-family: 'Inter', sans-serif;
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--accent-amber);
-}
-
-.popup-box .box .saveProgressWarning {
-	margin: 0 0 16px 0;
-	padding: 10px 12px;
-	border: 1px solid var(--danger);
-	border-radius: 8px;
-	background: color-mix(in srgb, var(--danger) 10%, transparent);
-	color: var(--danger);
-	font-family: 'Inter', sans-serif;
-	font-size: 13px;
-	font-weight: 600;
-}
-
-.popup-box .box .closeButton {
+.popup-box .box .close-button {
 	position: absolute;
 	top: 14px;
 	right: 14px;
@@ -74,20 +54,10 @@
 	transition: color .15s ease, border-color .15s ease;
 }
 
-.popup-box .box .closeButton:hover {
+.popup-box .box .close-button:hover {
 	cursor: pointer;
 	color: var(--accent-cyan);
 	border-color: var(--accent-cyan);
-}
-
-.popup-box .box .demonstration-win {
-	text-align: left;
-	background: var(--bg-base);
-	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	padding: 16px;
-	margin-top: 16px;
-	min-width: fit-content;
 }
 
 @keyframes popup-appear {
@@ -101,141 +71,30 @@
 	}
 }
 
-.colorGrid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 16px;
-	margin: 20px 0;
+.popup-forms-box {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 50;
 }
 
-.colorSwatchLabel {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
-	cursor: pointer;
+.popup-forms-box .box {
+    background: var(--bg-surface);
+    border: 1px solid var(--accent-cyan);
+    border-radius: 10px;
+    padding: 12px 18px;
+    box-shadow: var(--shadow-soft);
+    transition: border-color .15s ease;
 }
 
-.colorSwatchLabel input[type="radio"] {
-	display: none;
+.popup-forms-box .box a {
+    color: var(--accent-cyan);
+    font-family: 'Sora', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
 }
 
-.colorSwatch {
-	width: 44px;
-	height: 44px;
-	border-radius: 50%;
-	border: 2px solid var(--border-subtle);
-	transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
-}
-
-.colorSwatchLabel:hover .colorSwatch {
-	border-color: var(--accent-cyan);
-	transform: scale(1.08);
-}
-
-.colorSwatchName {
-	font-size: 12px;
-	color: var(--text-muted);
-}
-
-.popupClose {
-	margin-top: 12px;
-	padding: 8px 20px;
-	background: transparent;
-	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	color: var(--text-muted);
-	font-size: 13px;
-	transition: border-color .15s ease, color .15s ease;
-}
-
-.popupClose:hover {
-	border-color: var(--accent-cyan);
-	color: var(--accent-cyan);
-}
-
-.connectorGrid {
-	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	gap: 14px;
-	margin: 20px 0;
-}
-
-.connectorLabel {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 8px;
-	cursor: pointer;
-}
-
-.connectorLabel input[type="radio"] {
-	display: none;
-}
-
-.connectorSymbol {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 56px;
-	height: 56px;
-	border-radius: 10px;
-	background: var(--bg-base);
-	border: 1px solid var(--accent-cyan);
-	color: var(--accent-cyan);
-	font-family: 'JetBrains Mono', monospace;
-	font-size: 26px;
-	font-weight: 600;
-	transition: box-shadow .15s ease, transform .15s ease;
-}
-
-.connectorLabel:hover, .connectorSymbol {
-	box-shadow: var(--shadow-soft);
-	transform: scale(1.06);
-	background: rgba(var(--accent-rgb), 0.1);
-}
-
-.connectorName {
-	font-size: 12px;
-	color: var(--text-muted);
-}
-
-.popupWinActions {
-	display: flex;
-	justify-content: center;
-	gap: 12px;
-	margin-top: 20px;
-}
-
-.popupPrimary {
-	padding: 10px 22px;
-	border: 1px solid var(--accent-cyan);
-	border-radius: 8px;
-	background: transparent;
-	color: var(--accent-cyan);
-	font-family: 'Sora', sans-serif;
-	font-weight: 600;
-	font-size: 14px;
-	transition: background .15s ease, box-shadow .15s ease;
-}
-
-.popupPrimary:hover {
-	background: rgba(var(--accent-rgb), 0.1);
-}
-
-.popupSecondary {
-	padding: 10px 22px;
-	border: 1px solid var(--border-subtle);
-	border-radius: 8px;
-	background: transparent;
-	color: var(--text-muted);
-	font-family: 'Sora', sans-serif;
-	font-weight: 600;
-	font-size: 14px;
-	transition: border-color .15s ease, color .15s ease;
-}
-
-.popupSecondary:hover {
-	border-color: var(--accent-cyan);
-	color: var(--accent-cyan);
+.popup-forms-box .box:hover {
+    border-color: var(--accent-cyan);
 }

@@ -610,29 +610,29 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 	return (
 		<div className="game">
-			<div className="gameToolbar">
+			<div className="game-toolbar">
 				{mode === "Play" && (
-					<div className="gameStatus">
-						<div className="statusBadge" title="Temps écoulé">
-							<Clock size={16} className="statusIcon" />
-							<span className="statusValue">{formatTime(displaySeconds)}</span>
+					<div className="game-status">
+						<div className="status-badge" title="Temps écoulé">
+							<Clock size={16} className="status-icon" />
+							<span className="status-value">{formatTime(displaySeconds)}</span>
 						</div>
-						<div className="statusBadge" title="Nombre de coups">
-							<Hash size={16} className="statusIcon" />
-							<span className="statusValue">{displayMoves}</span>
-							<span className="statusLabel">coup{displayMoves !== 1 ? "s" : ""}</span>
+						<div className="status-badge" title="Nombre de coups">
+							<Hash size={16} className="status-icon" />
+							<span className="status-value">{displayMoves}</span>
+							<span className="status-label">coup{displayMoves !== 1 ? "s" : ""}</span>
 						</div>
 					</div>
 				)}
 
-				<div className="gameActions">
+				<div className="game-actions">
 					{/* Revient à la partie avant l'ajout d'une carte */}
-					<button id="back" className="buttonAction" onClick={undo} title="Retour arrière (Ctrl+Z)">
+					<button id="back" className="button-action" onClick={undo} title="Retour arrière (Ctrl+Z)">
 						<Undo2 size={18} />
 					</button>
 
 					{mode !== "Create" && (
-						<button id="aide" className="buttonAction" onClick={getNextMove} title="Aide (H)">
+						<button id="aide" className="button-action" onClick={getNextMove} title="Aide (H)">
 							<Lightbulb size={18} />
 						</button>
 					)}
@@ -651,7 +651,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 					{/* Bouton pour ouvrir un fichier JSON et afficher l'exercice à l'écran pour le modifier */}
 					{mode === "Create" && (
-						<label className="fileButton">
+						<label className="file-button">
 							<FileJson size={18} />
 							<span style={{marginLeft: "6px"}}>{openFileJson !== "" ? openFileJson : "Importer un niveau"}</span>
 							<input type="file" accept="application/json" onChange={openFile}></input>
@@ -660,7 +660,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 
 					{/* Copie du jeu actuel en format JSON dans le presse-papier */}
 					{mode === "Create" && (
-						<button className="fileDownload" onClick={saveAsFile}>
+						<button className="file-download" onClick={saveAsFile}>
 							<Download size={18} />Télécharger le niveau
 						</button>
 					)}
@@ -668,7 +668,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					{/* Bouton pour tester le niveau en mode Create */}
 					{mode === "Create" && (
 						<button 
-							className="fileDownload" 
+							className="file-download" 
 							style={{ padding: "0 12px", display: "flex", gap: "6px", width: "auto" }}
 							onClick={() => {
 								if (isTestingMode)
@@ -708,7 +708,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 						</button>
 					)}
 
-					<span id="checkBoxSimple" title="Affichage complet">
+					<span id="check-box-simple" title="Affichage complet">
 						<input
 							type="checkbox"
 							id="afficheSimple"
@@ -724,7 +724,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			</div>
 
 			{win && levelIndex + 2 <= totalLevelCount && (
-				<button className="buttonWin" onClick={nextExercise}>
+				<button className="button-win" onClick={nextExercise}>
 					Niveau suivant
 				</button>
 			)}
@@ -736,7 +736,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			/>
 
 			<GameTabProvider value={game}>
-				<div className="deckRow">
+				<div className="deck-row">
 					{/* Ajout des decks */}
 					{game.map((deck, index) => (
 						<Deck

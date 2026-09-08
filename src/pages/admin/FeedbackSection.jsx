@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { DEVICE_LABELS } from "./constants";
 import FeedbackRating from "./FeedbackRating";
 import { ConfirmModal } from "../../components/Modals";
+
+
+const DEVICE_LABELS = {
+	ordinateur: "Ordinateur",
+	mobile: "Smartphone / Tablette",
+	autre: "Autre",
+};
 
 
 /**
@@ -11,25 +17,25 @@ const FeedbackSection = ({ feedback, call }) => {
 	const [feedbackToDelete, setFeedbackToDelete] = useState(null);
 
 	return (
-		<section className="adminSection">
+		<section className="admin-section">
 			<h2>Avis reçus</h2>
 
-			{feedback.length === 0 && <p className="adminHint">Aucun avis pour le moment.</p>}
+			{feedback.length === 0 && <p className="admin-hint">Aucun avis pour le moment.</p>}
 
 			{feedback.map((entry) => (
-				<article key={entry.id_feedback} className="scoringCard feedbackCard">
-					<header className="feedbackCardHeader">
+				<article key={entry.id_feedback} className="scoring-card feedback-card">
+					<header className="feedback-card-header">
 						<div>
 							<strong>{entry.username ?? "Anonyme"}</strong>
-							<span className="feedbackDevice">
+							<span className="feedback-device">
 								{DEVICE_LABELS[entry.device] ?? entry.device}
 								{entry.device === "autre" && entry.device_other ? ` — ${entry.device_other}` : ""}
 							</span>
 						</div>
-						<div className="feedbackCardActions">
-							<span className="feedbackDate">{new Date(entry.created_at).toLocaleDateString("fr-FR")}</span>
+						<div className="feedback-card-actions">
+							<span className="feedback-date">{new Date(entry.created_at).toLocaleDateString("fr-FR")}</span>
 							<button
-								className="resetButton"
+								className="reset-button"
 								onClick={() => setFeedbackToDelete(entry.id_feedback)}
 							>
 								Supprimer
@@ -42,7 +48,7 @@ const FeedbackSection = ({ feedback, call }) => {
 					<FeedbackRating label="Site agréable visuellement" rating={entry.design_rating} comment={entry.design_comment} />
 
 					{entry.remarks && (
-						<p className="feedbackRemarks"><strong>Autres remarques :</strong> {entry.remarks}</p>
+						<p className="feedback-remarks"><strong>Autres remarques :</strong> {entry.remarks}</p>
 					)}
 				</article>
 			))}

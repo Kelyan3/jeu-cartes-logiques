@@ -148,12 +148,12 @@ const ChoiceContent = ({ mode, user }) => {
 	function afficheChapters()
 	{
 		return chapters.map((chapter) => (
-			<div key={chapter.id_chapter} className="levelCategory">
-				<div className="categoryHeader">
+			<div key={chapter.id_chapter} className="level-category">
+				<div className="category-header">
 					<h2>{chapter.name}</h2>
-					{!chapter.unlocked && <Lock size={20} className="categoryLockedIcon" />}
+					{!chapter.unlocked && <Lock size={20} className="category-locked-icon" />}
 				</div>
-				<div className="levelsGrid">
+				<div className="levels-grid">
 					{chapter.levels.map((level) => {
 						const locked = !level.unlocked;
 						return (
@@ -171,18 +171,18 @@ const ChoiceContent = ({ mode, user }) => {
 								}}
 								data-url={"/exercise/" + mode + "/" + level.num}
 								data-locked={locked ? "true" : "false"}
-								className={`levelCard ${level.completed ? "levelCompleted" : ""} ${locked ? "levelLocked" : ""}`}
+								className={`level-card ${level.completed ? "level-completed" : ""} ${locked ? "level-locked" : ""}`}
 							>
-								<div className="levelCardTop">
-									<span className="levelTitle">Niveau {level.num}</span>
-									{locked ? <Lock size={16} className="levelIcon lockedIcon" /> : level.completed ? <CheckCircle size={16} className="levelIcon completedIcon" /> : null}
+								<div className="level-card-top">
+									<span className="level-title">Niveau {level.num}</span>
+									{locked ? <Lock size={16} className="level-icon locked-icon" /> : level.completed ? <CheckCircle size={16} className="level-icon completed-icon" /> : null}
 								</div>
 								{level.completed && (
-									<div className="levelScoreInfo">
-										<span className="levelTime" title="Meilleur temps">
+									<div className="level-score-info">
+										<span className="level-time" title="Meilleur temps">
 											<Clock size={12} /> {formatTime(level.best_time_seconds)}
 										</span>
-										<span className="levelScoreValue" title="Score">
+										<span className="level-score-value" title="Score">
 											<Trophy size={12} /> {level.score} pts
 										</span>
 									</div>
@@ -228,22 +228,22 @@ const ChoiceContent = ({ mode, user }) => {
 							}
 						}}
 						data-url={"/exercise/" + mode + "/" + num}
-						className={`levelCard ${isCompleted ? "levelCompleted" : ""}`}
+						className={`level-card ${isCompleted ? "level-completed" : ""}`}
 					>
-						<div className="levelCardTop">
-							<span className="levelTitle">Niveau {num}</span>
-							{isCompleted && <CheckCircle size={16} className="levelIcon completedIcon" />}
+						<div className="level-card-top">
+							<span className="level-title">Niveau {num}</span>
+							{isCompleted && <CheckCircle size={16} className="level-icon completed-icon" />}
 						</div>
 					</div>
 				);
 			}
 
 			return (
-				<div key={category[2]} className="levelCategory">
-					<div className="categoryHeader">
+				<div key={category[2]} className="level-category">
+					<div className="category-header">
 						<h2>{category[2]}</h2>
 					</div>
-					<div className="levelsGrid">
+					<div className="levels-grid">
 						{levels}
 					</div>
 				</div>
@@ -258,13 +258,13 @@ const ChoiceContent = ({ mode, user }) => {
 	function affichePlay()
 	{
 		if (chaptersError)
-			return <p className="choiceMessage">Impossible de charger les niveaux pour le moment. Réessaie plus tard.</p>;
+			return <p className="choice-message">Impossible de charger les niveaux pour le moment. Réessaie plus tard.</p>;
 
 		if (chapters === null)
-			return <p className="choiceMessage">Chargement des niveaux...</p>;
+			return <p className="choice-message">Chargement des niveaux...</p>;
 
 		if (chapters.length === 0)
-			return <p className="choiceMessage">Aucun niveau n'est disponible pour le moment.</p>;
+			return <p className="choice-message">Aucun niveau n'est disponible pour le moment.</p>;
 
 		return afficheChapters();
 	}

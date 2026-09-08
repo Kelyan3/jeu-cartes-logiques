@@ -1,17 +1,17 @@
-.homeContainer {
+.home-container {
 	display: flex;
 	flex-direction: column;
 	min-height: 100vh;
 }
 
-.homeHero {
+.home-hero {
 	text-align: center;
 	padding: 80px 20px;
 	background: radial-gradient(circle at center, color-mix(in srgb, var(--accent-cyan) 10%, transparent), transparent 70%);
 	border-bottom: 1px solid var(--border-subtle);
 }
 
-.homeHero h1 {
+.home-hero h1 {
 	font-family: 'Sora', sans-serif;
 	font-size: min(48px, 10vw);
 	font-weight: 700;
@@ -20,7 +20,7 @@
 	letter-spacing: -0.02em;
 }
 
-.homeHero p {
+.home-hero p {
 	font-size: 18px;
 	color: var(--text-muted);
 	max-width: 600px;
@@ -28,14 +28,14 @@
 	line-height: 1.6;
 }
 
-.homeHeroActions {
+.home-hero-actions {
 	display: flex;
 	justify-content: center;
 	gap: 16px;
 	flex-wrap: wrap;
 }
 
-.buttonPrimary, .buttonSecondary {
+.button-primary, .button-secondary {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -49,30 +49,30 @@
 	text-decoration: none;
 }
 
-.buttonPrimary {
+.button-primary {
 	background: var(--accent-cyan);
 	color: var(--bg-body);
 	border: none;
 }
-.buttonPrimary:hover {
+.button-primary:hover {
 	opacity: 0.9;
 	transform: translateY(-1px);
 }
 
-.buttonSecondary {
+.button-secondary {
 	background: var(--bg-surface);
 	color: var(--text-primary);
 	border: 1px solid var(--border-subtle);
 }
-.buttonSecondary:hover {
+.button-secondary:hover {
 	background: var(--bg-surface-alt);
 	border-color: var(--text-muted);
 }
 
-/* --------------------------
- * Documentation Layout
- * -------------------------- */
-.homeRulesLayout {
+
+
+
+.home-rules-layout {
 	display: flex;
 	gap: 40px;
 	max-width: 1100px;
@@ -82,13 +82,13 @@
 	align-items: flex-start;
 }
 
-.rulesSidebar {
+.rules-sidebar {
 	flex: 0 0 240px;
 	position: sticky;
 	top: 80px;
 }
 
-.rulesSidebarGroup h3 {
+.rules-sidebar-group h3 {
 	font-family: 'Sora', sans-serif;
 	font-size: 13px;
 	text-transform: uppercase;
@@ -101,7 +101,7 @@
 	gap: 8px;
 }
 
-.rulesSidebarGroup button {
+.rules-sidebar-group button {
 	display: block;
 	width: 100%;
 	text-align: left;
@@ -117,17 +117,17 @@
 	margin-bottom: 4px;
 }
 
-.rulesSidebarGroup button:hover {
+.rules-sidebar-group button:hover {
 	background: var(--bg-surface);
 }
 
-.rulesSidebarGroup button.active {
+.rules-sidebar-group button.active {
 	background: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
 	color: var(--accent-cyan);
 	font-weight: 500;
 }
 
-.rulesMain {
+.rules-main {
 	flex: 1;
 	min-width: 0;
 	background: var(--bg-surface);
@@ -138,29 +138,29 @@
 }
 
 @media (max-width: 768px) {
-	.homeRulesLayout {
+	.home-rules-layout {
 		flex-direction: column;
 	}
-	.rulesSidebar {
+	.rules-sidebar {
 		position: static;
 		width: 100%;
 		flex: none;
 	}
-	.rulesSidebarGroup {
+	.rules-sidebar-group {
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
 		gap: 8px;
 	}
-	.rulesSidebarGroup h3 {
+	.rules-sidebar-group h3 {
 		width: 100%;
 		margin-bottom: 8px;
 	}
-	.rulesSidebarGroup button {
+	.rules-sidebar-group button {
 		width: auto;
 		flex: 1 1 140px;
 	}
-	.rulesMain {
+	.rules-main {
 		padding: 24px;
 	}
 }
@@ -168,7 +168,7 @@
 /* --------------------------
  * Rules Typography & Content
  * -------------------------- */
-.rulesIntro {
+.rules-intro {
 	font-family: 'Sora', sans-serif;
 	font-size: 20px;
 	font-weight: 600;
@@ -177,19 +177,19 @@
 	line-height: 1.4;
 }
 
-.rulesMain ol {
+.rules-main ol {
 	padding-left: 24px;
 	margin-bottom: 32px;
 }
 
-.rulesMain li {
+.rules-main li {
 	line-height: 1.7;
 	color: var(--text-muted);
 	margin-bottom: 12px;
 	font-size: 15px;
 }
 
-.rulesMain strong {
+.rules-main strong {
 	color: var(--text-primary);
 	font-weight: 600;
 }
@@ -203,7 +203,7 @@
 /* --------------------------
  * Examples (Cards, Flow)
  * -------------------------- */
-.rulesExampleRow {
+.rules-example-row {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-end;
@@ -213,17 +213,17 @@
 	border-top: 1px solid var(--border-subtle);
 }
 
-.exampleCard {
+.example-card {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-.exampleCard .card {
+.example-card .card {
 	margin: 0 0 12px 0;
 }
 
-.exampleCardLabel {
+.example-card-label {
 	font-family: 'Inter', sans-serif;
 	font-size: 12px;
 	color: var(--text-muted);
@@ -232,7 +232,7 @@
 }
 
 /* Flow Schema */
-.flowSchema {
+.flow-schema {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -245,7 +245,7 @@
 	background: var(--bg-base);
 }
 
-.flowBox {
+.flow-box {
 	padding: 16px 24px;
 	border: 1px solid var(--border-subtle);
 	border-radius: 10px;
@@ -258,14 +258,14 @@
 	transition: all 0.2s ease;
 }
 
-.flowBoxActive {
+.flow-box-active {
 	border-color: var(--accent-amber);
 	background: color-mix(in srgb, var(--accent-amber) 12%, var(--bg-surface));
 	color: var(--accent-amber);
 	transform: scale(1.05);
 }
 
-.flowArrow {
+.flow-arrow {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -273,7 +273,7 @@
 	padding: 0 8px;
 }
 
-.flowArrow span {
+.flow-arrow span {
 	font-family: 'Inter', sans-serif;
 	font-size: 12px;
 	color: var(--text-muted);
@@ -281,13 +281,13 @@
 	white-space: nowrap;
 }
 
-.flowArrow::after {
+.flow-arrow::after {
 	content: "→";
 	font-size: 24px;
 }
 
 /* Power Rows */
-.rulesPowerRow {
+.rules-power-row {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: flex-end;
@@ -297,13 +297,13 @@
 	border-bottom: 1px solid var(--border-subtle);
 }
 
-.rulesPowerRow:last-child {
+.rules-power-row:last-child {
 	border-bottom: none;
 	margin-bottom: 0;
 	padding-bottom: 0;
 }
 
-.rulesPowerArrow {
+.rules-power-arrow {
 	font-size: 24px;
 	color: var(--accent-cyan);
 	align-self: center;
@@ -311,21 +311,21 @@
 }
 
 /* Score Preview */
-.rulesScorePreview {
+.rules-score-preview {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 	gap: 24px;
 	margin-top: 32px;
 }
 
-.rulesScorePreviewItem {
+.rules-score-preview-item {
 	padding: 20px;
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
 	background: var(--bg-base);
 }
 
-.scorePreviewLabel {
+.score-preview-label {
 	font-family: 'Inter', sans-serif;
 	font-size: 13px;
 	color: var(--text-muted);
@@ -334,14 +334,14 @@
 	letter-spacing: 0.05em;
 }
 
-.scorePreviewResult {
+.score-preview-result {
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 16px;
 	font-weight: 600;
 	color: var(--accent-amber);
 }
 
-.scorePreviewLevel {
+.score-preview-level {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -352,12 +352,12 @@
 	border: 1px solid color-mix(in srgb, var(--accent-amber) 30%, transparent);
 }
 
-.levelName {
+.level-name {
 	font-weight: 600;
 	color: var(--text-primary);
 }
 
-.levelScoreValue {
+.level-score-value {
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 13px;
 	font-weight: 500;

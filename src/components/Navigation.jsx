@@ -23,8 +23,8 @@ const Navigation = () => {
 	 * Empêche le scroll du corps de page quand le menu mobile est ouvert.
 	 */
 	useEffect(() => {
-		document.body.classList.toggle("navOpen", menuOpen);
-		return () => document.body.classList.remove("navOpen");
+		document.body.classList.toggle("nav-open", menuOpen);
+		return () => document.body.classList.remove("nav-open");
 	}, [menuOpen]);
 
 	const handleProtectedClick = (path) => (event) => {
@@ -37,7 +37,7 @@ const Navigation = () => {
 	};
 
 	const handleNavbarClick = (event) => {
-		if (event.target.closest("a, .logoutLink"))
+		if (event.target.closest("a, .logout-link"))
 			setMenuOpen(false);
 	};
 
@@ -49,7 +49,7 @@ const Navigation = () => {
 
 			<button
 				type="button"
-				className={`burgerButton${menuOpen ? " isOpen" : ""}`}
+				className={`burger-button${menuOpen ? " is-open" : ""}`}
 				onClick={() => setMenuOpen((open) => !open)}
 				aria-expanded={menuOpen}
 				aria-controls="primary-navbar"
@@ -62,28 +62,28 @@ const Navigation = () => {
 
 			<ul
 				id="primary-navbar"
-				className={`navbar${menuOpen ? " isOpen" : ""}`}
+				className={`navbar${menuOpen ? " is-open" : ""}`}
 				onClick={handleNavbarClick}
 			>
 				<li>
-					<NavLink to="/tutorials" className="navLink" onClick={handleProtectedClick("/tutorials")}>
+					<NavLink to="/tutorials" className="nav-link" onClick={handleProtectedClick("/tutorials")}>
 						Tutoriels
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/levels" className="navLink" onClick={handleProtectedClick("/levels")}>
+					<NavLink to="/levels" className="nav-link" onClick={handleProtectedClick("/levels")}>
 						Niveaux
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/exercise/Create" className="navLink" onClick={handleProtectedClick("/exercise/Create")}>
+					<NavLink to="/exercise/Create" className="nav-link" onClick={handleProtectedClick("/exercise/Create")}>
 						Créer un niveau
 					</NavLink>
 				</li>
-				<li><NavLink to="/leaderboard" className="navLink">Classement</NavLink></li>
+				<li><NavLink to="/leaderboard" className="nav-link">Classement</NavLink></li>
 
 				<li className="choose">
-					<div className="dropdownTrigger">
+					<div className="dropdown-trigger">
 						Plus <ChevronDown size={14} className="chevron" />
 					</div>
 					<ul>
@@ -94,7 +94,7 @@ const Navigation = () => {
 
 				{!loading && !user && (
 					<li className="choose">
-						<div className="dropdownTrigger">
+						<div className="dropdown-trigger">
 							Compte <ChevronDown size={14} className="chevron" />
 						</div>
 						<ul>
@@ -106,23 +106,23 @@ const Navigation = () => {
 
 				{!loading && user && (
 					<li className="choose">
-						<div className="dropdownTrigger">
+						<div className="dropdown-trigger">
 							{user.username} <ChevronDown size={14} className="chevron" />
 						</div>
 						<ul>
 							<li><NavLink to="/profile">Mon profil</NavLink></li>
 							{user.role === "admin" && <li><NavLink to="/admin">Administration</NavLink></li>}
 							<li>
-								<div onClick={logout} className="logoutLink">Déconnexion</div>
+								<div onClick={logout} className="logout-link">Déconnexion</div>
 							</li>
 						</ul>
 					</li>
 				)}
 
-				<li className="themeNavItem">
+				<li className="theme-nav-item">
 					<button
 						type="button"
-						className="themeIconButton"
+						className="theme-icon-button"
 						onClick={toggleTheme}
 						title={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}
 						aria-label={theme === "dark" ? "Passer en mode clair" : "Passer en mode sombre"}

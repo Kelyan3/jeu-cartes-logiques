@@ -17,9 +17,9 @@ const CategoriesSection = ({ categories, call }) => {
 	};
 
 	return (
-		<section className="adminSection">
+		<section className="admin-section">
 			<h2>Catégories</h2>
-			<table className="adminTable">
+			<table className="admin-table">
 				<thead>
 					<tr><th>Nom</th><th></th></tr>
 				</thead>
@@ -37,7 +37,7 @@ const CategoriesSection = ({ categories, call }) => {
 							</td>
 							<td>
 								<button
-									className="actionButton actionDelete"
+									className="action-button action-delete"
 									title="Supprimer"
 									onClick={() => setCategoryToDelete(category)}
 								>
@@ -49,11 +49,11 @@ const CategoriesSection = ({ categories, call }) => {
 				</tbody>
 			</table>
 
-			<div className="adminCreatePanel">
+			<div className="admin-create-panel">
 				<h3>Ajouter une catégorie</h3>
-				<form className="adminForm" onSubmit={submit}>
+				<form className="admin-form" onSubmit={submit}>
 					<input placeholder="Nom de la catégorie" value={name} onChange={(e) => setName(e.target.value)} required />
-					<button type="submit" className="buttonPrimary">
+					<button type="submit" className="button-primary">
 						<Plus size={16} /> Créer
 					</button>
 				</form>

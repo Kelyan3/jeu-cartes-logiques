@@ -29,7 +29,7 @@ const GameActionBar = ({
 			{/* Menu déroulant "Bases" : Séparation / Implique / Fusion */}
 			{(isActionUnlocked("addAnd") || isActionUnlocked("addImplique") || isActionUnlocked("fuseAnd")) && (
 				<div
-					className="actionDropdown"
+					className="action-dropdown"
 					ref={basesMenuRef}
 					onMouseEnter={() => setBasesMenuOpen(true)}
 					onMouseLeave={() => setBasesMenuOpen(false)}
@@ -37,17 +37,17 @@ const GameActionBar = ({
 					<button
 						type="button"
 						id="bases"
-						className="buttonAction"
+						className="button-action"
 						onClick={() => setBasesMenuOpen((open) => !open)}
 					>
-						<span className="buttonFormula">Bases</span>
+						<span className="button-formula">Bases</span>
 					</button>
 					{basesMenuOpen && (
-						<div className="actionDropdownMenu">
+						<div className="action-dropdown-menu">
 							{isActionUnlocked("addAnd") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && levelIndex === 0 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 0 ? "bouton-selection" : ""}
 									onClick={() => { setBasesMenuOpen(false); addCardAnd(); }}
 								>
 									[P ∧ Q] → [P] [Q]
@@ -56,7 +56,7 @@ const GameActionBar = ({
 							{isActionUnlocked("addImplique") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && levelIndex === 1 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 1 ? "bouton-selection" : ""}
 									onClick={() => { setBasesMenuOpen(false); addCardFuse(); }}
 								>
 									[P] [P ⇒ Q] → [Q]
@@ -65,7 +65,7 @@ const GameActionBar = ({
 							{isActionUnlocked("fuseAnd") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && levelIndex === 2 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 2 ? "bouton-selection" : ""}
 									onClick={() => { setBasesMenuOpen(false); fuseCardAnd(); }}
 								>
 									[P] [Q] → [P ∧ Q]
@@ -79,7 +79,7 @@ const GameActionBar = ({
 			{/* Menu déroulant "Objectifs" */}
 			{(isActionUnlocked("addGoal_objectif") || isActionUnlocked("addGoal_lpu") || isActionUnlocked("addGoal_et")) && (
 				<div
-					className="actionDropdown"
+					className="action-dropdown"
 					ref={objectifMenuRef}
 					onMouseEnter={() => setObjectifMenuOpen(true)}
 					onMouseLeave={() => setObjectifMenuOpen(false)}
@@ -87,17 +87,17 @@ const GameActionBar = ({
 					<button
 						type="button"
 						id="addGoal"
-						className="buttonAction"
+						className="button-action"
 						onClick={() => setObjectifMenuOpen((open) => !open)}
 					>
-						<span className="buttonFormula">Objectifs</span>
+						<span className="button-formula">Objectifs</span>
 					</button>
 					{objectifMenuOpen && (
-						<div className="actionDropdownMenu">
+						<div className="action-dropdown-menu">
 							{isActionUnlocked("addGoal_objectif") && (
 								<button
 									type="button"
-									className={mode === "Tutorial" && levelIndex === 3 ? "boutonSelection" : ""}
+									className={mode === "Tutorial" && levelIndex === 3 ? "bouton-selection" : ""}
 									onClick={() => { setObjectifMenuOpen(false); addObjectif("objectif"); }}
 								>
 									{"=> dans objectif"}
@@ -121,7 +121,7 @@ const GameActionBar = ({
 			{/* Menu déroulant "Tiers exclus" */}
 			{isActionUnlocked("tiersExclus") && (
 				<div
-					className="actionDropdown"
+					className="action-dropdown"
 					ref={tiersExclusMenuRef}
 					onMouseEnter={() => setTiersExclusMenuOpen(true)}
 					onMouseLeave={() => setTiersExclusMenuOpen(false)}
@@ -129,13 +129,13 @@ const GameActionBar = ({
 					<button
 						type="button"
 						id="tiersExclus"
-						className="buttonAction"
+						className="button-action"
 						onClick={() => setTiersExclusMenuOpen((open) => !open)}
 					>
-						<span className="buttonFormula">Tiers Exclus</span>
+						<span className="button-formula">Tiers Exclus</span>
 					</button>
 					{tiersExclusMenuOpen && (
-						<div className="actionDropdownMenu">
+						<div className="action-dropdown-menu">
 							<button type="button" onClick={() => { setTiersExclusMenuOpen(false); tiersExclus(); }}>
 								¬(¬P) → P
 							</button>
@@ -147,7 +147,7 @@ const GameActionBar = ({
 			{/* Menu déroulant "Transitivité" */}
 			{(isActionUnlocked("transitivite_arrow") || isActionUnlocked("transitivite_equiv") || isActionUnlocked("transitivite_equiv_sym")) && (
 				<div
-					className="actionDropdown"
+					className="action-dropdown"
 					ref={transitiviteMenuRef}
 					onMouseEnter={() => setTransitiviteMenuOpen(true)}
 					onMouseLeave={() => setTransitiviteMenuOpen(false)}
@@ -155,13 +155,13 @@ const GameActionBar = ({
 					<button
 						type="button"
 						id="transitivite"
-						className="buttonAction"
+						className="button-action"
 						onClick={() => setTransitiviteMenuOpen((open) => !open)}
 					>
-						<span className="buttonFormula">Transitivité</span>
+						<span className="button-formula">Transitivité</span>
 					</button>
 					{transitiviteMenuOpen && (
-						<div className="actionDropdownMenu">
+						<div className="action-dropdown-menu">
 							{isActionUnlocked("transitivite_arrow") && (
 								<button type="button" onClick={() => { setTransitiviteMenuOpen(false); transitivite("arrow"); }}>
 									⇒

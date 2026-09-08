@@ -1,14 +1,14 @@
-.adminPage {
+.admin-page {
 	width: min(960px, 92vw);
 	margin: 40px auto 80px;
 }
 
-.adminPage h1 {
+.admin-page h1 {
 	font-family: 'Sora', sans-serif;
 	margin-bottom: 24px;
 }
 
-.adminError {
+.admin-error {
 	background: color-mix(in srgb, red 12%, transparent);
 	border: 1px solid red;
 	border-radius: 8px;
@@ -16,20 +16,20 @@
 	margin-bottom: 20px;
 }
 
-.adminLayout {
+.admin-layout {
 	display: flex;
 	gap: 32px;
 	align-items: flex-start;
 }
 
-.adminSidebar {
+.admin-sidebar {
 	flex: 0 0 240px;
 	display: flex;
 	flex-direction: column;
 	gap: 24px;
 }
 
-.adminSidebarGroup h3 {
+.admin-sidebar-group h3 {
 	font-family: 'Sora', sans-serif;
 	font-size: 13px;
 	text-transform: uppercase;
@@ -39,7 +39,7 @@
 	padding-left: 12px;
 }
 
-.adminSidebarGroup button {
+.admin-sidebar-group button {
 	display: block;
 	width: 100%;
 	text-align: left;
@@ -54,22 +54,22 @@
 	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.adminSidebarGroup button:hover {
+.admin-sidebar-group button:hover {
 	background: var(--bg-surface);
 }
 
-.adminSidebarGroup button.active {
+.admin-sidebar-group button.active {
 	background: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
 	color: var(--accent-cyan);
 	font-weight: 500;
 }
 
-.adminMain {
+.admin-main {
 	flex: 1;
 	min-width: 0;
 }
 
-.adminSection {
+.admin-section {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
@@ -78,34 +78,34 @@
 }
 
 @media (max-width: 768px) {
-	.adminLayout {
+	.admin-layout {
 		flex-direction: column;
 	}
-	.adminSidebar {
+	.admin-sidebar {
 		flex: none;
 		width: 100%;
 		flex-direction: row;
 		flex-wrap: wrap;
 		gap: 16px;
 	}
-	.adminSidebarGroup {
+	.admin-sidebar-group {
 		flex: 1;
 		min-width: 140px;
 	}
 }
 
-.adminSection h2 {
+.admin-section h2 {
 	font-family: 'Sora', sans-serif;
 	margin-bottom: 12px;
 }
 
-.adminHint {
+.admin-hint {
 	color: var(--text-muted);
 	font-size: 14px;
 	margin-bottom: 16px;
 }
 
-.adminFilterBar {
+.admin-filter-bar {
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -114,14 +114,14 @@
 	border-bottom: 1px solid var(--border-subtle);
 }
 
-.adminFilterBar label {
+.admin-filter-bar label {
 	font-family: 'Sora', sans-serif;
 	font-size: 14px;
 	font-weight: 600;
 	color: var(--text-muted);
 }
 
-.adminFilterBar select {
+.admin-filter-bar select {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 8px;
@@ -133,23 +133,23 @@
 	cursor: pointer;
 }
 
-.adminSubgroup {
+.admin-subgroup {
 	margin-bottom: 20px;
 }
 
-.adminSubgroup h3 {
+.admin-subgroup h3 {
 	font-size: 15px;
 	color: var(--text-muted);
 	margin-bottom: 6px;
 }
 
-.adminTable {
+.admin-table {
 	width: 100%;
 	border-collapse: collapse;
 	margin-bottom: 16px;
 }
 
-.adminTable th {
+.admin-table th {
 	text-align: left;
 	font-size: 12px;
 	text-transform: uppercase;
@@ -158,14 +158,14 @@
 	padding: 6px 8px;
 }
 
-.adminTable td {
+.admin-table td {
 	padding: 6px 8px;
 	border-top: 1px solid var(--border-subtle);
 	vertical-align: middle;
 }
 
-.adminTable input,
-.adminTable select {
+.admin-table input,
+.admin-table select {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 6px;
@@ -176,7 +176,7 @@
 	width: 100%;
 }
 
-.adminTable .resetButton {
+.admin-table .reset-button {
 	margin-top: 0;
 	width: auto;
 	padding: 6px 12px;
@@ -184,15 +184,15 @@
 	white-space: nowrap;
 }
 
-.adminForm {
+.admin-form {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 10px;
 	align-items: center;
 }
 
-.adminForm input,
-.adminForm select {
+.admin-form input,
+.admin-form select {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 6px;
@@ -202,7 +202,7 @@
 	font-size: 14px;
 }
 
-.adminForm .resetButton {
+.admin-form .reset-button {
 	margin-top: 0;
 	width: auto;
 	padding: 8px 14px;
@@ -210,7 +210,7 @@
 	white-space: nowrap;
 }
 
-.adminCreatePanel {
+.admin-create-panel {
 	margin-top: 24px;
 	padding: 20px;
 	background: var(--bg-base);
@@ -218,14 +218,14 @@
 	border-radius: 10px;
 }
 
-.adminCreatePanel h3 {
+.admin-create-panel h3 {
 	font-size: 14px;
 	color: var(--text-primary);
 	margin-bottom: 12px;
 	font-family: 'Sora', sans-serif;
 }
 
-.buttonPrimary {
+.button-primary {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
@@ -242,16 +242,16 @@
 	white-space: nowrap;
 }
 
-.buttonPrimary:hover:not(:disabled) {
+.button-primary:hover:not(:disabled) {
 	opacity: 0.85;
 }
 
-.buttonPrimary:disabled {
+.button-primary:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
 
-.actionButton {
+.action-button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -265,37 +265,37 @@
 	transition: all 0.15s ease;
 }
 
-.actionButton:hover {
+.action-button:hover {
 	background: var(--bg-surface);
 	color: var(--text-primary);
 }
 
-.actionButton.actionDelete:hover {
+.action-button.action-delete:hover {
 	border-color: var(--danger);
 	color: var(--danger);
 	background: color-mix(in srgb, var(--danger) 12%, transparent);
 }
 
-.adminTable tr[draggable="true"] {
+.admin-table tr[draggable="true"] {
 	cursor: grab;
 	transition: background-color 0.15s ease, opacity 0.15s ease;
 }
 
-.adminTable tr.dragging {
+.admin-table tr.dragging {
 	opacity: 0.4;
 }
 
-.adminTable tr.dragOver {
+.admin-table tr.drag-over {
 	background-color: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
 }
 
-.adminTable .dragHandle {
+.admin-table .drag-handle {
 	width: 24px;
 	color: var(--text-muted);
 	text-align: center;
 }
 
-.scoringCard {
+.scoring-card {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 10px;
@@ -303,19 +303,19 @@
 	margin-bottom: 12px;
 }
 
-.scoringCard h4 {
+.scoring-card h4 {
 	font-size: 14px;
 	margin-bottom: 10px;
 }
 
-.scoringFields {
+.scoring-fields {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 	gap: 10px;
 	margin-bottom: 12px;
 }
 
-.scoringFields label {
+.scoring-fields label {
 	display: flex;
 	flex-direction: column;
 	gap: 4px;
@@ -323,7 +323,7 @@
 	color: var(--text-muted);
 }
 
-.scoringFields input {
+.scoring-fields input {
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
 	border-radius: 6px;
@@ -333,68 +333,68 @@
 	font-size: 14px;
 }
 
-.scoringCard .resetButton {
+.scoring-card .reset-button {
 	margin-top: 0;
 	width: auto;
 	padding: 6px 14px;
 	font-size: 12px;
 }
 
-.scoringCard .resetButton:disabled {
+.scoring-card .reset-button:disabled {
 	opacity: 0.4;
 	cursor: not-allowed;
 }
 
-.feedbackCardHeader {
+.feedback-card-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
 	margin-bottom: 12px;
 }
 
-.feedbackDevice {
+.feedback-device {
 	display: block;
 	font-size: 12px;
 	color: var(--text-muted);
 	margin-top: 2px;
 }
 
-.feedbackCardActions {
+.feedback-card-actions {
 	display: flex;
 	align-items: center;
 	gap: 10px;
 }
 
-.feedbackDate {
+.feedback-date {
 	font-size: 12px;
 	color: var(--text-muted);
 	white-space: nowrap;
 }
 
-.feedbackRating {
+.feedback-rating {
 	margin-bottom: 10px;
 }
 
-.feedbackRatingLabel {
+.feedback-rating-label {
 	font-size: 13px;
 	color: var(--text-muted);
 	margin-right: 6px;
 }
 
-.feedbackRatingValue {
+.feedback-rating-value {
 	font-size: 13px;
 	font-weight: 600;
 	color: var(--accent-cyan);
 }
 
-.feedbackRatingComment {
+.feedback-rating-comment {
 	font-size: 13px;
 	color: var(--text-primary);
 	margin-top: 4px;
 	padding-left: 2px;
 }
 
-.feedbackRemarks {
+.feedback-remarks {
 	font-size: 13px;
 	color: var(--text-primary);
 	margin-top: 12px;

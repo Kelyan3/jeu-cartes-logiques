@@ -1,11 +1,11 @@
-.profileContainer {
+.profile-container {
 	width: min(700px, 90vw);
 	margin: 0 auto;
 	padding-bottom: 60px;
 	text-align: left;
 }
 
-.profileHeader {
+.profile-header {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -18,13 +18,13 @@
 	flex-wrap: wrap;
 }
 
-.profileHeaderUser {
+.profile-header-user {
 	display: flex;
 	align-items: center;
 	gap: 20px;
 }
 
-.profileAvatar {
+.profile-avatar {
 	width: 64px;
 	height: 64px;
 	border-radius: 50%;
@@ -36,14 +36,14 @@
 	flex-shrink: 0;
 }
 
-.profileInfo h2 {
+.profile-info h2 {
 	font-family: 'Sora', sans-serif;
 	font-size: 24px;
 	margin: 0 0 6px 0;
 	color: var(--text-primary);
 }
 
-.profileInfo p {
+.profile-info p {
 	font-size: 14px;
 	color: var(--text-muted);
 	margin: 0;
@@ -52,7 +52,7 @@
 	gap: 6px;
 }
 
-.profileMeta {
+.profile-meta {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -60,21 +60,21 @@
 	margin-top: 6px;
 }
 
-.profileHeaderActions {
+.profile-header-actions {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	flex-wrap: wrap;
 }
 
-.profileStatsGrid {
+.profile-stats-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 	gap: 20px;
 	margin-bottom: 32px;
 }
 
-.profileStatCard {
+.profile-stat-card {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
@@ -83,7 +83,7 @@
 	flex-direction: column;
 }
 
-.statHeader {
+.stat-header {
 	display: flex;
 	align-items: center;
 	gap: 10px;
@@ -93,7 +93,7 @@
 	margin-bottom: 16px;
 }
 
-.statValue {
+.stat-value {
 	font-family: 'JetBrains Mono', monospace;
 	font-size: 32px;
 	font-weight: 600;
@@ -101,15 +101,15 @@
 	margin-bottom: 8px;
 }
 
-.statScore .statValue {
+.stat-score .stat-value {
 	color: var(--accent-amber);
 }
 
-.statProgress {
+.stat-progress {
 	margin-top: 12px;
 }
 
-.statProgressHeader {
+.stat-progress-header {
 	display: flex;
 	justify-content: space-between;
 	font-size: 13px;
@@ -117,7 +117,7 @@
 	margin-bottom: 8px;
 }
 
-.profileSection {
+.profile-section {
 	background: var(--bg-base);
 	border: 1px solid var(--border-subtle);
 	border-radius: 12px;
@@ -125,7 +125,7 @@
 	margin-bottom: 24px;
 }
 
-.profileSection h3 {
+.profile-section h3 {
 	font-family: 'Sora', sans-serif;
 	font-size: 16px;
 	margin: 0 0 16px 0;
@@ -135,7 +135,7 @@
 	gap: 8px;
 }
 
-.profileSection p.sectionDesc {
+.profile-section p.section-desc {
 	font-size: 14px;
 	color: var(--text-muted);
 	margin-top: 0;
@@ -143,13 +143,13 @@
 	line-height: 1.5;
 }
 
-.profileFormGroup {
+.profile-form-group {
 	display: flex;
 	gap: 12px;
 	align-items: flex-start;
 }
 
-.profileFormGroup select {
+.profile-form-group select {
 	flex: 1;
 	background: var(--bg-surface);
 	border: 1px solid var(--border-subtle);
@@ -161,7 +161,7 @@
 	cursor: pointer;
 }
 
-.buttonPrimary {
+.button-primary {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
@@ -178,17 +178,17 @@
 	white-space: nowrap;
 }
 
-.buttonPrimary:hover:not(:disabled) {
+.button-primary:hover:not(:disabled) {
 	opacity: 0.85;
 }
 
-.buttonPrimary:disabled {
+.button-primary:disabled {
 	opacity: 0.5;
 	cursor: not-allowed;
 }
 
 
-.buttonDanger {
+.button-danger {
 	display: inline-flex;
 	align-items: center;
 	gap: 8px;
@@ -204,12 +204,12 @@
 	transition: all 0.15s ease;
 }
 
-.buttonDanger:hover {
+.button-danger:hover {
 	background: var(--danger);
 	color: white;
 }
 
-.buttonSecondary {
+.button-secondary {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
@@ -225,9 +225,9 @@
 	cursor: pointer;
 	transition: all 0.15s ease;
 	white-space: nowrap;
+}
 
-	&:hover {
-		background: var(--bg-surface-alt);
-		border-color: var(--border-default);
-	}
+.button-secondary:hover {
+	background: var(--bg-surface-alt);
+	border-color: var(--border-default);
 }

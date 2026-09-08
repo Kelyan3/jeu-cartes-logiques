@@ -1,4 +1,4 @@
-.cardSimple {
+.card-simple {
 	border: 2px solid var(--border-subtle);
 	border-radius: 8px;
 	background-size: cover;
@@ -73,14 +73,14 @@
 	);
 }
 
-.cardContainerHorizontal {
+.card-container-horizontal {
 	display: inline-grid;
 	grid-gap: 1px;
 	grid-template-columns: 1fr 0px 1fr;
 	grid-template-rows: 1fr;
 }
 
-.cardContainerVertical {
+.card-container-vertical {
 	display: inline-grid;
 	grid-gap: 1px;
 	grid-template-columns: 1fr;
@@ -107,12 +107,12 @@
 	z-index: 2;
 }
 
-.linkVertical {
+.link-vertical {
 	transform: rotate(90deg);
 	left: 25px;
 }
 
-.linkVertical2 {
+.link-vertical-2 {
 	transform: rotate(90deg);
 	left: 87px;
 }

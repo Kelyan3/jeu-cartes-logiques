@@ -79,7 +79,7 @@ const Admin = () => {
 		return (
 			<div className="home">
 				<Navigation />
-				<div className="profileCard">
+				<div className="profile-card">
 					<h2>Accès refusé</h2>
 					<p>Cette page est réservée aux comptes administrateur.</p>
 				</div>
@@ -89,32 +89,32 @@ const Admin = () => {
 	return (
 		<div className="home">
 			<Navigation />
-			<div className="adminPage">
+			<div className="admin-page">
 				<h1>Administration</h1>
-				{error && <p className="adminError">{error}</p>}
+				{error && <p className="admin-error">{error}</p>}
 
-				<div className="adminLayout">
-					<aside className="adminSidebar">
-						<div className="adminSidebarGroup">
+				<div className="admin-layout">
+					<aside className="admin-sidebar">
+						<div className="admin-sidebar-group">
 							<h3>Contenu du jeu</h3>
 							<button className={activeSection === "chapters" ? "active" : ""} onClick={() => setActiveSection("chapters")}>Chapitres</button>
 							<button className={activeSection === "levels" ? "active" : ""} onClick={() => setActiveSection("levels")}>Niveaux</button>
 							<button className={activeSection === "quests" ? "active" : ""} onClick={() => setActiveSection("quests")}>Quêtes</button>
 						</div>
 						
-						<div className="adminSidebarGroup">
+						<div className="admin-sidebar-group">
 							<h3>Configuration</h3>
 							<button className={activeSection === "scoring" ? "active" : ""} onClick={() => setActiveSection("scoring")}>Gestion du score</button>
 							<button className={activeSection === "categories" ? "active" : ""} onClick={() => setActiveSection("categories")}>Catégories</button>
 						</div>
 
-						<div className="adminSidebarGroup">
+						<div className="admin-sidebar-group">
 							<h3>Communauté</h3>
 							<button className={activeSection === "feedback" ? "active" : ""} onClick={() => setActiveSection("feedback")}>Avis reçus</button>
 						</div>
 					</aside>
 
-					<main className="adminMain">
+					<main className="admin-main">
 						{activeSection === "chapters" && (
 							<ChaptersSection chapters={chapters} call={call} />
 						)}

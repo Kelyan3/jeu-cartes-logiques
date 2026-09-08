@@ -100,7 +100,7 @@ const Deck = ({
 			}));
 
 		return (
-			<div className="goalGroup">
+			<div className="goal-group">
 				{secondaryEntries.length > 0 && (
 					<div className="subgoal">
 						<div className="deck">
@@ -165,20 +165,20 @@ const Deck = ({
 				)}
 
 				{mode === "Create" && (
-					<div className="deckToolbar">
-						<button className="deckAction" onClick={addCardToDeck}>
+					<div className="deck-toolbar">
+						<button className="deck-action" onClick={addCardToDeck}>
 							<p>+</p>
-							<span className="deckTooltip">Ajouter une carte</span>
+							<span className="deck-tooltip">Ajouter une carte</span>
 						</button>
 
-						<button className="deckAction" onClick={deleteCardToDeck}>
+						<button className="deck-action" onClick={deleteCardToDeck}>
 							<p>🗑</p>
-							<span className="deckTooltip">Supprimer une carte</span>
+							<span className="deck-tooltip">Supprimer une carte</span>
 						</button>
 
-						<button className="deckAction deckActionSymbol" onClick={transformIntoNonCard}>
+						<button className="deck-action deck-action-symbol" onClick={transformIntoNonCard}>
 							<p>¬</p>
-							<span className="deckTooltip">Transformer en carte négative</span>
+							<span className="deck-tooltip">Transformer en carte négative</span>
 						</button>
 					</div>
 				)}

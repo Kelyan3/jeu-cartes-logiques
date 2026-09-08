@@ -52,7 +52,7 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 			return (
 				<span
 					key={path}
-					className={`cardSimple pattern-${currentCard.color} ` + (selec && currentCard.color !== "transparent" ? "selected " : "")}
+					className={`card-simple pattern-${currentCard.color} ` + (selec && currentCard.color !== "transparent" ? "selected " : "")}
 					style={style}
 				></span>
 			);
@@ -61,17 +61,17 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 		if (affichageSimple)
 			currentCard = currentCard.displayGoodCard();
 
-		let className = "cardContainerVertical";
-		let link = "linkVertical";
+		let className = "card-container-vertical";
+		let link = "link-vertical";
 
 		if (count % 2 !== 0 || (originalCount === 2 && count === 2))
 		{
-			className = "cardContainerHorizontal";
+			className = "card-container-horizontal";
 			link = "";
 		}
 
 		if (count % 4 === 0)
-			link = "linkVertical2";
+			link = "link-vertical-2";
 
 		return (
 			<span className={className} key={path}>

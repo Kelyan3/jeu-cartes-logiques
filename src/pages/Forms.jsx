@@ -19,13 +19,13 @@ const LikertField = ({
 	rating, onRatingChange,
 	comment, onCommentChange
 }) => (
-	<div className="field likertField">
+	<div className="field likert-field">
 		<label>{question}</label>
-		<div className="likertOptions">
+		<div className="likert-options">
 			{RATING_LABELS.map((label, index) => {
 				const value = index + 1;
 				return (
-					<label key={value} className="likertOption">
+					<label key={value} className="likert-option">
 						<input
 							type="radio"
 							name={name}
@@ -109,25 +109,25 @@ const Forms = () => {
 				<h2>Donnez votre avis</h2>
 
 				{sent ? (
-					<div className="formSuccessState">
-						<CheckCircle2 size={48} className="successIcon" />
+					<div className="form-success-state">
+						<CheckCircle2 size={48} className="success-icon" />
 						<h3>Merci beaucoup !</h3>
 						<p>Votre avis a bien été envoyé. Il nous aidera à améliorer le Jeu des Cartes Logiques.</p>
 					</div>
 				) : (
-					<form onSubmit={handleSubmit} className="authForm feedbackForm">
+					<form onSubmit={handleSubmit} className="auth-form feedback-form">
 						<div className="field">
 							<label>Sur quel support avez-vous consulté ce site ?</label>
-							<div className="likertOptions">
-								<label className="likertOption">
+							<div className="likert-options">
+								<label className="likert-option">
 									<input type="radio" name="device" value="ordinateur" checked={device === "ordinateur"} onChange={() => setDevice("ordinateur")} required />
 									Ordinateur
 								</label>
-								<label className="likertOption">
+								<label className="likert-option">
 									<input type="radio" name="device" value="mobile" checked={device === "mobile"} onChange={() => setDevice("mobile")} />
 									Smartphone / Tablette
 								</label>
-								<label className="likertOption">
+								<label className="likert-option">
 									<input type="radio" name="device" value="autre" checked={device === "autre"} onChange={() => setDevice("autre")} />
 									Autre
 								</label>
@@ -185,7 +185,7 @@ const Forms = () => {
 						</div>
 
 						{user && (
-							<div className="field fieldCheckbox">
+							<div className="field field-checkbox">
 								<label htmlFor="anonymous">
 									<input
 										id="anonymous"
@@ -198,9 +198,9 @@ const Forms = () => {
 							</div>
 						)}
 
-						{error && <p className="formError">{error}</p>}
+						{error && <p className="form-error">{error}</p>}
 
-						<button type="submit" className="authSubmit" disabled={submitting}>
+						<button type="submit" className="auth-submit" disabled={submitting}>
 							<Send size={18} style={{marginRight: "8px"}} />
 							{submitting ? "Envoi en cours..." : "Envoyer mon avis"}
 						</button>

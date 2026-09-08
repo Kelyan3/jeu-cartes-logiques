@@ -61,5 +61,6 @@ export const useAuthModal = () => {
 	const context = useContext(AuthModalContext);
 	if (!context)
 		throw new Error("useAuthModal doit être utilisé à l'intérieur d'un AuthModalProvider");
+
 	return context;
 };

@@ -1,15 +1,15 @@
-.forms .feedbackForm {
+.forms .feedback-form {
 	width: 100%;
 }
 
-.forms .likertOptions {
+.forms .likert-options {
 	display: flex;
 	flex-direction: column;
 	gap: 8px;
 	margin-top: 8px;
 }
 
-.forms .likertOption {
+.forms .likert-option {
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -26,18 +26,18 @@
 	transition: border-color .15s ease, background .15s ease;
 }
 
-.forms .likertOption:hover {
+.forms .likert-option:hover {
 	border-color: var(--accent-cyan);
 	background: var(--bg-surface-alt);
 }
 
-.forms .likertOption:has(input:checked) {
+.forms .likert-option:has(input:checked) {
 	border-color: var(--accent-cyan);
 	background: rgba(var(--accent-rgb), 0.05);
 	box-shadow: 0 0 0 1px var(--accent-cyan);
 }
 
-.forms .likertOption input {
+.forms .likert-option input {
 	accent-color: var(--accent-cyan);
 	width: 16px;
 	height: 16px;
@@ -45,7 +45,7 @@
 	cursor: pointer;
 }
 
-.forms .fieldCheckbox label {
+.forms .field-checkbox label {
 	display: flex;
 	align-items: flex-start;
 	gap: 12px;
@@ -62,12 +62,12 @@
 	transition: border-color .15s ease, background .15s ease;
 }
 
-.forms .fieldCheckbox label:has(input:checked) {
+.forms .field-checkbox label:has(input:checked) {
 	border-color: var(--accent-cyan);
 	background: rgba(var(--accent-rgb), 0.05);
 }
 
-.forms .fieldCheckbox input {
+.forms .field-checkbox input {
 	margin-top: 2px;
 	accent-color: var(--accent-cyan);
 	width: 16px;
@@ -75,7 +75,7 @@
 	cursor: pointer;
 }
 
-.formSuccessState {
+.form-success-state {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -84,19 +84,19 @@
 	text-align: center;
 }
 
-.formSuccessState .successIcon {
+.form-success-state .success-icon {
 	color: var(--accent-cyan);
 	margin-bottom: 20px;
 }
 
-.formSuccessState h3 {
+.form-success-state h3 {
 	font-family: 'Sora', sans-serif;
 	font-size: 20px;
 	color: var(--text-primary);
 	margin-bottom: 12px;
 }
 
-.formSuccessState p {
+.form-success-state p {
 	color: var(--text-muted);
 	font-size: 15px;
 	line-height: 1.5;

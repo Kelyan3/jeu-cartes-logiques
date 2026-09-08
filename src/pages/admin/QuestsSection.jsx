@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
 import { ConfirmModal } from "../../components/Modals";
 
-import { MENUS } from "./constants";
+
+const MENUS = ["base", "objectif", "transitivite", "tiers_exclus"];
 
 
 /**
@@ -33,12 +34,12 @@ const QuestsSection = ({ quests, chapters, call }) => {
 	};
 
 	return (
-		<section className="adminSection">
+		<section className="admin-section">
 			<h2>Quêtes</h2>
-			<p className="adminHint">
+			<p className="admin-hint">
 				Une quête sans chapitre requis est débloquée pour tout le monde par défaut (c'est le cas du menu "base").
 			</p>
-			<table className="adminTable">
+			<table className="admin-table">
 				<thead>
 					<tr><th>Menu</th><th>Label</th><th>Clé bouton</th><th>Chapitre requis</th><th></th></tr>
 				</thead>
@@ -73,7 +74,7 @@ const QuestsSection = ({ quests, chapters, call }) => {
 								</select>
 							</td>
 							<td>
-								<button className="actionButton actionDelete" title="Supprimer" onClick={() => setQuestToDelete(quest)}>
+								<button className="action-button action-delete" title="Supprimer" onClick={() => setQuestToDelete(quest)}>
 									<Trash2 size={16} />
 								</button>
 							</td>
@@ -82,9 +83,9 @@ const QuestsSection = ({ quests, chapters, call }) => {
 				</tbody>
 			</table>
 
-			<div className="adminCreatePanel">
+			<div className="admin-create-panel">
 				<h3>Ajouter une quête</h3>
-				<form className="adminForm" onSubmit={submit}>
+				<form className="admin-form" onSubmit={submit}>
 					<select value={menu} onChange={(e) => setMenu(e.target.value)}>
 						{MENUS.map((m) => <option key={m} value={m}>{m}</option>)}
 					</select>
@@ -97,7 +98,7 @@ const QuestsSection = ({ quests, chapters, call }) => {
 						))}
 					</select>
 					<input type="number" placeholder="Position" value={position} onChange={(e) => setPosition(e.target.value)} required />
-					<button type="submit" className="buttonPrimary">
+					<button type="submit" className="button-primary">
 						<Plus size={16} /> Créer
 					</button>
 				</form>
