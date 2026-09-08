@@ -41,7 +41,7 @@ Projet développé dans le cadre d'un projet tutoré à l'Université de la Nouv
 **Frontend**
 - [React 19](https://react.dev/) + [Vite](https://vite.dev/)
 - [react-router-dom](https://reactrouter.com/) pour le routage
-- Sass (SCSS) pour les styles, avec variables CSS pour la gestion des thèmes clair/sombre
+- Sass (SCSS) pour les styles (structurés en modules avec nommage strict en **kebab-case**, incluant des fichiers dédiés pour les modales `_modals.scss` et popups de jeu `_gamePopups.scss`), avec variables CSS pour la gestion des thèmes clair/sombre
 
 **Backend**
 - [Flask](https://flask.palletsprojects.com/) (Python), organisé en Application Factory + Blueprints
@@ -123,11 +123,10 @@ src/
 ├── context/                        # Contextes React (authentification, thème)
 ├── pages/                          # Pages / routes de l'application
 │   └── admin/                      # Sous-composants de la page Admin, un par section
-│       ├── constants.js
 │       ├── ChaptersSection.jsx, LevelsSection.jsx
 │       ├── ScoringSection.jsx, QuestsSection.jsx
 │       ├── CategoriesSection.jsx, FeedbackSection.jsx, FeedbackRating.jsx
-└── styles/                         # Feuilles de style SCSS
+└── styles/                         # Feuilles de style SCSS (kebab-case strict, avec _modals.scss et _gamePopups.scss dédiés)
 
 public/
 ├── img/                            # Images statiques
