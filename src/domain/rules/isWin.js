@@ -1,5 +1,89 @@
 import { containCard } from "../gameSolver";
-import { buildObjectives, findObjectifRelative, checkSubObj, removeCard, removeDeck, removeCardWithEquals } from "./goals";
+import { buildObjectives, checkSubObj, removeDeck } from "./goals";
+
+/**
+ * Cherche l'implication dans le deck objectif correspondant à la LPU d'indice d.
+ * L'hypothèse de la LPU est toujours sa première carte (gameState[d][0]).
+ *
+ * @param {Card[][]} gameState
+ * @param {number} d - indice de la LPU
+ *
+ * @returns {{ card: Card, index: number } | null}
+ */
+function findParentImplicationForLPU(gameState, d)
+{
+	const lpu = gameState[d];
+	if (!lpu || lpu.length === 0)
+		return null;
+
+	const hypothesis = lpu[0];
+	const objDeck = gameState[gameState.length - 1];
+	if (!objDeck)
+		return null;
+
+	// Cherche les implications dont la partie gauche est égale à l'hypothèse
+	const candidates = [];
+	for (let i = 0; i < objDeck.length; i++)
+	{
+		const card = objDeck[i];
+		if (card != null && card.color === null && card.link === "=>")
+		{
+			if (card.left.equals(hypothesis))
+				candidates.push({ card, index: i });
+		}
+	}
+
+	if (candidates.length === 0)
+		return null;
+
+	if (candidates.length === 1)
+		return candidates[0];
+
+	// Si plusieurs candidats, préférer celui dont la partie droite est déjà présente dans la LPU
+	const foundByRightInLPU = candidates.find(c => containCard(gameState, d, c.card.right));
+	if (foundByRightInLPU)
+		return foundByRightInLPU;
+
+	// Préférer celui dont la partie droite apparaît comme sous-objectif dans le deck objectif
+	const foundBySubObj = candidates.find(c =>
+		objDeck.some((elem, idx) => idx !== c.index && elem != null && elem.equals(c.card.right))
+	);
+	if (foundBySubObj)
+		return foundBySubObj;
+
+	return candidates[0];
+}
+
+/**
+ * Supprime du deck objectif toute carte égale à cardToDelete,
+ * en protégeant toujours l'objectif principal à l'indice 0.
+ *
+ * @param {Card[]} deck
+ * @param {Card} cardToDelete
+ *
+ * @returns {Card[]}
+ */
+function removeSubObjective(deck, cardToDelete)
+{
+	if (!cardToDelete || deck.length <= 1)
+		return deck;
+
+	let finalDeck = [deck[0]];
+	let cpt = 0;
+	for (let i = 1; i < deck.length; i++)
+	{
+		if (deck[i] != null && deck[i].equals(cardToDelete))
+			cpt++;
+		else if (deck[i] != null)
+		{
+			let tmpCard = deck[i];
+			tmpCard.id = tmpCard.id - cpt;
+			finalDeck.push(tmpCard);
+		}
+	}
+
+	return finalDeck;
+}
 
 /**
  * Vérifie si l'exercice est résolu (objectif principal atteint) et fait progresser
@@ -25,147 +109,91 @@ import { buildObjectives, findObjectifRelative, checkSubObj, removeCard, removeD
  *
  * @returns {[Card[][], boolean, Array, number[]]} [gameState, bool, arrayMsg, arrayIndent]
  */
-export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
+export function runIsWin(arrayMsg, arrayIndent, gameState, originel=true, deps)
 {
-	if (originel === undefined)
-		originel = true;
-
 	const { addToGame, addLineDemonstration, setSavedGame, clearSelection, setObjectives, setWin, setPopupWin, saveProgress } = deps;
-
-	let currentObjectives = buildObjectives(gameState);
-	const listObjectif = [];
-	for (let numObjectif of currentObjectives)
-		listObjectif.push([gameState[gameState.length - 1][numObjectif[1]], numObjectif,]);
 
 	let bool = false;
 	let modif = false;
 
-	const findIntermediateDeckFor = (cardObj) => {
-		const findObj = findObjectifRelative(cardObj, gameState);
-		if (findObj === -1)
-			return -1;
+	// 1. Vérifier si une LPU a atteint son objectif ou a dérivé "Faux" (principe d'explosion).
+	// On parcourt de la LPU la plus imbriquée vers la première.
+	const numLPUs = gameState.length - 2;
+	for (let d = numLPUs; d >= 1; d--)
+	{
+		const parentInfo = findParentImplicationForLPU(gameState, d);
+		if (!parentInfo)
+			continue;
 
-		const hypothesis = gameState[gameState.length - 1][findObj].left;
-		for (let d = 1; d < gameState.length - 1; d++)
+		const { card: parentImpl, index: parentIndex } = parentInfo;
+		const goal = parentImpl.right;
+
+		const hasGoal = containCard(gameState, d, goal);
+		const hasWhite = gameState[d].some(c => c != null && c.color === "white");
+
+		if (hasGoal || hasWhite)
 		{
-			if (containCard(gameState, d, hypothesis))
-				return d;
-		}
-
-		return -1;
-	};
-
-	const checkWinForEveryObjectif = (cardArray) => {
-		const cardObj = cardArray[0];
-		const numObj = cardArray[1][0];
-		const isLinked = cardArray[1][2];
-
-		const intermediaireDeck = numObj === 0 ? 0 : findIntermediateDeckFor(cardObj);
-
-		const checkWin = (card, deckIndex) => {
-			if (card == null || cardObj == null)
-				return;
-
-			if (modif || bool)
-				return;
-
-			if (!card.equals(cardObj) && card.color !== "white")
-				return;
-
-			// Objectif principal.
-			if (numObj === 0)
-			{
-				bool = true;
-				return;
-			}
-
-			// La carte doit être dans la bonne LPU ou dans le deck de départ.
-			if (deckIndex !== 0 && deckIndex !== intermediaireDeck)
-				return;
-
-			if (intermediaireDeck === -1)
-				return;
-
-			const findObj = findObjectifRelative(cardObj, gameState);
-			if (findObj === -1)
-				return;
-
 			modif = true;
+			const objectiveCard = parentImpl.copy();
 
-			const objectiveCard = gameState[gameState.length - 1][findObj].copy();
+			// Remonte l'implication démontrée dans le deck juste au-dessus de la LPU
+			if (!addToGame(gameState, d - 1, objectiveCard, undefined, false))
+				return [gameState, bool, arrayMsg, arrayIndent];
 
-			// Remonte "A ⇒ B" dans le deck juste au-dessus de la LPU
-			if (!addToGame(gameState, intermediaireDeck - 1, objectiveCard, undefined, false))
-				return;
+			// Retire le sous-objectif éventuel (goal) du deck objectif
+			gameState[gameState.length - 1] = removeSubObjective(gameState[gameState.length - 1], goal);
 
-			// Retire B des objectifs.
-			gameState[gameState.length - 1] = removeCardWithEquals(gameState[gameState.length - 1], cardObj);
+			// Retire l'implication démontrée si ce n'est pas l'objectif principal (index 0)
+			if (parentIndex !== 0)
+				gameState[gameState.length - 1] = removeSubObjective(gameState[gameState.length - 1], parentImpl);
 
-			// Retire "A ⇒ B" du deck objectif s'il était lié.
-			if (findObj !== 0 && isLinked)
-				gameState[gameState.length - 1] = removeCard(gameState[gameState.length - 1], findObj);
-
-			// Supprime la LPU intermédiaire trouvée (plus removeDeck(gameState, numObj))
-			gameState = removeDeck(gameState, intermediaireDeck);
+			// Supprime la LPU résolue
+			gameState = removeDeck(gameState, d);
 
 			arrayMsg.push(["On a ", objectiveCard.copy(), "."]);
 			arrayIndent.push(-1);
-		};
+			break;
+		}
+	}
 
-		// Parcourt tous les decks utiles : départ + LPU intermédiaires.
-		for (let d = 0; d < gameState.length - 1; d++)
-			gameState[d].forEach((card) => checkWin(card, d));
-
-		return bool;
-	};
-
-	listObjectif.forEach((e) => {
-		if (!bool && !modif)
-			checkWinForEveryObjectif(e);
-	});
-
-	/**
-	 * Objectifs secondaires issus d'un "et" (bouton Objectif sur (A=>B)∧(C=>D)) :
-	 * ce sont des cartes "Montrons X" ajoutées au deck objectif sans LPU intermédiaire.
-	 * Dès que X est présent dans une LPU, on retire la carte correspondante des objectifs.
-	 */
+	// 2. Objectifs secondaires sans LPU intermédiaire (issus d'un "et" ou depuis LPU) :
+	// ce sont des cartes "Montrons X" ajoutées au deck objectif sans création de LPU.
+	// Dès que X est présent dans Deck 0 ou dans une LPU, on retire la carte correspondante des objectifs.
 	if (!bool && !modif)
 	{
 		const objDeckIndex = gameState.length - 1;
 		for (let i = gameState[objDeckIndex].length - 1; i >= 1; i--)
 		{
 			const goalCard = gameState[objDeckIndex][i];
-			if (goalCard == null || goalCard === undefined)
+			if (goalCard == null)
 				continue;
 
 			if (checkSubObj(gameState[objDeckIndex], goalCard))
 				continue;
 
-			let foundInLPU = false;
+			let found = false;
 			for (let d = 0; d < objDeckIndex; d++)
 			{
 				if (containCard(gameState, d, goalCard))
 				{
-					foundInLPU = true;
+					found = true;
 					break;
 				}
 			}
 
-			if (foundInLPU)
+			if (found)
 			{
-				gameState[objDeckIndex] = removeCardWithEquals(gameState[objDeckIndex], goalCard);
+				gameState[objDeckIndex] = removeSubObjective(gameState[objDeckIndex], goalCard);
 				arrayMsg.push(["On a ", goalCard.copy(), "."]);
 				arrayIndent.push(0);
 				modif = true;
+				break;
 			}
 		}
 	}
 
-	/**
-	 * Regarde l'objectif précédent pour voir si le fait d'ajouter l'objectif secondaire ne l'a pas validé.
-	 * Si cela valide l'objectif principal : bool = true
-	 * Sinon : bool = false
-	 */
+	// 3. Récursion : si une LPU ou un sous-objectif a été résolu, re-vérifier l'état global
+	// (la résolution peut permettre de résoudre la LPU parente ou l'objectif principal).
 	if (!bool && modif)
 	{
 		let recursiveResult = runIsWin(arrayMsg, arrayIndent, gameState, false, deps);
@@ -175,12 +203,24 @@ export function runIsWin(arrayMsg, arrayIndent, gameState, originel, deps)
 		arrayIndent = recursiveResult[3];
 	}
 
+	// 4. Objectif principal : ne peut être validé que dans le deck 0 lorsqu'aucune LPU n'est ouverte.
+	// Un théorème ne peut être déclaré démontré que lorsque toutes les hypothèses
+	// temporaires ont été déchargées.
+	if (!bool && !modif && gameState.length === 2)
+	{
+		const mainObj = gameState[gameState.length - 1][0];
+		const deck0HasMain = mainObj != null && gameState[0].some(c => c != null && c.equalsSymmetric(mainObj));
+		const deck0HasWhite = gameState[0].some(c => c != null && c.color === "white");
+		if (deck0HasMain || deck0HasWhite)
+			bool = true;
+	}
+
 	if (originel)
 	{
 		addLineDemonstration(arrayMsg, arrayIndent);
 		setSavedGame(gameState);
 		clearSelection(gameState);
-		currentObjectives = buildObjectives(gameState);
+		const currentObjectives = buildObjectives(gameState);
 		setObjectives(currentObjectives);
 	}
 

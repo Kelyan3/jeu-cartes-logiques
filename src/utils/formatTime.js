@@ -7,7 +7,7 @@
  */
 export function formatTime(totalSeconds)
 {
-	if (totalSeconds === null || totalSeconds === undefined)
+	if (totalSeconds == null)
 		return null;
 
 	const minutes = Math.floor(totalSeconds / 60);

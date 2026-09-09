@@ -65,10 +65,7 @@ export function computeAddLineDemonstration(currentState, msgArray, indentationA
 		if (msg == null || msg.length === 0)
 			return;
 
-		if (indentationArray[index] === undefined)
-			indentationArray[index] = 0;
-
-		indentation += indentationArray[index];
+		indentation += indentationArray[index] ?? 0;
 
 		tmpTabIndentation.push(indentation);
 		tmpDemonstration.push([indentation, msg]);

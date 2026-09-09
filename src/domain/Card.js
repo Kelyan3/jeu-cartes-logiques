@@ -148,8 +148,8 @@ export default class Card
 	 */
 	copy()
 	{
-		const leftCopy = this.left !== null ? this.left.copy() : null;
-		const rightCopy = this.right !== null ? this.right.copy() : null;
+		const leftCopy = this.left != null ? this.left.copy() : null;
+		const rightCopy = this.right != null ? this.right.copy() : null;
 
 		return new Card(this.id, this.color, this.active, this.link, leftCopy, rightCopy, this.isNew);
 	}
@@ -194,6 +194,9 @@ export default class Card
 	 */
 	equals(card)
 	{
+		if (card == null)
+			return false;
+
 		if (this.color !== null && card.color !== null)
 			return this.color === card.color;
 
@@ -226,6 +229,9 @@ export default class Card
 	 */
 	equalsSymmetric(card)
 	{
+		if (card == null)
+			return false;
+
 		if (this.isDoubleArrow() && card.isDoubleArrow() &&
 			this.left.equals(card.right) && this.right.equals(card.left))
 			return true;

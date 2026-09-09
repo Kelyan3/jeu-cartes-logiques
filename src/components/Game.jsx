@@ -319,7 +319,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 * Adaptateur autour de `runIsWin` : lui fournit les callbacks nécessaires, pour
 	 * garder inchangés tous les appels existants à `isWin(...)`.
 	 */
-	const isWin = (arrayMsg, arrayIndent, gameState, originel) => runIsWin(arrayMsg, arrayIndent, gameState, originel, {
+	const isWin = (arrayMsg, arrayIndent, gameState, originel=true) => runIsWin(arrayMsg, arrayIndent, gameState, originel, {
 		addToGame, addLineDemonstration, setSavedGame, clearSelection, setObjectives, setWin, setPopupWin, saveProgress,
 	});
 
