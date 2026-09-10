@@ -1,5 +1,6 @@
 import Card from "../Card";
 import { containCard, copyGameArray } from "../gameSolver";
+import { buildObjectives } from "./goals";
 
 
 /**
@@ -22,7 +23,7 @@ import { containCard, copyGameArray } from "../gameSolver";
  */
 export function runAddCardAnd(deps)
 {
-	const { navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin } = deps;
+	const { navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin, addLineDemonstration, clearSelection, setSavedGame, setObjectives } = deps;
 
 	if (navigation || win)
 		return;
@@ -77,8 +78,20 @@ export function runAddCardAnd(deps)
 	let tmpCard2 = game[deckI][cardI].right.copy();
 	addToGame(workingGame, deckI, tmpCard2, false);
 
-	// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
-	isWin([["On a ", tmpCard1.copy(), ". On a ", tmpCard2.copy(), "."]], [0], workingGame);
+	if (deckI === game.length - 1)
+	{
+		addLineDemonstration([["Montrons ", tmpCard1.copy(), ". Montrons ", tmpCard2.copy(), "."]], [0]);
+		clearSelection(workingGame);
+		setSavedGame(workingGame);
+
+		if (setObjectives)
+			setObjectives(buildObjectives(workingGame));
+	}
+	else
+	{
+		// Vérifie si l'exercice est fini, si oui affiche le popup de victoire
+		isWin([["On a ", tmpCard1.copy(), ". On a ", tmpCard2.copy(), "."]], [0], workingGame);
+	}
 }
 
 /**

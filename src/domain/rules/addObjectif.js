@@ -1,4 +1,5 @@
 import { copyGameArray } from "../gameSolver";
+import { buildObjectives } from "./goals";
 
 /**
  * Variante "=> dans objectif" : la carte sélectionnée (dans le deck objectif, liaison
@@ -96,7 +97,7 @@ function addObjectifDepuisLPU(deckI, cardI, deps)
  */
 function addObjectifEt(deckI, cardI, deps)
 {
-	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelection } = deps;
+	const { game, setSavedGame, saveGame, addToGame, addLineDemonstration, clearSelection, setObjectives } = deps;
 
 	let workingGame = copyGameArray(game);
 
@@ -125,6 +126,9 @@ function addObjectifEt(deckI, cardI, deps)
 	// Met à jour le jeu & désélectionne toutes les cartes
 	clearSelection(workingGame);
 	setSavedGame(workingGame);
+
+	if (setObjectives)
+		setObjectives(buildObjectives(workingGame));
 }
 
 /**

@@ -377,6 +377,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	 */
 	const cardActionDeps = () => ({
 		navigation, win, selectedCardCount, firstSelectedDeckIndex, secondSelectedDeckIndex, firstSelectedCardIndex, secondSelectedCardIndex, game, error, saveGame, addToGame, isWin,
+		addLineDemonstration, clearSelection, setSavedGame, setObjectives,
 	});
 
 	/**
