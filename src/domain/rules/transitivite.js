@@ -120,6 +120,7 @@ function transitiviteEquiv(symmetric, deps)
 	const selection = getTransitiviteSelection(deps);
 	if (selection === null)
 		return;
+
 	const [finalDeck, card1, card2] = selection;
 
 	if (!card1.isDoubleArrow() || !card2.isDoubleArrow())
@@ -170,6 +171,81 @@ function transitiviteEquiv(symmetric, deps)
 }
 
 /**
+ * Variante "<=> symétrique" : sélectionne une seule carte "<=>" (A <=> B)
+ * pour en déduire sa symétrique (B <=> A) dans la LPU.
+ */
+function transitiviteEquivSym(deps)
+{
+	const { selectedCardCount, firstSelectedCardIndex, secondSelectedCardIndex, firstSelectedDeckIndex, secondSelectedDeckIndex, game, error, addToGame, isWin } = deps;
+
+	// S'il n'y a qu'une carte de sélectionnée
+	if (!((firstSelectedCardIndex !== -1 && secondSelectedCardIndex === -1 && firstSelectedDeckIndex !== -1 && secondSelectedDeckIndex === -1) ||
+		(firstSelectedCardIndex === -1 && secondSelectedCardIndex !== -1 && firstSelectedDeckIndex === -1 && secondSelectedDeckIndex !== -1)))
+	{
+		if (selectedCardCount > 1)
+			error("Vous devez sélectionner une seule carte !");
+		else if (selectedCardCount === 0)
+			error("Vous devez sélectionner une carte !");
+		else
+			error("Vous devez sélectionner une seule carte !");
+		return;
+	}
+
+	let finalDeck = Math.max(firstSelectedDeckIndex, secondSelectedDeckIndex);
+	let cardI = Math.max(firstSelectedCardIndex, secondSelectedCardIndex);
+
+	if (finalDeck === game.length - 1)
+	{
+		error("Vous ne pouvez pas utiliser une carte de l'objectif avec ce bouton !");
+		return;
+	}
+
+	let workingGame = copyGameArray(game);
+	let selectedCard = workingGame[finalDeck][cardI];
+
+	if (!selectedCard.isDoubleArrow())
+	{
+		error('La carte sélectionnée doit avoir une liaison "<=>" !');
+		return;
+	}
+
+	let cardLeft = selectedCard.left.left;
+	let cardRight = selectedCard.left.right;
+
+	const cardToAdd = new Card(
+		workingGame[finalDeck].length,
+		null,
+		false,
+		"et",
+		new Card(0, null, false, "=>", cardRight.copy(), cardLeft.copy()),
+		new Card(0, null, false, "=>", cardLeft.copy(), cardRight.copy())
+	);
+
+	if (containCardSymmetric(workingGame, finalDeck, cardToAdd))
+	{
+		error(`La carte ${cardToAdd} existe deja dans la LPU ${finalDeck + 1}`);
+		return;
+	}
+
+	if (!addToGame(workingGame, finalDeck, cardToAdd))
+		return;
+
+	isWin(
+		[
+			[
+				"Par symétrie, on a : ",
+				cardRight.copy(),
+				" <=> ",
+				cardLeft.copy(),
+				".",
+			],
+		],
+		[0],
+		workingGame
+	);
+}
+
+/**
  * Fonction appelée après avoir choisi une des 3 options du menu "Transitivité".
  *
  * @param {"arrow"|"equiv"|"equiv_sym"} variant
@@ -204,5 +280,5 @@ export function runTransitivite(variant, deps)
 	else if (variant === "equiv")
 		transitiviteEquiv(false, deps);
 	else if (variant === "equiv_sym")
-		transitiviteEquiv(true, deps);
+		transitiviteEquivSym(deps);
 }
