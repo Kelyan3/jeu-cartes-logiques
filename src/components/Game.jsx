@@ -163,10 +163,10 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 			});
 		}
 
-		if (game.length >= 2 && game[1] && game[1].length > 0)
+		if (game.length >= 2 && game[game.length - 1] && game[game.length - 1].length > 0)
 		{
 			demonstrationLines.push("Montrons ");
-			demonstrationLines.push(game[1][0].copy());
+			demonstrationLines.push(game[game.length - 1][0].copy());
 			demonstrationLines.push(".");
 		}
 
@@ -693,6 +693,23 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 								else
 								{
 									// Entrée en mode test
+									let demonstrationLines = [];
+									if (game[0])
+									{
+										game[0].forEach((element) => {
+											demonstrationLines.push("On a ");
+											demonstrationLines.push(element.copy());
+											demonstrationLines.push(". ");
+										});
+									}
+									if (game.length >= 2 && game[game.length - 1] && game[game.length - 1].length > 0)
+									{
+										demonstrationLines.push("Montrons ");
+										demonstrationLines.push(game[game.length - 1][0].copy());
+										demonstrationLines.push(".");
+									}
+									const initialTestDemo = demonstrationLines.length > 0 ? [[0, demonstrationLines]] : [];
+
 									setPreTestState({
 										game: game.map(d => d.map(c => c.copy())),
 										demonstration: demonstration.map(row => [row[0], [...row[1]]]),
@@ -700,6 +717,11 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 										tabIndiceDemonstration: [...tabIndiceDemonstration],
 										tabIndentation: [...tabIndentation]
 									});
+									setDemonstration(initialTestDemo);
+									setIndentationDemonstration(0);
+									setTabIndiceDemonstration([-1]);
+									setTabIndentation([0]);
+									setSavedGame(game.map(d => d.map(c => c.copy())));
 									setIsTestingMode(true);
 								}
 							}}
