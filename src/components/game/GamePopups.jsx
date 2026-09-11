@@ -14,8 +14,8 @@ const COLORS = [
 ];
 
 const CONNECTORS = [
-	["and", "Et", "∧"],
-	["or", "Ou", "∨"],
+	["et", "Et", "∧"],
+	["ou", "Ou", "∨"],
 	["=>", "Implique", "⇒"],
 	["<=>", "Équivaut", "⇔"],
 ];

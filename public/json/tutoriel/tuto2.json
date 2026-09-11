@@ -1,11 +1,13 @@
 [
-  [
-    { "color": "yellow" },
-    {
-      "left": { "color": "yellow" },
-      "link": "=>",
-      "right": { "color": "blue" }
-    }
-  ],
-  [{ "color": "blue" }]
+	[
+		{ "color": "yellow" },
+		{
+			"left": { "color": "yellow" },
+			"link": "=>",
+			"right": { "color": "blue" }
+		}
+	],
+	[
+		{ "color": "blue" }
+	]
 ]

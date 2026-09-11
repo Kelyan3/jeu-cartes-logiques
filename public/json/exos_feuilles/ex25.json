@@ -1,117 +1,75 @@
 [
- [
-  {
-   "left": {
-    "left": {
-     "color": "blue"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "color": "red"
-    },
-    "link": "et",
-    "right": {
-     "color": "yellow"
-    }
-   }
-  },
-  {
-   "left": {
-    "left": {
-     "color": "red"
-    },
-    "link": "et",
-    "right": {
-     "color": "yellow"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  },
-  {
-   "left": {
-    "left": {
-     "color": "orange"
-    },
-    "link": "et",
-    "right": {
-     "color": "blue"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "color": "red"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   }
-  },
-  {
-   "left": {
-    "left": {
-     "color": "red"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "color": "orange"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   }
-  }
- ],
- [
-  {
-   "left": {
-    "left": {
-     "left": {
-      "color": "blue"
-     },
-     "link": "=>",
-     "right": {
-      "color": "white"
-     }
-    },
-    "link": "=>",
-    "right": {
-     "color": "orange"
-    }
-   },
-   "link": "et",
-   "right": {
-    "left": {
-     "color": "orange"
-    },
-    "link": "=>",
-    "right": {
-     "left": {
-      "color": "blue"
-     },
-     "link": "=>",
-     "right": {
-      "color": "white"
-     }
-    }
-   }
-  }
- ]
+	[
+		{
+			"left": {
+				"left": { "color": "blue" },
+				"link": "=>",
+				"right": { "color": "white" }
+			},
+			"link": "=>",
+			"right": {
+				"left": { "color": "red" },
+				"link": "et",
+				"right": { "color": "yellow" }
+			}
+		},
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "et",
+				"right": { "color": "yellow" }
+			},
+			"link": "=>",
+			"right": { "color": "orange" }
+		},
+		{
+			"left": {
+				"left": { "color": "orange" },
+				"link": "et",
+				"right": { "color": "blue" }
+			},
+			"link": "=>",
+			"right": {
+				"left": { "color": "red" },
+				"link": "=>",
+				"right": { "color": "white" }
+			}
+		},
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "=>",
+				"right": { "color": "white" }
+			},
+			"link": "=>",
+			"right": {
+				"left": { "color": "orange" },
+				"link": "=>",
+				"right": { "color": "white" }
+			}
+		}
+	],
+	[
+		{
+			"left": {
+				"left": {
+					"left": { "color": "blue" },
+					"link": "=>",
+					"right": { "color": "white" }
+				},
+				"link": "=>",
+				"right": { "color": "orange" }
+			},
+			"link": "et",
+			"right": {
+				"left": { "color": "orange" },
+				"link": "=>",
+				"right": {
+					"left": { "color": "blue" },
+					"link": "=>",
+					"right": { "color": "white" }
+				}
+			}
+		}
+	]
 ]

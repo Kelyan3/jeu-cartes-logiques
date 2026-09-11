@@ -1,90 +1,58 @@
 [
- [
-  {
-   "left": {
-    "left": {
-     "color": "blue"
-    },
-    "link": "=>",
-    "right": {
-     "color": "yellow"
-    }
-   },
-   "link": "et",
-   "right": {
-    "left": {
-     "color": "yellow"
-    },
-    "link": "=>",
-    "right": {
-     "color": "blue"
-    }
-   }
-  },
-  {
-   "left": {
-    "color": "red"
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "color": "blue"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   }
-  },
-  {
-   "left": {
-    "left": {
-     "color": "blue"
-    },
-    "link": "et",
-    "right": {
-     "color": "yellow"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "left": {
-      "color": "orange"
-     },
-     "link": "=>",
-     "right": {
-      "color": "white"
-     }
-    },
-    "link": "=>",
-    "right": {
-     "color": "red"
-    }
-   }
-  }
- ],
- [
-  {
-   "left": {
-    "left": {
-     "left": {
-      "color": "blue"
-     },
-     "link": "=>",
-     "right": {
-      "color": "white"
-     }
-    },
-    "link": "=>",
-    "right": {
-     "color": "yellow"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  }
- ]
+	[
+		{
+			"left": {
+				"left": { "color": "blue" },
+				"link": "=>",
+				"right": { "color": "yellow" }
+			},
+			"link": "et",
+			"right": {
+				"left": { "color": "yellow" },
+				"link": "=>",
+				"right": { "color": "blue" }
+			}
+		},
+		{
+			"left": { "color": "red" },
+			"link": "=>",
+			"right": {
+				"left": { "color": "blue" },
+				"link": "=>",
+				"right": { "color": "white" }
+			}
+		},
+		{
+			"left": {
+				"left": { "color": "blue" },
+				"link": "et",
+				"right": { "color": "yellow" }
+			},
+			"link": "=>",
+			"right": {
+				"left": {
+					"left": { "color": "orange" },
+					"link": "=>",
+					"right": { "color": "white" }
+				},
+				"link": "=>",
+				"right": { "color": "red" }
+			}
+		}
+	],
+	[
+		{
+			"left": {
+				"left": {
+					"left": { "color": "blue" },
+					"link": "=>",
+					"right": { "color": "white" }
+				},
+				"link": "=>",
+				"right": { "color": "yellow" }
+			},
+			"link": "=>",
+			"right": { "color": "orange" }
+		}
+	]
 ]

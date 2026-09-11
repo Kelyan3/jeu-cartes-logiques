@@ -1,1 +1,33 @@
-[[{"left":{"left":{"color":"red"},"link":"=>","right":{"color":"white"}},"link":"=>","right":{"color":"blue"}},{"left":{"left":{"color":"blue"},"link":"et","right":{"color":"orange"}},"link":"=>","right":{"color":"yellow"}}],[{"left":{"left":{"color":"blue"},"link":"et","right":{"color":"red"}},"link":"=>","right":{"color":"orange"}}]]
+[
+	[
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "=>",
+				"right": { "color": "white" }
+			},
+			"link": "=>",
+			"right": { "color": "blue" }
+		},
+		{
+			"left": {
+				"left": { "color": "blue" },
+				"link": "et",
+				"right": { "color": "orange" }
+			},
+			"link": "=>",
+			"right": { "color": "yellow" }
+		}
+	],
+	[
+		{
+			"left": {
+				"left": { "color": "blue" },
+				"link": "et",
+				"right": { "color": "red" }
+			},
+			"link": "=>",
+			"right": { "color": "orange" }
+		}
+	]
+]

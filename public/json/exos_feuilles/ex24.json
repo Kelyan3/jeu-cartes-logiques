@@ -1,57 +1,37 @@
 [
- [
-  {
-   "left": {
-    "left": {
-     "left": {
-      "color": "red"
-     },
-     "link": "=>",
-     "right": {
-      "color": "white"
-     }
-    },
-    "link": "=>",
-    "right": {
-     "color": "blue"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  },
-  {
-   "left": {
-    "left": {
-     "color": "red"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "color": "yellow"
-    },
-    "link": "=>",
-    "right": {
-     "color": "blue"
-    }
-   }
-  }
- ],
- [
-  {
-   "left": {
-    "color": "yellow"
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  }
- ]
+	[
+		{
+			"left": {
+				"left": {
+					"left": { "color": "red" },
+					"link": "=>",
+					"right": { "color": "white" }
+				},
+				"link": "=>",
+				"right": { "color": "blue" }
+			},
+			"link": "=>",
+			"right": { "color": "orange" }
+		},
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "=>",
+				"right": { "color": "white" }
+			},
+			"link": "=>",
+			"right": {
+				"left": { "color": "yellow" },
+				"link": "=>",
+				"right": { "color": "blue" }
+			}
+		}
+	],
+	[
+		{
+			"left": { "color": "yellow" },
+			"link": "=>",
+			"right": { "color": "orange" }
+		}
+	]
 ]

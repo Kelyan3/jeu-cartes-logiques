@@ -1,24 +1,16 @@
 [
-    [
-     {
-      "left": {
-       "left": {
-        "color": "red"
-       },
-       "link": "=>",
-       "right": {
-        "color": "white"
-       }
-      },
-      "link": "=>",
-      "right": {
-       "color": "white"
-      }
-     }
-    ],
-    [
-     {
-      "color": "red"
-     }
-    ]
-   ]
+	[
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "=>",
+				"right": { "color": "white" }
+			},
+			"link": "=>",
+			"right": { "color": "white" }
+		}
+	],
+	[
+		{ "color": "red" }
+	]
+]

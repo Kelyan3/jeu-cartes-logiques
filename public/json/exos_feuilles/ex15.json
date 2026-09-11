@@ -1,78 +1,50 @@
 [
- [
-  {
-   "left": {
-    "color": "red"
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  },
-  {
-   "left": {
-    "color": "orange"
-   },
-   "link": "=>",
-   "right": {
-    "color": "yellow"
-   }
-  },
-  {
-   "left": {
-    "color": "yellow"
-   },
-   "link": "=>",
-   "right": {
-    "color": "red"
-   }
-  }
- ],
- [
-  {
-   "left": {
-    "left": {
-     "left": {
-      "color": "red"
-     },
-     "link": "=>",
-     "right": {
-      "color": "orange"
-     }
-    },
-    "link": "et",
-    "right": {
-     "left": {
-      "color": "orange"
-     },
-     "link": "=>",
-     "right": {
-      "color": "red"
-     }
-    }
-   },
-   "link": "et",
-   "right": {
-    "left": {
-     "left": {
-      "color": "orange"
-     },
-     "link": "=>",
-     "right": {
-      "color": "yellow"
-     }
-    },
-    "link": "et",
-    "right": {
-     "left": {
-      "color": "yellow"
-     },
-     "link": "=>",
-     "right": {
-      "color": "orange"
-     }
-    }
-   }
-  }
- ]
+	[
+		{
+			"left": { "color": "red" },
+			"link": "=>",
+			"right": { "color": "orange" }
+		},
+		{
+			"left": { "color": "orange" },
+			"link": "=>",
+			"right": { "color": "yellow" }
+		},
+		{
+			"left": { "color": "yellow" },
+			"link": "=>",
+			"right": { "color": "red" }
+		}
+	],
+	[
+		{
+			"left": {
+				"left": {
+					"left": { "color": "red" },
+					"link": "=>",
+					"right": { "color": "orange" }
+				},
+				"link": "et",
+				"right": {
+					"left": { "color": "orange" },
+					"link": "=>",
+					"right": { "color": "red" }
+				}
+			},
+			"link": "et",
+			"right": {
+				"left": {
+					"left": { "color": "orange" },
+					"link": "=>",
+					"right": { "color": "yellow" }
+				},
+				"link": "et",
+				"right": {
+					"left": { "color": "yellow" },
+					"link": "=>",
+					"right": { "color": "orange" }
+				}
+			}
+		}
+	]
 ]

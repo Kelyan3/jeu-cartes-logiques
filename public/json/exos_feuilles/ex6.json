@@ -1,33 +1,21 @@
 [
- [
-  {
-   "color": "blue"
-  },
-  {
-   "left": {
-    "left": {
-     "color": "blue"
-    },
-    "link": "et",
-    "right": {
-     "color": "red"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  }
- ],
- [
-  {
-   "left": {
-    "color": "red"
-   },
-   "link": "=>",
-   "right": {
-    "color": "orange"
-   }
-  }
- ]
+	[
+		{ "color": "blue" },
+		{
+			"left": {
+				"left": { "color": "blue" },
+				"link": "et",
+				"right": { "color": "red" }
+			},
+			"link": "=>",
+			"right": { "color": "orange" }
+		}
+	],
+	[
+		{
+			"left": { "color": "red" },
+			"link": "=>",
+			"right": { "color": "orange" }
+		}
+	]
 ]

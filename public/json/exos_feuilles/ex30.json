@@ -1,60 +1,38 @@
 [
- [
-  {
-   "left": {
-    "left": {
-     "color": "red"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "color": "blue"
-   }
-  },
-  {
-   "left": {
-    "color": "red"
-   },
-   "link": "=>",
-   "right": {
-    "color": "yellow"
-   }
-  },
-  {
-   "left": {
-    "left": {
-     "color": "red"
-    },
-    "link": "et",
-    "right": {
-     "color": "yellow"
-    }
-   },
-   "link": "=>",
-   "right": {
-    "left": {
-     "color": "orange"
-    },
-    "link": "=>",
-    "right": {
-     "color": "white"
-    }
-   }
-  }
- ],
- [
-  {
-   "left": {
-    "color": "orange"
-   },
-   "link": "=>",
-   "right": {
-    "color": "blue"
-   }
-  }
- ]
+	[
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "=>",
+				"right": { "color": "white" }
+			},
+			"link": "=>",
+			"right": { "color": "blue" }
+		},
+		{
+			"left": { "color": "red" },
+			"link": "=>",
+			"right": { "color": "yellow" }
+		},
+		{
+			"left": {
+				"left": { "color": "red" },
+				"link": "et",
+				"right": { "color": "yellow" }
+			},
+			"link": "=>",
+			"right": {
+				"left": { "color": "orange" },
+				"link": "=>",
+				"right": { "color": "white" }
+			}
+		}
+	],
+	[
+		{
+			"left": { "color": "orange" },
+			"link": "=>",
+			"right": { "color": "blue" }
+		}
+	]
 ]

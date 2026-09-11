@@ -35,7 +35,11 @@ export function useGameFile(game, setGame)
 	 */
 	const saveAsFile = () => {
 		const fileData = gameOutput();
-		const blob = new Blob([JSON.stringify(fileData)], { type: "text/json;charset=utf-8;", });
+		const jsonString = JSON.stringify(fileData, null, 2)
+			.replace(/\\u003C/g, '<')
+			.replace(/\\u003E/g, '>');
+
+		const blob = new Blob([jsonString], { type: "text/json;charset=utf-8;", });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");
 
