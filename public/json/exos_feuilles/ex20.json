@@ -4,7 +4,7 @@
 			"left": { "color": "red" },
 			"link": "=>",
 			"right": {
-				"left": { "color": "green" },
+				"left": { "color": "orange" },
 				"link": "=>",
 				"right": { "color": "yellow" }
 			}
@@ -13,25 +13,25 @@
 			"left": { "color": "yellow" },
 			"link": "=>",
 			"right": {
-				"left": { "color": "green" },
+				"left": { "color": "orange" },
 				"link": "=>",
 				"right": { "color": "red" }
 			}
 		},
 		{
 			"left": {
-				"left": { "color": "green" },
+				"left": { "color": "orange" },
 				"link": "=>",
 				"right": { "color": "blue" }
 			},
 			"link": "=>",
-			"right": { "color": "orange" }
+			"right": { "color": "purple" }
 		},
 		{
 			"left": {
-				"left": { "color": "green" },
+				"left": { "color": "orange" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			},
 			"link": "=>",
 			"right": { "color": "blue" }
@@ -49,7 +49,7 @@
 				"right": {
 					"left": { "color": "yellow" },
 					"link": "=>",
-					"right": { "color": "orange" }
+					"right": { "color": "purple" }
 				}
 			},
 			"link": "et",
@@ -57,7 +57,7 @@
 				"left": {
 					"left": { "color": "yellow" },
 					"link": "=>",
-					"right": { "color": "orange" }
+					"right": { "color": "purple" }
 				},
 				"link": "=>",
 				"right": {

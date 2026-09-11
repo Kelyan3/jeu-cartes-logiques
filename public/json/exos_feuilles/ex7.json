@@ -20,7 +20,7 @@
 			"right": {
 				"left": { "color": "yellow" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			}
 		}
 	],
@@ -28,7 +28,7 @@
 		{
 			"left": { "color": "blue" },
 			"link": "=>",
-			"right": { "color": "orange" }
+			"right": { "color": "purple" }
 		}
 	]
 ]

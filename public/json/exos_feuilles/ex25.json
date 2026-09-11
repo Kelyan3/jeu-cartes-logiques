@@ -20,11 +20,11 @@
 				"right": { "color": "yellow" }
 			},
 			"link": "=>",
-			"right": { "color": "orange" }
+			"right": { "color": "purple" }
 		},
 		{
 			"left": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "et",
 				"right": { "color": "blue" }
 			},
@@ -43,7 +43,7 @@
 			},
 			"link": "=>",
 			"right": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "=>",
 				"right": { "color": "white" }
 			}
@@ -58,11 +58,11 @@
 					"right": { "color": "white" }
 				},
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			},
 			"link": "et",
 			"right": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "=>",
 				"right": {
 					"left": { "color": "blue" },

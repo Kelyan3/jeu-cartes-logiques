@@ -1,7 +1,7 @@
 [
 	[
 		{
-			"left": { "color": "orange" },
+			"left": { "color": "purple" },
 			"link": "et",
 			"right": {
 				"left": { "color": "red" },
@@ -13,7 +13,7 @@
 			"left": { "color": "blue" },
 			"link": "=>",
 			"right": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "=>",
 				"right": { "color": "red" }
 			}

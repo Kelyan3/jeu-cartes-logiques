@@ -4,14 +4,14 @@
 			"left": {
 				"left": { "color": "red" },
 				"link": "et",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			},
 			"link": "=>",
 			"right": { "color": "blue" }
 		},
 		{
 			"left": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "et",
 				"right": { "color": "yellow" }
 			},
@@ -30,7 +30,7 @@
 	],
 	[
 		{
-			"left": { "color": "orange" },
+			"left": { "color": "purple" },
 			"link": "=>",
 			"right": {
 				"left": { "color": "yellow" },

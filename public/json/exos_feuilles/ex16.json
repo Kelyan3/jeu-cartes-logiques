@@ -17,11 +17,11 @@
 			"left": {
 				"left": { "color": "blue" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			},
 			"link": "et",
 			"right": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "=>",
 				"right": { "color": "blue" }
 			}
@@ -36,11 +36,11 @@
 				"left": {
 					"left": { "color": "red" },
 					"link": "=>",
-					"right": { "color": "orange" }
+					"right": { "color": "purple" }
 				},
 				"link": "et",
 				"right": {
-					"left": { "color": "orange" },
+					"left": { "color": "purple" },
 					"link": "=>",
 					"right": { "color": "red" }
 				}

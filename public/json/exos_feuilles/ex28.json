@@ -1,13 +1,13 @@
 [
 	[
 		{
-			"left": { "color": "orange" },
+			"left": { "color": "purple" },
 			"link": "=>",
 			"right": { "color": "yellow" }
 		},
 		{
 			"left": {
-				"left": { "color": "orange" },
+				"left": { "color": "purple" },
 				"link": "et",
 				"right": { "color": "yellow" }
 			},
@@ -19,11 +19,11 @@
 				"left": {
 					"left": { "color": "red" },
 					"link": "=>",
-					"right": { "color": "orange" }
+					"right": { "color": "purple" }
 				},
 				"link": "et",
 				"right": {
-					"left": { "color": "orange" },
+					"left": { "color": "purple" },
 					"link": "=>",
 					"right": { "color": "red" }
 				}
@@ -41,7 +41,7 @@
 			"right": {
 				"left": { "color": "red" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			}
 		}
 	],

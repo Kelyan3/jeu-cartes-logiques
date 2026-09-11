@@ -3,10 +3,10 @@
 		{
 			"left": { "color": "red" },
 			"link": "=>",
-			"right": { "color": "orange" }
+			"right": { "color": "purple" }
 		},
 		{
-			"left": { "color": "orange" },
+			"left": { "color": "purple" },
 			"link": "=>",
 			"right": {
 				"left": { "color": "yellow" },
@@ -24,7 +24,7 @@
 			"right": {
 				"left": { "color": "red" },
 				"link": "et",
-				"right": { "color": "yellow" }
+				"right": { "color": "purple" }
 			}
 		}
 	],

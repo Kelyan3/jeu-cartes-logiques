@@ -3,7 +3,7 @@
 		{
 			"left": { "color": "red" },
 			"link": "=>",
-			"right": { "color": "orange" }
+			"right": { "color": "purple" }
 		},
 		{
 			"left": { "color": "yellow" },
@@ -14,7 +14,7 @@
 			"left": {
 				"left": { "color": "red" },
 				"link": "et",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			},
 			"link": "=>",
 			"right": { "color": "blue" }
@@ -31,7 +31,7 @@
 			"right": {
 				"left": { "color": "yellow" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			}
 		}
 	]

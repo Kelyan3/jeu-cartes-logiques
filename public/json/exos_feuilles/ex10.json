@@ -16,7 +16,7 @@
 			"right": {
 				"left": { "color": "yellow" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			}
 		}
 	],
@@ -27,7 +27,7 @@
 			"right": {
 				"left": { "color": "blue" },
 				"link": "=>",
-				"right": { "color": "orange" }
+				"right": { "color": "purple" }
 			}
 		}
 	]
