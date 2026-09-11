@@ -221,13 +221,7 @@ function transitiviteEquivSym(deps)
 		new Card(0, null, false, "=>", cardLeft.copy(), cardRight.copy())
 	);
 
-	if (containCardSymmetric(workingGame, finalDeck, cardToAdd))
-	{
-		error(`La carte ${cardToAdd} existe deja dans la LPU ${finalDeck + 1}`);
-		return;
-	}
-
-	if (!addToGame(workingGame, finalDeck, cardToAdd))
+	if (!addToGame(workingGame, finalDeck, cardToAdd, error))
 		return;
 
 	isWin(
