@@ -3,7 +3,6 @@ export default class Card
 	/**
 	 * @param {number} id
 	 * @param {string|null} color - couleur de la carte, voir {@link getColor} pour la liste complète des valeurs possibles.
-	 * @param {boolean} active
 	 * @param {""|"et"|"ou"|"=>"|"<=>"|"non"} link - ""    = carte simple ;
 	 *                                               "non" = liaison "¬"  ;
 	 *                                               "et"  = liaison "et" ;
@@ -14,11 +13,10 @@ export default class Card
 	 * @param {Card|null} right
 	 * @param {boolean} isNew - true si la carte doit être affichée avec l'animation d'apparition.
 	 */
-	constructor(id, color, active, link, left, right, isNew)
+	constructor(id, color, link, left, right, isNew)
 	{
 		this.id = id;
 		this.color = color;
-		this.active = active;
 		this.link = link;
 		this.left = left;
 		this.right = right;
@@ -32,8 +30,10 @@ export default class Card
 	 *
 	 * @returns {string} La traduction de la couleur.
 	 */
-	getColor(color) {
-		switch (color) {
+	getColor(color)
+	{
+		switch (color)
+		{
 			case "red": return "Rouge";
 			case "yellow": return "Jaune";
 			case "blue": return "Bleue";
@@ -151,7 +151,7 @@ export default class Card
 		const leftCopy = this.left != null ? this.left.copy() : null;
 		const rightCopy = this.right != null ? this.right.copy() : null;
 
-		return new Card(this.id, this.color, this.active, this.link, leftCopy, rightCopy, this.isNew);
+		return new Card(this.id, this.color, this.link, leftCopy, rightCopy, this.isNew);
 	}
 
 	/**
@@ -325,7 +325,7 @@ export default class Card
 		if (!this.isDoubleArrow())
 			return this;
 
-		return new Card(this.id, null, this.active, "<=>", this.left.left, this.left.right, this.isNew);
+		return new Card(this.id, null, "<=>", this.left.left, this.left.right, this.isNew);
 	}
 
 	/**
@@ -376,9 +376,8 @@ export default class Card
 		return new Card(
 			this.id,
 			null,
-			this.active,
 			"non",
-			new Card(0, "transparent", this.active, "", null, null),
+			new Card(0, "transparent", "", null, null),
 			this.left,
 			this.isNew
 		);
@@ -389,7 +388,8 @@ export default class Card
 	 *
 	 * @returns {boolean} true si la carte correspond à une carte avec un connecteur "ou", sinon false
 	 */
-	isOuCard() {
+	isOuCard()
+	{
 		if (this.color !== null)
 			return false;
 
@@ -412,7 +412,7 @@ export default class Card
 		if (!this.isOuCard())
 			return this;
 
-		return new Card(this.id, null, this.active, "ou", this.left.left, this.right, this.isNew);
+		return new Card(this.id, null, "ou", this.left.left, this.right, this.isNew);
 	}
 
 	/**
@@ -436,12 +436,13 @@ export default class Card
 	 *
 	 * @returns {Card} - La carte complexe sous son autre format d'affichage.
 	 */
-	displayGoodCardRecur() {
+	displayGoodCardRecur()
+	{
 		if (this.color !== null)
 			return this;
 
 		let temp = this.displayGoodCard();
 
-		return new Card(temp.id, temp.color, temp.active, temp.link, temp.left.displayGoodCardRecur(), temp.right.displayGoodCardRecur(), this.isNew);
+		return new Card(temp.id, temp.color, temp.link, temp.left.displayGoodCardRecur(), temp.right.displayGoodCardRecur(), this.isNew);
 	}
 }

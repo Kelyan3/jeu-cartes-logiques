@@ -2,6 +2,10 @@ import Card from "./Card";
 import { useGameTab } from "../context/GameTabContext";
 
 const Deck = ({
+	firstSelectedDeckIndex,
+	firstSelectedCardIndex,
+	secondSelectedDeckIndex,
+	secondSelectedCardIndex,
 	updateGame,
 	indice,
 	addCardFunc,
@@ -75,6 +79,11 @@ const Deck = ({
 		return objectiveLabel;
 	};
 
+	const isCardActive = (index) => {
+		return (firstSelectedDeckIndex === indice && firstSelectedCardIndex === index) ||
+			   (secondSelectedDeckIndex === indice && secondSelectedCardIndex === index);
+	};
+
 	const isCardHelp = (index) => {
 		return (
 			(helpCardPos !== null && helpCardPos[0] === indice && helpCardPos[1] === index) ||
@@ -119,6 +128,7 @@ const Deck = ({
 										isWin={isWin}
 										affichageSimple={affichageSimple}
 										isHelp={isCardHelp(index)}
+										isActive={isCardActive(index)}
 									/>
 								</div>
 							))}
@@ -142,6 +152,7 @@ const Deck = ({
 								isWin={isWin}
 								affichageSimple={affichageSimple}
 								isHelp={isCardHelp(index)}
+								isActive={isCardActive(index)}
 							/>
 						))}
 					</div>
@@ -192,6 +203,7 @@ const Deck = ({
 							isWin={isWin}
 							affichageSimple={affichageSimple}
 							isHelp={isCardHelp(index)}
+							isActive={isCardActive(index)}
 						/>
 					</div>
 				))}

@@ -226,7 +226,7 @@ export function runFuseCardAnd(deps)
 	// Copie du jeu actuel.
 	let workingGame = copyGameArray(game);
 
-	if (containCard(game, finalDeck, new Card(0, null, false, "et", workingGame[firstSelectedDeckIndex][firstSelectedCardIndex], workingGame[secondSelectedDeckIndex][secondSelectedCardIndex], true)))
+	if (containCard(game, finalDeck, new Card(0, null, "et", workingGame[firstSelectedDeckIndex][firstSelectedCardIndex], workingGame[secondSelectedDeckIndex][secondSelectedCardIndex], true)))
 	{
 		error("La carte que vous voulez ajouter existe déjà !");
 		return;
@@ -244,7 +244,7 @@ export function runFuseCardAnd(deps)
 	tmpCard2.setNew(true);
 
 	// Ajoute la nouvelle carte dans le deck le plus haut avec les 2 autres cartes & une liaison "et"
-	let cardToAdd = new Card(workingGame[finalDeck].length, null, false, "et", tmpCard1, tmpCard2, true);
+	let cardToAdd = new Card(workingGame[finalDeck].length, null, "et", tmpCard1, tmpCard2, true);
 	if (!addToGame(workingGame, finalDeck, cardToAdd))
 		return;
 

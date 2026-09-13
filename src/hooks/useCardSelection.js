@@ -29,11 +29,9 @@ export function useCardSelection()
 	 * @returns {{selectedCardCount: number, firstSelectedDeckIndex: number, firstSelectedCardIndex: number, secondSelectedDeckIndex: number, secondSelectedCardIndex: number}}
 	 *          le nouvel état de sélection (utile à l'appelant pour ses propres besoins, ex. tutoriel/popup)
 	 */
-	const selectCard = (i, j, tmp) => {
+	const selectCard = (i, j) => {
 		setHelpCardPos(null);
 		setHelpCardPos2(null);
-
-		let currentCard = tmp[i][j];
 
 		let nextSelectedCardCount = selectedCardCount;
 		let nextFirstSelectedDeckIndex = firstSelectedDeckIndex;
@@ -47,7 +45,6 @@ export function useCardSelection()
 			nextFirstSelectedCardIndex = -1;
 			nextFirstSelectedDeckIndex = -1;
 			nextSelectedCardCount--;
-			currentCard.select(!currentCard.active);
 		}
 		else if (nextSecondSelectedDeckIndex === i && nextSecondSelectedCardIndex === j)
 		{
@@ -55,7 +52,6 @@ export function useCardSelection()
 			nextSecondSelectedCardIndex = -1;
 			nextSecondSelectedDeckIndex = -1;
 			nextSelectedCardCount--;
-			currentCard.select(!currentCard.active);
 		}
 		else if (nextFirstSelectedDeckIndex === -1 && nextFirstSelectedCardIndex === -1)
 		{
@@ -63,7 +59,6 @@ export function useCardSelection()
 			nextFirstSelectedDeckIndex = i;
 			nextFirstSelectedCardIndex = j;
 			nextSelectedCardCount++;
-			currentCard.select(!currentCard.active);
 		}
 		else if (nextSelectedCardCount < 2)
 		{
@@ -71,7 +66,6 @@ export function useCardSelection()
 			nextSecondSelectedDeckIndex = i;
 			nextSecondSelectedCardIndex = j;
 			nextSelectedCardCount++;
-			currentCard.select(!currentCard.active);
 		}
 
 		setSelectedCardCount(nextSelectedCardCount);
@@ -79,8 +73,6 @@ export function useCardSelection()
 		setSecondSelectedCardIndex(nextSecondSelectedCardIndex);
 		setFirstSelectedDeckIndex(nextFirstSelectedDeckIndex);
 		setSecondSelectedDeckIndex(nextSecondSelectedDeckIndex);
-
-		tmp[i][j] = currentCard;
 
 		return {
 			selectedCardCount: nextSelectedCardCount,

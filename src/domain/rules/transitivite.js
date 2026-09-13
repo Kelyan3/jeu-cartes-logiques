@@ -85,14 +85,14 @@ function transitiviteArrow(deps)
 		cardRight = card1.right;
 		cardLeft = card2.left;
 		cardMiddle = card1.left;
-		cardToAdd = new Card(game[finalDeck].length, null, false, "=>", card2.left.copy(), card1.right.copy());
+		cardToAdd = new Card(game[finalDeck].length, null, "=>", card2.left.copy(), card1.right.copy());
 	}
 	else if (card1.right.equals(card2.left))
 	{
 		cardRight = card2.right;
 		cardLeft = card1.left;
 		cardMiddle = card2.left;
-		cardToAdd = new Card(game[finalDeck].length, null, false, "=>", card1.left.copy(), card2.right.copy());
+		cardToAdd = new Card(game[finalDeck].length, null, "=>", card1.left.copy(), card2.right.copy());
 	}
 	else
 	{
@@ -160,10 +160,9 @@ function transitiviteEquiv(symmetric, deps)
 	const cardToAdd = new Card(
 		game[finalDeck].length,
 		null,
-		false,
 		"et",
-		new Card(0, null, false, "=>", cardLeft.copy(), cardRight.copy()),
-		new Card(0, null, false, "=>", cardRight.copy(), cardLeft.copy())
+		new Card(0, null, "=>", cardLeft.copy(), cardRight.copy()),
+		new Card(0, null, "=>", cardRight.copy(), cardLeft.copy())
 	);
 
 	const isDuplicate = symmetric && containCardSymmetric(game, finalDeck, cardToAdd);
@@ -215,10 +214,9 @@ function transitiviteEquivSym(deps)
 	const cardToAdd = new Card(
 		workingGame[finalDeck].length,
 		null,
-		false,
 		"et",
-		new Card(0, null, false, "=>", cardRight.copy(), cardLeft.copy()),
-		new Card(0, null, false, "=>", cardLeft.copy(), cardRight.copy())
+		new Card(0, null, "=>", cardRight.copy(), cardLeft.copy()),
+		new Card(0, null, "=>", cardLeft.copy(), cardRight.copy())
 	);
 
 	if (!addToGame(workingGame, finalDeck, cardToAdd, error))

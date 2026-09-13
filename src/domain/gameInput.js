@@ -14,10 +14,10 @@ import Card from "../domain/Card";
 export const toClass = (obj, i) => {
 	// Si c'est une carte complexe
 	if (obj.color === undefined)
-		return new Card(i, null, false, obj.link, toClass(obj.left, 0), toClass(obj.right, 1), true);
+		return new Card(i, null, obj.link, toClass(obj.left, 0), toClass(obj.right, 1), true);
 
 	// Si c'est une carte simple
-	return new Card(i, obj.color, false, "", null, null, true);
+	return new Card(i, obj.color, "", null, null, true);
 };
 
 /**

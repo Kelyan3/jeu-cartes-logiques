@@ -189,20 +189,33 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 	const update = (i, j) => {
 		if (!navigation && !win)
 		{
-			// Met le message d'erreur en "" ce qui ne l'affiche plus
 			setErrorMessage("");
 
-			/**
-			 * Copie du jeu dans nextGameState (copie aussi le deck concerné, pas seulement
-			 * le tableau extérieur, pour ne pas modifier `game` avant setGame())
-			 */
-			let nextGameState = game.map((d, di) => (di === i ? [...d] : d));
+			// On retire les cartes isNew de manière immutable.
+			let hasNewCards = false;
 
-			setAllCardOld(nextGameState);
+			const nextGameState = game.map((deck) =>
+				deck.map((card) => {
+					if (card.isNew)
+					{
+						hasNewCards = true;
+						const newCard = card.copy();
+						newCard.setNew(false);
+						return newCard;
+					}
 
-			const { selectedCardCount: nextSelectedCardCount, firstSelectedDeckIndex: nextFirstSelectedDeckIndex, secondSelectedDeckIndex: nextSecondSelectedDeckIndex } = selectCard(i, j, nextGameState);
+					return card;
+				})
+			);
 
-			setGame(ensureDeckIds(nextGameState));
+			if (hasNewCards)
+				setGame(nextGameState);
+
+			const {
+				selectedCardCount: nextSelectedCardCount,
+				firstSelectedDeckIndex: nextFirstSelectedDeckIndex,
+				secondSelectedDeckIndex: nextSecondSelectedDeckIndex
+			} = selectCard(i, j);
 
 			if (nextSelectedCardCount === 2 && mode === "Create" && !isTestingMode)
 				setPopupFusion(true);
@@ -214,19 +227,6 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					setTutorialMessage(nextTutorialMessage);
 			}
 		}
-	};
-
-	/**
-	 * Marque toutes les cartes du tableau reçu comme "non nouvelles" (arrête l'animation d'apparition).
-	 *
-	 * @param {Card[][]} gameState - tableau du jeu temporaire
-	 */
-	const setAllCardOld = (gameState) => {
-		gameState.forEach((deck) => {
-			deck.forEach((card) => {
-				card.setNew(false);
-			});
-		});
 	};
 
 	/**
@@ -285,10 +285,9 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 		let cardToAdd = new Card(
 			0,
 			null,
-			false,
 			"=>",
 			futureCardNon,
-			new Card(1, "white", false, "", null, null, true),
+			new Card(1, "white", "", null, null, true),
 			true
 		);
 
@@ -763,6 +762,10 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 					{/* Ajout des decks */}
 					{game.map((deck, index) => (
 						<Deck
+							firstSelectedDeckIndex={firstSelectedDeckIndex}
+							firstSelectedCardIndex={firstSelectedCardIndex}
+							secondSelectedDeckIndex={secondSelectedDeckIndex}
+							secondSelectedCardIndex={secondSelectedCardIndex}
 							updateGame={update}
 							indice={index}
 							addCardFunc={addCard}
@@ -776,7 +779,7 @@ const Game = ({ mode, ex, levelIndex, totalLevelCount }) => {
 							helpCardPos={helpCardPos}
 							helpCardPos2={helpCardPos2}
 							key={deck.__deckId ?? index}
-						></Deck>
+						/>
 					))}
 				</div>
 			</GameTabProvider>

@@ -31,7 +31,7 @@ export function runChooseColor(event, deps)
 	event.target.checked = false;
 
 	// Ajoute la carte dans le deck (addCardDeckIndex est affecté avant de rentrer dans la fonction)
-	let cardToAdd = new Card(game[addCardDeckIndex].length, event.target.value, false, "", null, null, true);
+	let cardToAdd = new Card(game[addCardDeckIndex].length, event.target.value, "", null, null, true);
 	if (!addToGame(workingGame, addCardDeckIndex, cardToAdd))
 		return;
 
@@ -87,8 +87,8 @@ export function runChooseConnector(event, deps)
 			null, // color
 			false, // active
 			"et", // link
-			new Card(0, null, false, "=>", c1.copy(), c2.copy()), // left
-			new Card(0, null, false, "=>", c2.copy(), c1.copy()), // right
+			new Card(0, null, "=>", c1.copy(), c2.copy()), // left
+			new Card(0, null, "=>", c2.copy(), c1.copy()), // right
 			true
 		);
 	}
@@ -97,12 +97,10 @@ export function runChooseConnector(event, deps)
 		cardToAdd = new Card(
 			game[firstSelectedDeckIndex].length, // id
 			null, // color
-			false, // active
 			"=>", // link
 			new Card(
 				c1.id,
 				null,
-				false,
 				"=>",
 				c1,
 				new Card(1, "white", false, "", null, null, true)

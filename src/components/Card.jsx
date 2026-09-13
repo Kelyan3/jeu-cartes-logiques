@@ -2,7 +2,7 @@ import { useGameTab } from "../context/GameTabContext";
 import LogicText from "./LogicText";
 
 
-const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) => {
+const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp, isActive }) => {
 	/**
 	 * Fonction qui détecte le clique sur une carte & qui appelle la fonction {@link update()} passée par le
 	 * component Deck.
@@ -177,7 +177,7 @@ const Card = ({ deckIndex, cardIndex, update, isWin, affichageSimple, isHelp }) 
 				(isHelp ? "help" : "")}
 			style={calcSizeCard(game[deckIndex][cardIndex])}
 		>
-			{renderCard(game[deckIndex][cardIndex], game[deckIndex][cardIndex].active)}
+			{renderCard(game[deckIndex][cardIndex], isActive)}
 		</div>
 	);
 };
