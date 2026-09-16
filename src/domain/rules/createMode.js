@@ -85,7 +85,6 @@ export function runChooseConnector(event, deps)
 		cardToAdd = new Card(
 			game[firstSelectedDeckIndex].length, // id
 			null, // color
-			false, // active
 			"et", // link
 			new Card(0, null, "=>", c1.copy(), c2.copy()), // left
 			new Card(0, null, "=>", c2.copy(), c1.copy()), // right
@@ -103,7 +102,7 @@ export function runChooseConnector(event, deps)
 				null,
 				"=>",
 				c1,
-				new Card(1, "white", false, "", null, null, true)
+				new Card(1, "white", "", null, null, true)
 			), // left
 			c2, // right
 			true
@@ -115,7 +114,6 @@ export function runChooseConnector(event, deps)
 		cardToAdd = new Card(
 			game[firstSelectedDeckIndex].length, // id
 			null, // color
-			false, // active
 			l, // link
 			c1, // left
 			c2, // right

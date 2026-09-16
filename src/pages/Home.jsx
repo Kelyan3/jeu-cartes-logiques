@@ -14,33 +14,33 @@ import { useAuthModal } from "../context/AuthModalContext";
  * Cartes d'exemple utilisées pour illustrer les règles, affichées via le vrai composant
  * Card (donc toujours visuellement fidèles au jeu). Voir <ExampleCard> plus bas.
  */
-const cardBlanche = new CardModel(0, "white", false, "", null, null, false);
-const cardRed = new CardModel(1, "red", false, "", null, null, false);
-const cardBlue = new CardModel(2, "blue", false, "", null, null, false);
+const cardBlanche = new CardModel(0, "white", "", null, null, false);
+const cardRed = new CardModel(1, "red", "", null, null, false);
+const cardBlue = new CardModel(2, "blue", "", null, null, false);
 
-const cardEt = new CardModel(3, null, false, "et",
-	new CardModel(0, "red", false, "", null, null, false),
-	new CardModel(0, "blue", false, "", null, null, false),
+const cardEt = new CardModel(3, null, "et",
+	new CardModel(0, "red", "", null, null, false),
+	new CardModel(0, "blue", "", null, null, false),
 	false);
 
-const cardOu = new CardModel(4, null, false, "ou",
-	new CardModel(0, "red", false, "", null, null, false),
-	new CardModel(0, "blue", false, "", null, null, false),
+const cardOu = new CardModel(4, null, "ou",
+	new CardModel(0, "red", "", null, null, false),
+	new CardModel(0, "blue", "", null, null, false),
 	false);
 
-const cardImplique = new CardModel(5, null, false, "=>",
-	new CardModel(0, "red", false, "", null, null, false),
-	new CardModel(0, "blue", false, "", null, null, false),
+const cardImplique = new CardModel(5, null, "=>",
+	new CardModel(0, "red", "", null, null, false),
+	new CardModel(0, "blue", "", null, null, false),
 	false);
 
-const cardEquivaut = new CardModel(6, null, false, "<=>",
-	new CardModel(0, "red", false, "", null, null, false),
-	new CardModel(0, "blue", false, "", null, null, false),
+const cardEquivaut = new CardModel(6, null, "<=>",
+	new CardModel(0, "red", "", null, null, false),
+	new CardModel(0, "blue", "", null, null, false),
 	false);
 
-const cardNon = new CardModel(7, null, false, "non",
-	new CardModel(0, "transparent", false, "", null, null, false),
-	new CardModel(0, "red", false, "", null, null, false),
+const cardNon = new CardModel(7, null, "non",
+	new CardModel(0, "transparent", "", null, null, false),
+	new CardModel(0, "red", "", null, null, false),
 	false);
 
 const exampleCards = [cardBlanche, cardRed, cardBlue, cardEt, cardOu, cardImplique, cardEquivaut, cardNon];
@@ -53,7 +53,16 @@ const exampleGame = [exampleCards];
  */
 const ExampleCard = ({ index, label }) => (
 	<div className="example-card">
-		<Card deckIndex={0} cardIndex={index} update={() => {}} isWin={true} affichageSimple={false} isHelp={false} />
+		<Card
+			deckIndex={0}
+			cardIndex={index}
+			update={() => {}}
+			isWin={true}
+			affichageSimple={false}
+			isHelp={false}
+			isActive={false}
+		/>
+
 		{label && <p className="example-card-label">{label}</p>}
 	</div>
 );
