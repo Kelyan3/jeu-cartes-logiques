@@ -280,7 +280,7 @@ Implémentation : `compute_score()` dans `backend/app/services/progress_service.
 | `moves_threshold` | Nombre de coups autorisés avant pénalité | 10 |
 | `moves_rate` | Points perdus par coup au-delà du seuil | 3 |
 
-Ces paramètres sont **globaux** (ils s'appliquent à tous les niveaux du mode Jeu) et modifiables depuis la page Admin, section "Gestion du score" (`GET`/`PUT /api/admin/scoring`, réservé aux administrateurs). La table impose des contraintes `CHECK` en base (`score_min ≤ score_max`, `time_interval_s > 0`, aucune valeur négative) — voir `backend/data.sql`.
+Ces paramètres sont **globaux** (ils s'appliquent à tous les niveaux du mode Jeu) et modifiables depuis la page Admin, section "Gestion du score" (`GET`/`PUT /api/admin/scoring`, réservé aux administrateurs). La table impose des contraintes `CHECK` en base (`score_min ≤ score_max`, `time_interval_s > 0`, aucune valeur négative) (voir `backend/data.sql`).
 
 ## API backend
 
